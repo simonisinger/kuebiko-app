@@ -1,0 +1,9 @@
+synthetic-package: false
+
+# The files are generated into the path specified by `arb-dir`
+arb-dir: lib/i18n
+
+# Or, specifically provide an output path:
+output-dir: lib/generated/i18n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart

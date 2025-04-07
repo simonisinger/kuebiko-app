@@ -1,0 +1,4 @@
+enum ReadDirection {
+  ltr,
+  rtl
+}
