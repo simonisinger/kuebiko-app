@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/pages/client_selection.dart';
 import 'package:kuebiko_web_client/pages/home/books_list_horizontal.dart';
 import 'package:kuebiko_web_client/services/client.dart';
+import 'package:kuebiko_web_client/widget/main_drawer.dart';
 
 class OverviewPage extends StatefulWidget {
   const OverviewPage({Key? key}) : super(key: key);
@@ -36,41 +36,7 @@ class _OverviewPageState extends State<OverviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).shadowColor,
-              ),
-              child: const Text('Kuebiko'),
-            ),
-            ListTile(
-              title: const Text('Serverauswahl'),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => const ClientSelectionPage()
-                    )
-                );
-              },
-            ),
-            ListTile(
-              title: const Text('Übersicht'),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => const OverviewPage()
-                    )
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: const MainDrawer(),
       body: ListView(
         children: [
           const Padding(

@@ -11,6 +11,7 @@ class ClientService {
   final List<String> _hosts = [];
   final Map<String, KuebikoClient> _clients = {};
   KuebikoClient? selectedClient;
+  Library? selectedLibrary;
 
   ClientService() {
     _initClient();
@@ -55,6 +56,7 @@ class ClientService {
         password
     );
     _clients.addAll({hostAddress.toString(): newClient});
+    _hosts.add(hostAddress.toString());
     await storage.write(key: 'hosts', value: jsonEncode(_hosts));
     await storage.write(key: hostAddress.toString(), value: jsonEncode({
       'apiKey': newClient.getConfig().apiKey,
@@ -101,5 +103,5 @@ class ClientService {
     clientsLoaded.broadcast();
   }
 
-  get clients => _clients;
+  Map<String, KuebikoClient> get clients => _clients;
 }

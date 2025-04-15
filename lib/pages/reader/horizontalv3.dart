@@ -65,10 +65,10 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
         ]
     );
   }
-  Widget _getPageWidget(List<ContentElement> page) => Container(
+  Widget _getPageWidget(BuildContext context, int index) => Container(
       padding: const EdgeInsets.only(top: 20),
       child: ListView(
-        children: page.map((e) => e.render()).toList(),
+        children: _pages[index].map((e) => e.render()).toList(),
       )
   );
 
@@ -132,10 +132,10 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
     return Stack(
         children: [
           GestureDetector(
-            child: PageView(
+            child: PageView.builder(
               controller: _pageController,
-              children: _pages.map((e) => _getPageWidget(e)).toList(),
               onPageChanged: _updateChapter,
+              itemBuilder: _getPageWidget,
             ),
             onTapUp: _readerTap,
             onHorizontalDragStart: _readerHorizontalDragStart,
@@ -180,6 +180,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
                             max: _pages.length.toDouble(),
                             activeColor: _ebook?.readDirection == ReadDirection.ltr ? theme.scaffoldBackgroundColor : Colors.white,
                             inactiveColor: _ebook?.readDirection == ReadDirection.ltr ? Colors.white : theme.scaffoldBackgroundColor,
+                            divisions: _pages.length,
                             onChanged: (double newPage) {
                               setState(() {
                                 _pageController.jumpToPage(newPage.toInt());

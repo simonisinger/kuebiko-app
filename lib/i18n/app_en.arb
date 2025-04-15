@@ -1,3 +1,11 @@
 {
-  "page": "Page"
+  "page": "Page",
+  "librariesLoading": "Libraries are loading",
+  "serverSelection": "Server selection",
+  "libraries": "Libraries",
+  "noLibraries": "This server has no libraries",
+  "addServer": "Add Server",
+  "createLibrary": "Create library",
+  "library": "Library",
+  "libraryName": "Library name"
 }

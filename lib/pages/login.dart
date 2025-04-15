@@ -121,14 +121,15 @@ class LoginPage extends StatelessWidget {
                   padding: inputMargin,
                   width: width,
                   child: TextButton(
-                    onPressed: (){
-                      ClientService.service.addClient(
+                    onPressed: () async {
+                      await ClientService.service.addClient(
                           Uri.parse(_hostAddress.value.text),
                           _deviceName.value.text,
                           _username.value.text,
                           _password.value.text,
                           _serverName.value.text
                       );
+                      Navigator.of(context).popAndPushNamed('/client-selection');
                     },
                     child: Text(
                       'Login',

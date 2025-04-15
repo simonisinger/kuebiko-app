@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/pages/client_selection_list.dart';
+
 class ClientSelectionPage extends StatelessWidget {
   const ClientSelectionPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double width;
-    if(MediaQuery.of(context).size.width > 768){
+    if (MediaQuery.of(context).size.width > 768) {
       width = 768;
     } else {
       width = MediaQuery.of(context).size.width;
@@ -26,5 +27,4 @@ class ClientSelectionPage extends StatelessWidget {
       ),
     );
   }
-
 }

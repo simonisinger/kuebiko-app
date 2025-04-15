@@ -100,6 +100,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page'**
   String get page;
+
+  /// No description provided for @librariesLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Libraries are loading'**
+  String get librariesLoading;
+
+  /// No description provided for @serverSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Server selection'**
+  String get serverSelection;
+
+  /// No description provided for @libraries.
+  ///
+  /// In en, this message translates to:
+  /// **'Libraries'**
+  String get libraries;
+
+  /// No description provided for @noLibraries.
+  ///
+  /// In en, this message translates to:
+  /// **'This server has no libraries'**
+  String get noLibraries;
+
+  /// No description provided for @addServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Server'**
+  String get addServer;
+
+  /// No description provided for @createLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Create library'**
+  String get createLibrary;
+
+  /// No description provided for @library.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get library;
+
+  /// No description provided for @libraryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Library name'**
+  String get libraryName;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

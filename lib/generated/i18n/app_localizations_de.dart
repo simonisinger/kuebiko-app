@@ -10,4 +10,28 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get page => 'Seite';
+
+  @override
+  String get librariesLoading => 'Bibliotheken werden geladen';
+
+  @override
+  String get serverSelection => 'Serverauswahl';
+
+  @override
+  String get libraries => 'Bibliotheken';
+
+  @override
+  String get noLibraries => 'Dieser Server hat keine Bibliotheken';
+
+  @override
+  String get addServer => 'Server hinzufügen';
+
+  @override
+  String get createLibrary => 'Bibliothek erstellen';
+
+  @override
+  String get library => 'Bibliothek';
+
+  @override
+  String get libraryName => 'Bibliotheksname';
 }

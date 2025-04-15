@@ -1,3 +1,11 @@
 {
-  "page": "Seite"
+  "page": "Seite",
+  "librariesLoading": "Bibliotheken werden geladen",
+  "serverSelection": "Serverauswahl",
+  "libraries": "Bibliotheken",
+  "noLibraries": "Dieser Server hat keine Bibliotheken",
+  "addServer": "Server hinzufügen",
+  "createLibrary": "Bibliothek erstellen",
+  "library": "Bibliothek",
+  "libraryName": "Bibliotheksname"
 }

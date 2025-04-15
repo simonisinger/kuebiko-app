@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kuebiko_web_client/pages/404.dart';
 import 'package:kuebiko_web_client/pages/client_selection.dart';
+import 'package:kuebiko_web_client/pages/library/libraries.dart';
+import 'package:kuebiko_web_client/pages/home/overview.dart';
+import 'package:kuebiko_web_client/pages/library/library_add.dart';
 import 'package:kuebiko_web_client/pages/loading.dart';
 import 'package:kuebiko_web_client/pages/setup/setup.dart';
 import 'generated/i18n/app_localizations.dart';
-import 'pages/reader/horizontalv3.dart';
+import 'pages/login.dart';
 import 'url_strategy.dart';
 
 void main() {
   usePathUrlStrategy();
-  runApp(const MyApp());
+  runApp(const KuebikoApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class KuebikoApp extends StatelessWidget {
+  const KuebikoApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -47,6 +50,23 @@ class MyApp extends StatelessWidget {
           case 'client-selection':
             return MaterialPageRoute(
                 builder: (context) => const ClientSelectionPage()
+            );
+          case 'login':
+            return MaterialPageRoute(
+                builder: (context) => LoginPage()
+            );
+          case 'libraries':
+            return MaterialPageRoute(
+                builder: (context) => const LibrariesPage()
+            );
+          case 'library':
+            if (routeList[2] == 'add') {
+              return MaterialPageRoute(
+                  builder: (context) => LibraryAddPage()
+              );
+            }
+            return MaterialPageRoute(
+                builder: (context) => const OverviewPage()
             );
           case 'setup':
             return MaterialPageRoute(
