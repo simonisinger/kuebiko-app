@@ -60,7 +60,7 @@ class KuebikoApp extends StatelessWidget {
                 builder: (context) => const LibrariesPage()
             );
           case 'library':
-            if (routeList[2] == 'add') {
+            if (routeList.length > 2 && routeList[2] == 'add') {
               return MaterialPageRoute(
                   builder: (context) => LibraryAddPage()
               );
