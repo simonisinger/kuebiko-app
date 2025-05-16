@@ -111,10 +111,9 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
 
     if (_pages[page].isNotEmpty) {
       ContentElement targetElement = _pages[page].first;
+      // iterate through the elements to find the right chapter
       for (String key in _contentElements.keys) {
-        List<ContentElement> chapterElements = _contentElements[key]!
-            .values
-            .reduce((a, b) {
+        List<ContentElement> chapterElements = _contentElements[key]!.values.reduce((a, b) {
           a.addAll(b);
           return a;
         });
@@ -135,6 +134,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
               controller: _pageController,
               onPageChanged: _updateChapter,
               itemBuilder: _getPageWidget,
+              itemCount: _pages.length,
             ),
             onTapUp: _readerTap,
             onHorizontalDragStart: _readerHorizontalDragStart,
