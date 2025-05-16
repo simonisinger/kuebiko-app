@@ -31,14 +31,14 @@ class StorageService {
     Uint8List ebookData;
     String path = await _generatePath(book);
     File ebookFile = File(path);
-    // if (await ebookIsDownloaded(book)) {
-      // ebookData = ebookFile.readAsBytesSync();
-    // } else {
+    if (await ebookIsDownloaded(book)) {
+      ebookData = ebookFile.readAsBytesSync();
+    } else {
       ebookData = await book.download(Formats.epub);
       ebookFile
         ..createSync()
         ..writeAsBytesSync(ebookData);
-    // }
+    }
 
     return EpubReader(await epubx.EpubReader.readBook(ebookData));
   }
