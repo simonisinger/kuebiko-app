@@ -7,5 +7,10 @@
   "addServer": "Add Server",
   "createLibrary": "Create library",
   "library": "Library",
-  "libraryName": "Library name"
+  "libraryName": "Library name",
+  "selectFiles": "Select files",
+  "upload": "Upload",
+  "downloadRead": "Download and read",
+  "read": "Read",
+  "home": "Home"
 }

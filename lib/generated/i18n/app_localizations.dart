@@ -148,6 +148,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Library name'**
   String get libraryName;
+
+  /// No description provided for @selectFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Select files'**
+  String get selectFiles;
+
+  /// No description provided for @upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get upload;
+
+  /// No description provided for @downloadRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Download and read'**
+  String get downloadRead;
+
+  /// No description provided for @read.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get read;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

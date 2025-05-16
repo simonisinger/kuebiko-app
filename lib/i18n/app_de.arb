@@ -7,5 +7,10 @@
   "addServer": "Server hinzufügen",
   "createLibrary": "Bibliothek erstellen",
   "library": "Bibliothek",
-  "libraryName": "Bibliotheksname"
+  "libraryName": "Bibliotheksname",
+  "selectFiles": "Dateien auswählen",
+  "upload": "Hochladen",
+  "downloadRead": "Herunterladen & Lesen",
+  "read": "Lesen",
+  "home": "Startseite"
 }

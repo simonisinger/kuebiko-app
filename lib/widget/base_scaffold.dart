@@ -3,7 +3,8 @@ import 'package:kuebiko_web_client/widget/main_drawer.dart';
 
 class BaseScaffold extends StatelessWidget {
   final Widget child;
-  const BaseScaffold(this.child, {super.key});
+  final Widget? floatingActionButton;
+  const BaseScaffold(this.child, {super.key, this.floatingActionButton});
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +13,10 @@ class BaseScaffold extends StatelessWidget {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       drawer: const MainDrawer(),
+      floatingActionButton: floatingActionButton,
       body: Container(
           color: Theme.of(context).scaffoldBackgroundColor,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: child,
       ),
     );

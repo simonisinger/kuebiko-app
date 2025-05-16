@@ -4,10 +4,11 @@ import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/widget/add_button.dart';
-import 'package:kuebiko_web_client/widget/main_drawer.dart';
+import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 
 class LibrariesPage extends StatefulWidget {
   const LibrariesPage({super.key});
+  static const String route = '/libraries';
 
   @override
   State<StatefulWidget> createState() => _LibrariesPageState();
@@ -33,17 +34,15 @@ class _LibrariesPageState extends State<LibrariesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    return BaseScaffold(
+      initialized ? _showLibraries() : _showLoading(),
+      floatingActionButton: const AddWidget(
+        targetPath: '/library/add',
       ),
-      drawer: const MainDrawer(),
-      body: initialized ? _showLibraries() : _showLoading(),
     );
   }
 
   Widget _showLibraries() {
-    AppLocalizations localizations = AppLocalizations.of(context)!;
     List<Widget> widgets = [];
     if (libraries.isEmpty) {
       widgets.add(
@@ -68,15 +67,6 @@ class _LibrariesPageState extends State<LibrariesPage> {
             },
             child: Text(element.name)
         ))
-    );
-    widgets.add(
-        Container(
-          margin: const EdgeInsets.only(top: 20),
-          child: AddWidget(
-            targetPath: '/library/add',
-            buttonText: localizations.createLibrary,
-          ),
-        )
     );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),

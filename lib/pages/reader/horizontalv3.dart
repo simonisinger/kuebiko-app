@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
+import 'package:kuebiko_web_client/services/ebook/ebook.dart';
+import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
 
 import '../../enum/read_direction.dart';
-import '../../services/ebook/epub_reader.dart';
 import 'content/content_element.dart';
 
 enum _ChangePageDirection {
@@ -12,16 +12,14 @@ enum _ChangePageDirection {
 }
 
 class HorizontalV3ReaderPage extends StatefulWidget {
-  final ReadDirection direction;
-  const HorizontalV3ReaderPage({Key? key, this.direction = ReadDirection.ltr}) : super(key: key);
+  final Reader reader;
+  const HorizontalV3ReaderPage({Key? key, required this.reader}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _HorizontalV3ReaderPageState();
 }
 
 class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
-
-  EpubReader? _ebook;
   Map<String, Map<String, List<ContentElement>>> _contentElements = {};
   late String _chapter;
   final List<List<ContentElement>> _pages = [];
@@ -29,11 +27,12 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
   final PageController _pageController = PageController(initialPage: 0);
   double? _initialDragPosition;
   int _page = 0;
+  bool _isLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _initEbook();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initEbook());
   }
 
   Widget _showLoading() {
@@ -178,8 +177,8 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
                             value: _pageController.page!,
                             min: 0,
                             max: _pages.length.toDouble(),
-                            activeColor: _ebook?.readDirection == ReadDirection.ltr ? theme.scaffoldBackgroundColor : Colors.white,
-                            inactiveColor: _ebook?.readDirection == ReadDirection.ltr ? Colors.white : theme.scaffoldBackgroundColor,
+                            activeColor: widget.reader.readDirection == ReadDirection.ltr ? theme.scaffoldBackgroundColor : Colors.white,
+                            inactiveColor: widget.reader.readDirection == ReadDirection.ltr ? Colors.white : theme.scaffoldBackgroundColor,
                             divisions: _pages.length,
                             onChanged: (double newPage) {
                               setState(() {
@@ -190,7 +189,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
                         Container(
                           margin: const EdgeInsets.only(bottom: 10),
                           child: Text(
-                            "${_ebook!.readDirection == ReadDirection.ltr ? _page + 1 : _pages.length - _page} / ${_pages.length}",
+                            "${widget.reader.readDirection == ReadDirection.ltr ? _page + 1 : _pages.length - _page} / ${_pages.length}",
                             style: TextStyle(
                               color: Theme.of(context).scaffoldBackgroundColor
                             ),
@@ -232,15 +231,13 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: _ebook == null ? _showLoading() : _showReader(),
+        child: _isLoaded ? _showReader() : _showLoading(),
       ),
     );
   }
 
   _initEbook() async {
-    http.Response res = await http.get(Uri.parse('testlink'));
-    _ebook = await EpubReader.init(res.bodyBytes);
-    _contentElements = _ebook!.convertToObjects();
+    _contentElements = widget.reader.convertToObjects();
     _chapter = _contentElements.keys.first;
 
     double deviceHeight = MediaQuery.of(context).size.height;
@@ -248,8 +245,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
     List<List<ContentElement>> pages = [];
     _contentElements.forEach((key, value) {
       value.forEach((key, contentElements) {
-
-        List<double> heights = EpubReader.generateHeight(
+        List<double> heights = EbookService.generateHeight(
             contentElements,
             MediaQuery.of(context).size.width,
             maxHeight
@@ -272,12 +268,15 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
       });
     });
 
-    if (_ebook!.readDirection == ReadDirection.rtl) {
+    if (widget.reader.readDirection == ReadDirection.rtl) {
       _pages.addAll(pages.reversed);
     } else {
       _pages.addAll(pages);
     }
 
-    setState((){});
+
+    setState((){
+      _isLoaded = true;
+    });
   }
 }

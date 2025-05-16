@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
+import 'package:kuebiko_web_client/pages/library/overview.dart';
 import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/widget/add_button.dart';
 
 class ClientSelectionListWidget extends StatefulWidget {
   const ClientSelectionListWidget({Key? key}) : super(key: key);
@@ -42,7 +42,7 @@ class _ClientSelectionListWidgetState extends State<ClientSelectionListWidget> {
             child: OutlinedButton(
               onPressed: () {
                 ClientService.service.selectedClient = value;
-                Navigator.pushNamed(context, '/libraries');
+                Navigator.pushNamed(context, OverviewPage.route);
               },
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,9 +63,6 @@ class _ClientSelectionListWidgetState extends State<ClientSelectionListWidget> {
       );
     });
 
-    selectionList.add(
-      AddWidget(targetPath: '/login', buttonText: localizations.addServer)
-    );
     return ListView(
       children: selectionList,
     );

@@ -34,4 +34,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get libraryName => 'Bibliotheksname';
+
+  @override
+  String get selectFiles => 'Dateien auswählen';
+
+  @override
+  String get upload => 'Hochladen';
+
+  @override
+  String get downloadRead => 'Herunterladen & Lesen';
+
+  @override
+  String get read => 'Lesen';
+
+  @override
+  String get home => 'Startseite';
 }

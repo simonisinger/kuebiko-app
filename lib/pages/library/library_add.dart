@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/pages/base_scaffold.dart';
+import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/widget/action_button.dart';
 
 class LibraryAddPage extends StatelessWidget {
+  static const route = '/library/add';
   final TextEditingController _libraryName = TextEditingController();
   LibraryAddPage({super.key});
 

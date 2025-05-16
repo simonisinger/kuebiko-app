@@ -15,29 +15,31 @@ import 'package:kuebiko_web_client/services/css/property.dart';
 import 'package:kuebiko_web_client/services/css/rule.dart';
 import 'package:kuebiko_web_client/services/css_parser.dart';
 import 'package:kuebiko_web_client/services/ebook/models/epub_raw_content_element.dart';
-import 'package:image/image.dart' as image;
+import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
+import 'package:path/path.dart' as p;
 
-class EpubReader {
+class EpubReader implements Reader {
   late final epubx.EpubBook _book;
   late final List<EpubRawContentElement> rawElements;
 
-  static Future<EpubReader> init(Uint8List rawEpubData) async {
-    EpubReader reader = EpubReader();
-    reader._book = await epubx.EpubReader.readBook(rawEpubData);
-    reader._convert();
-    return reader;
+  EpubReader(this._book) {
+    convert();
   }
 
+  @override
   ReadDirection get readDirection => _book.Schema?.Package?.Spine?.ltr ?? true ? ReadDirection.ltr : ReadDirection.rtl;
 
-  _convert(){
+  @override
+  void convert() {
     Map<String, CssParser> cssFiles = _parseCssFiles();
     _EpubReaderTmpDataStorage elements = _getHtmlElements(cssFiles);
 
     // parse each css file
     cssFiles.forEach((cssFilename, cssFile) {
-      for (int i = 0; i < cssFile.rules.length; i++) {
-        CssRule cssRule = cssFile.rules[i];
+      for (CssRule cssRule in cssFile.rules) {
+        if (elements.documents[cssFilename] == null) {
+          continue;
+        }
         for (int d = 0; d < elements.documents[cssFilename]!.length; d++) {
           dom.Document document = elements.documents[cssFilename]![d];
           List<dom.Element> selectedElements;
@@ -81,6 +83,7 @@ class EpubReader {
     rawElements = allElements;
   }
 
+  @override
   Map<String, Map<String, List<ContentElement>>> convertToObjects() {
     Map<String, Map<String, List<ContentElement>>> results = {};
 
@@ -112,31 +115,37 @@ class EpubReader {
             List<PartParagraphElement> parts = [];
             String innerHtml = rawContentElement.contentElement.innerHtml;
             for (dom.Element spanElement in spanElements) {
-              innerHtml = innerHtml.replaceAll(spanElement.outerHtml.trim(), '%;' + spanElements.indexOf(spanElement).toString() + ';%');
+              innerHtml = innerHtml.replaceAll(spanElement.outerHtml.trim(), ';%;{{' + spanElements.indexOf(spanElement).toString() + '}};%;');
             }
-            RegExp regex = RegExp(r'%;(\d+);%');
 
-            List<String> partsRaw = regex.allMatches(innerHtml).map((RegExpMatch match) => match.group(1)!).toList();
+            List<String> partsRaw = innerHtml.split(';%;');
             for (String part in partsRaw) {
               TextStyle style;
               String text;
-              dom.Element spanElement = spanElements[int.tryParse(part)!];
-              text = spanElement.text;
-              if (text.trim().isEmpty) {
+              if (part.trim().isEmpty) {
                 continue;
               }
+              RegExp regex = RegExp(r'\{\{(\d+)}}');
+              RegExpMatch? match = regex.firstMatch(part);
+              if (match != null) {
+                dom.Element spanElement = spanElements[int.tryParse(match.group(1)!)!];
+                text = spanElement.text;
 
-              List<CssProperty> rules = rawElements.firstWhere((element) => element.contentElement == spanElement).rules;
-              // detect and override the default css rules
-              if (spanElement.attributes['style'] != null) {
-                List<CssProperty> localProperties = CssParser().parsePropertiesString(spanElement.attributes['style']!);
-                for (CssProperty property in localProperties) {
-                   rules.removeWhere((CssProperty tmpProperty) => property.propertyName == tmpProperty.propertyName);
-                   rules.add(property);
+                List<CssProperty> rules = rawElements.firstWhere((element) => element.contentElement == spanElement).rules;
+                // detect and override the default css rules
+                if (spanElement.attributes['style'] != null) {
+                  List<CssProperty> localProperties = CssParser().parsePropertiesString(spanElement.attributes['style']!);
+                  for (CssProperty property in localProperties) {
+                    rules.removeWhere((CssProperty tmpProperty) => property.propertyName == tmpProperty.propertyName);
+                    rules.add(property);
+                  }
                 }
+                style = convertCssPropertiesToTextStyle(rules);
+              } else {
+                text = part;
+                style = const TextStyle();
               }
 
-              style = convertCssPropertiesToTextStyle(rules);
               parts.add(PartParagraphElement(style, text));
             }
             if (parts.isEmpty) {
@@ -176,6 +185,7 @@ class EpubReader {
       if (property.propertyName == 'font-size') {
         //fontSize = double.tryParse(property.propertyValue.replaceAll('px', ''));
         fontSizeFactor = double.tryParse(property.propertyValue.replaceAll('em', ''));
+        // 14 is the default font size of flutter
         fontSize = (fontSizeFactor ?? 1) * 14;
       }
 
@@ -274,7 +284,11 @@ class EpubReader {
       List<dom.Element> localElements = document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,img,span');
       String stylesheetName = '';
       if (document.querySelector('link[rel="stylesheet"]') != null) {
-        stylesheetName = document.querySelector('link[rel="stylesheet"]')!.attributes['href']!;
+        stylesheetName = p.normalize(
+            document.querySelector('link[rel="stylesheet"]')!
+                .attributes['href']!
+                .replaceAll('../', '')
+        );
       }
 
       if (!documents.containsKey(stylesheetName)) {
@@ -295,68 +309,6 @@ class EpubReader {
     });
 
     return _EpubReaderTmpDataStorage(elements, documents);
-  }
-
-  static List<double> generateHeight(List<ContentElement> elements, double maxWidth, double maxHeight) {
-    List<double> heights = [];
-    BoxConstraints constraints = BoxConstraints(
-      maxWidth: maxWidth, // maxwidth calculated
-      minHeight: 0.0,
-      minWidth: 0.0,
-    );
-
-    for (ContentElement element in elements) {
-      RenderParagraph renderParagraph;
-      switch(element.runtimeType) {
-        case ImageContent:
-          ImageContent imageContent = element as ImageContent;
-          image.Image imageObject = image.decodeImage(imageContent.imageData)!;
-          double height = imageObject.height.toDouble();
-          if (imageObject.width > maxWidth) {
-            double multiplication = imageObject.height / imageObject.width;
-            height = maxWidth * multiplication;
-          }
-          if (maxHeight < height) {
-            height = maxHeight;
-          }
-          heights.add(height);
-          break;
-        case SinglePartParagraph:
-          SinglePartParagraph singlePartParagraph = element as SinglePartParagraph;
-          renderParagraph = RenderParagraph(
-            TextSpan(
-                text: singlePartParagraph.text,
-                style: singlePartParagraph.style
-            ),
-            textDirection: TextDirection.ltr,
-          );
-
-          renderParagraph.layout(constraints);
-          heights.add(renderParagraph.size.height + 10);
-          break;
-        case MultiPartParagraphElement:
-          MultiPartParagraphElement multiPartParagraphElement = element as MultiPartParagraphElement;
-
-          renderParagraph = RenderParagraph(
-            TextSpan(
-                text: '',
-                style: const TextStyle(),
-                children: multiPartParagraphElement.textElements.map(
-                        (e) => TextSpan(
-                        text: e.text,
-                        style: e.style
-                    )
-                ).toList()
-            ),
-            textDirection: TextDirection.ltr,
-          );
-          renderParagraph.layout(constraints);
-          heights.add(renderParagraph.size.height + 10);
-          break;
-      }
-    }
-
-    return heights;
   }
 }
 

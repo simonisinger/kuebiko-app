@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/pages/client_selection_list.dart';
+import 'package:kuebiko_web_client/widget/base_scaffold.dart';
+
+import '../widget/add_button.dart';
 
 class ClientSelectionPage extends StatelessWidget {
   const ClientSelectionPage({Key? key}) : super(key: key);
@@ -13,8 +16,9 @@ class ClientSelectionPage extends StatelessWidget {
       width = MediaQuery.of(context).size.width;
     }
 
-    return Scaffold(
-      body: Container(
+    return BaseScaffold(
+      floatingActionButton: const AddWidget(targetPath: '/login'),
+      Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor

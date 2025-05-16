@@ -8,7 +8,7 @@ import 'package:version/version.dart';
 Event clientsLoaded = Event();
 class ClientService {
   static final ClientService service = ClientService();
-  final List<String> _hosts = [];
+  final List<String> _hostNames = [];
   final Map<String, KuebikoClient> _clients = {};
   KuebikoClient? selectedClient;
   Library? selectedLibrary;
@@ -18,17 +18,17 @@ class ClientService {
   }
 
   Future<List<String>> _loadHosts() async {
-    String? rawHostsJson = await storage.read(key: 'hosts');
+    String? rawHostsJson = await storage.read(key: 'hostNames');
     if (rawHostsJson == null) {
       rawHostsJson = jsonEncode([]);
-      await storage.write(key: 'hosts', value: rawHostsJson);
+      await storage.write(key: 'hostNames', value: rawHostsJson);
     }
     List<String> jsonHosts = jsonDecode(rawHostsJson).cast<String>();
     return jsonHosts;
   }
 
   Future<void> setupClient(KuebikoConfig config, String localName) async {
-    if(_hosts.contains(config.baseUrl.toString())){
+    if(_hostNames.contains(config.baseUrl.toString())){
       return;
     }
     await storage.write(key: config.baseUrl.toString(), value: jsonEncode({
@@ -36,12 +36,12 @@ class ClientService {
       'deviceName': config.deviceName,
       'name': localName
     }));
-    _addHost(config.baseUrl.toString());
+    _addHostName(config.baseUrl.toString());
   }
 
-  Future<void> _addHost(String host) async {
-    _hosts.add(host);
-    await storage.write(key: 'hosts', value: jsonEncode(_hosts));
+  Future<void> _addHostName(String hostName) async {
+    _hostNames.add(hostName);
+    await storage.write(key: 'hostNames', value: jsonEncode(_hostNames));
   }
 
   Future<bool> addClient(Uri hostAddress, String deviceName, String username, String password, String localName) async {
@@ -55,13 +55,13 @@ class ClientService {
         username,
         password
     );
-    _clients.addAll({hostAddress.toString(): newClient});
-    _hosts.add(hostAddress.toString());
-    await storage.write(key: 'hosts', value: jsonEncode(_hosts));
-    await storage.write(key: hostAddress.toString(), value: jsonEncode({
+    _clients.addAll({localName: newClient});
+    _hostNames.add(localName);
+    await storage.write(key: 'hostNames', value: jsonEncode(_hostNames));
+    await storage.write(key: localName, value: jsonEncode({
       'apiKey': newClient.getConfig().apiKey,
       'deviceName': deviceName,
-      'name': localName
+      'host': hostAddress.toString()
     }));
     return true;
   }
@@ -75,20 +75,20 @@ class ClientService {
   }
 
   Future<void> _initClient() async {
-    List hosts = await _loadHosts();
+    List hostNames = await _loadHosts();
     Map<String, KuebikoClient> configMap = {};
-    for (String host in hosts) {
-      String? configStringRaw = await storage.read(key: host);
+    for (String hostName in hostNames) {
+      String? configStringRaw = await storage.read(key: hostName);
       if (configStringRaw == null) {
         continue;
       }
       Map configRaw = jsonDecode(configStringRaw);
       try {
-        configMap[configRaw['name']] = KuebikoClient(
+        configMap[hostName] = KuebikoClient(
             KuebikoConfig(
                 appName: 'Official Kuebiko App',
                 appVersion: Version(1, 0, 0),
-                baseUrl: Uri.parse(host),
+                baseUrl: Uri.parse(configRaw['host']),
                 deviceName: configRaw['deviceName'],
                 apiKey: configRaw['apiKey']
             )

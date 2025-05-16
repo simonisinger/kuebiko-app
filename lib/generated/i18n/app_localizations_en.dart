@@ -34,4 +34,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get libraryName => 'Library name';
+
+  @override
+  String get selectFiles => 'Select files';
+
+  @override
+  String get upload => 'Upload';
+
+  @override
+  String get downloadRead => 'Download and read';
+
+  @override
+  String get read => 'Read';
+
+  @override
+  String get home => 'Home';
 }

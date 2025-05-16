@@ -1,20 +1,18 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-
-import 'package:http/http.dart' as http;
+import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:kuebiko_web_client/services/ebook/epub_reader.dart';
 
+import '../../services/ebook/reader_interface.dart';
 import 'content/content_element.dart';
 
 class VerticalReaderPage extends StatefulWidget {
 
-  final String ebookPath;
+  final Reader reader;
 
-  const VerticalReaderPage({Key? key, required this.ebookPath}) : super(key: key);
+  const VerticalReaderPage({Key? key, required this.reader}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _VerticalReaderPageState();
@@ -62,17 +60,14 @@ class _VerticalReaderPageState extends State<VerticalReaderPage> {
   }
 
   _initEbook() async {
-    File file = File(widget.ebookPath);
-    http.Response res = await http.get(Uri.parse('https://kuebiko.app/Trapped in a Dating Sim_ The W - Yomu Mishima & Monda_382.epub'));
-    _ebook = await EpubReader.init(res.bodyBytes);
-    _contentElements = _ebook!.convertToObjects();
+    _contentElements = widget.reader.convertToObjects();
     _chapter = _contentElements.keys.first;
     _part = _contentElements[_chapter]!.keys.first;
 
     _chapterHeight.addAll(
         _contentElements.map((key, value) {
           Map<String, double> heightMap = value.map((key, contentElements) {
-            List<double> heights = EpubReader.generateHeight(
+            List<double> heights = EbookService.generateHeight(
                 contentElements,
                 MediaQuery.of(context).size.width,
                 MediaQuery.of(context).size.height * 0.9

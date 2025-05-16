@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 
 class LoginPage extends StatelessWidget {
+  static const route = '/login';
   LoginPage({Key? key}) : super(key: key);
 
   final TextEditingController _hostAddress = TextEditingController();

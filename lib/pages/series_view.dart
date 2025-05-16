@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/pages/home/book_list_item.dart';
+import 'package:kuebiko_web_client/widget/library/book_list_item.dart';
 
 class SeriesViewPage extends StatefulWidget {
   final Series series;
@@ -35,7 +35,7 @@ class _SeriesViewPageState extends State<SeriesViewPage> {
   List<Widget> _generateBookWidgets() {
     List<Widget> books = [];
     for (Book book in _books!) {
-      books.add(BookListItemWidget(book: book));
+      books.add(BookListItem(book: book));
     }
     return books;
   }

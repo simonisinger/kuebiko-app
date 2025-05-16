@@ -22,12 +22,18 @@ class MainDrawer extends StatelessWidget {
       child: ListView(
         children: [
           ListTile(
+            title: Text(localizations.home),
+            onTap: () {
+              Navigator.of(context).pushNamed('/home');
+            },
+          ),
+          _generateLibrariesButton(localizations, context),
+          ListTile(
             title: Text(localizations.serverSelection),
             onTap: () {
               Navigator.of(context).pushNamed('/client-selection');
             },
           ),
-          _generateLibrariesButton(localizations, context)
         ],
       ),
     );
