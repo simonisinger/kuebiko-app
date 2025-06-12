@@ -7,8 +7,6 @@ import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
 import 'package:kuebiko_web_client/widget/action_button.dart';
 
-import '../../services/ebook/reader_interface.dart';
-
 class BookDetailPage extends StatefulWidget {
   static const route = '/book/detail';
   final Book book;
@@ -74,13 +72,34 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
-                    ActionButton(
-                        onPressed: () async {
-                          Reader reader = await StorageService.service.getEbookReader(widget.book);
-                          Navigator.of(context).pushNamed('/book/read', arguments: reader);
-                        },
-                        buttonText: _ebookDownloaded ? localizations.read : localizations.downloadRead
-                    )
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        _ebookDownloaded ? ActionButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/book/read', arguments: widget.book);
+                            },
+                            buttonText: localizations.read
+                        ) : ActionButton(
+                            onPressed: () async {
+                              await StorageService.service.downloadEbook(widget.book);
+                              setState(() {
+                                _ebookDownloaded = true;
+                              });
+                            },
+                            buttonText: localizations.download
+                        ),
+                        _ebookDownloaded ? IconButton(
+                            onPressed: () async {
+                              await StorageService.service.deleteEbook(widget.book);
+                              setState(() {
+                                _ebookDownloaded = false;
+                              });
+                            },
+                            icon: const Icon(Icons.delete_forever)
+                        ) : Container()
+                      ],
+                    ),
                   ],
                 )
               ),

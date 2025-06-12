@@ -12,5 +12,6 @@
   "upload": "Upload",
   "downloadRead": "Download and read",
   "read": "Read",
-  "home": "Home"
+  "home": "Home",
+  "download": "Download"
 }

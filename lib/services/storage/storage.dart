@@ -1,19 +1,16 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:epubx/epubx.dart' as epubx;
+import 'package:file_picker/file_picker.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/services/client.dart';
+import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../ebook/epub_reader.dart';
 
 class StorageService {
   static final StorageService service = StorageService();
-  Future<void> storeEbook(Book book, Uint8List data) async {
-    String path = await _generatePath(book);
-    File(path).writeAsBytesSync(data);
-  }
 
   Future<String> _generatePath(Book book) async {
     Directory baseDirectory = await getApplicationDocumentsDirectory();
@@ -27,19 +24,45 @@ class StorageService {
     return ebookFile.existsSync();
   }
 
-  Future<EpubReader> getEbookReader(Book book) async {
-    Uint8List ebookData;
+  Future<void> deleteEbook(Book book) async {
+    File(await _generatePath(book)).deleteSync();
+  }
+
+  Future<void> uploadEbook(PlatformFile file) async {
+    BookMeta meta = await EbookService.parseEpubMeta(file.name, file.xFile.openRead(), file.size);
+    await ClientService.service.selectedLibrary!.upload(
+        file.name,
+        meta,
+        file.xFile.openRead(),
+        file.size
+    );
+  }
+
+  Future<void> downloadEbook(Book book) async {
     String path = await _generatePath(book);
     File ebookFile = File(path);
-    if (await ebookIsDownloaded(book)) {
-      ebookData = ebookFile.readAsBytesSync();
+    if (!(await ebookIsDownloaded(book))) {
+      final download = await book.download(Formats.epub);
+      ebookFile.createSync();
+      await ebookFile.openWrite().addStream(download.stream);
     } else {
-      ebookData = await book.download(Formats.epub);
-      ebookFile
-        ..createSync()
-        ..writeAsBytesSync(ebookData);
+      throw Exception('ebook already exists');
+    }
+  }
+
+  Future<EpubReader> getEbookReader(Book book) async {
+    String path = await _generatePath(book);
+    File ebookFile = File(path);
+
+    if (!(await ebookIsDownloaded(book))) {
+      throw Exception('ebook file doesnt exists');
     }
 
-    return EpubReader(await epubx.EpubReader.readBook(ebookData));
+    return EpubReader.fromEpubBookRef(
+        await epubx.EpubReader.openBookStream(
+          ebookFile.openRead(),
+          ebookFile.lengthSync()
+        )
+    );
   }
 }

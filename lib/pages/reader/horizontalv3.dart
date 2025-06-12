@@ -1,7 +1,13 @@
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
+import 'package:kuebiko_web_client/services/storage/storage.dart';
+import 'package:kuebiko_web_client/widget/reader/overlay_bottom.dart';
+import 'package:kuebiko_web_client/widget/reader/overlay_top.dart';
 
 import '../../enum/read_direction.dart';
 import 'content/content_element.dart';
@@ -12,21 +18,22 @@ enum _ChangePageDirection {
 }
 
 class HorizontalV3ReaderPage extends StatefulWidget {
-  final Reader reader;
-  const HorizontalV3ReaderPage({Key? key, required this.reader}) : super(key: key);
+  static final Event<Value<int>> pageUpdatedEvent = Event();
+  static final Event<Value<bool>> showMenuChangedEvent = Event();
+  final Book book;
+  const HorizontalV3ReaderPage({Key? key, required this.book}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _HorizontalV3ReaderPageState();
 }
 
-class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
+class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with ProgressMixin {
+  late final Reader reader;
   Map<String, Map<String, List<ContentElement>>> _contentElements = {};
-  late String _chapter;
   final List<List<ContentElement>> _pages = [];
   bool _showMenu = false;
-  final PageController _pageController = PageController(initialPage: 0);
+  late final PageController _pageController;
   double? _initialDragPosition;
-  int _page = 0;
   bool _isLoaded = false;
 
   @override
@@ -64,6 +71,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
         ]
     );
   }
+
   Widget _getPageWidget(BuildContext context, int index) => Container(
       padding: const EdgeInsets.only(top: 20),
       child: ListView(
@@ -81,9 +89,8 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
     } else if (nextPage < position) {
       _changePage(_ChangePageDirection.up);
     } else {
-      setState(() {
-        _showMenu = !_showMenu;
-      });
+      _showMenu = !_showMenu;
+      HorizontalV3ReaderPage.showMenuChangedEvent.broadcast(Value(_showMenu));
     }
   }
 
@@ -105,126 +112,65 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
   }
 
   _updateChapter(int page) {
-    setState(() {
-      _page = page;
-    });
-
-    if (_pages[page].isNotEmpty) {
-      ContentElement targetElement = _pages[page].first;
-      // iterate through the elements to find the right chapter
-      for (String key in _contentElements.keys) {
-        List<ContentElement> chapterElements = _contentElements[key]!.values.reduce((a, b) {
-          a.addAll(b);
-          return a;
-        });
-        if (chapterElements.contains(targetElement)) {
-          _chapter = key;
-          break;
-        }
-      }
-    }
+    HorizontalV3ReaderPage.pageUpdatedEvent.broadcast(Value(page));
+    updateProgress(_pages[page].first, _pages, widget.book);
   }
 
   Widget _showReader() {
-    final ThemeData theme = Theme.of(context);
     return Stack(
         children: [
-          GestureDetector(
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: _updateChapter,
-              itemBuilder: _getPageWidget,
-              itemCount: _pages.length,
+          KeyboardListener(
+            focusNode: FocusNode(),
+            onKeyEvent: (KeyEvent keyEvent) {
+
+            },
+            child: GestureDetector(
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: _updateChapter,
+                itemBuilder: _getPageWidget,
+                itemCount: _pages.length,
+              ),
+              onTapUp: _readerTap,
+              onHorizontalDragStart: _readerHorizontalDragStart,
+              onHorizontalDragUpdate: _readerHorizontalDragUpdate,
+              onHorizontalDragCancel: _readerHorizontalDragCancel,
+              onHorizontalDragEnd: _readerHorizontalDragEnd,
             ),
-            onTapUp: _readerTap,
-            onHorizontalDragStart: _readerHorizontalDragStart,
-            onHorizontalDragUpdate: _readerHorizontalDragUpdate,
-            onHorizontalDragCancel: _readerHorizontalDragCancel,
-            onHorizontalDragEnd: _readerHorizontalDragEnd,
           ),
-          _showMenu ? Positioned(
-              top: 0,
-              width: MediaQuery.of(context).size.width,
-              child: Container(
-                padding: const EdgeInsets.only(top: 20, bottom: 10),
-                decoration: BoxDecoration(
-                    color: theme.primaryColor
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      _chapter,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: theme.scaffoldBackgroundColor
-                      ),
-                    ),
-                  ],
-                ),
-              )
-          ) : Container(),
-          _showMenu ? Positioned(
-              bottom: 0,
-              width: MediaQuery.of(context).size.width,
-              child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                      color: theme.primaryColor
-                  ),
-                  child: Column(
-                      children: [
-                        Slider(
-                            value: _pageController.page!,
-                            min: 0,
-                            max: _pages.length.toDouble(),
-                            activeColor: widget.reader.readDirection == ReadDirection.ltr ? theme.scaffoldBackgroundColor : Colors.white,
-                            inactiveColor: widget.reader.readDirection == ReadDirection.ltr ? Colors.white : theme.scaffoldBackgroundColor,
-                            divisions: _pages.length,
-                            onChanged: (double newPage) {
-                              setState(() {
-                                _pageController.jumpToPage(newPage.toInt());
-                              });
-                            },
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          child: Text(
-                            "${widget.reader.readDirection == ReadDirection.ltr ? _page + 1 : _pages.length - _page} / ${_pages.length}",
-                            style: TextStyle(
-                              color: Theme.of(context).scaffoldBackgroundColor
-                            ),
-                          )
-                        )
-                      ]
-                  )
-              )
-          ) : Container(),
+          ReaderOverlayTop(
+            pages: _pages,
+            contentElements: _contentElements,
+          ),
+          ReaderOverlayBottom(
+            readDirection: reader.readDirection,
+            pageController: _pageController,
+            countPages: _pages.length
+          ),
         ]
     );
   }
 
   void _changePage(_ChangePageDirection direction) {
-    setState(() {
-      int newPage = _pageController.page!.ceil();
-      switch (direction) {
-        case _ChangePageDirection.up:
-          newPage++;
-          if (newPage == _pages.length) {
-            return;
-          }
-        case _ChangePageDirection.down:
-          if (newPage == 0) {
-            return;
-          }
-          newPage--;
-      }
-      _page = newPage;
-      _pageController.animateToPage(
-          newPage,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.decelerate
-      );
-    });
+    int newPage = _pageController.page!.ceil();
+    switch (direction) {
+      case _ChangePageDirection.up:
+        newPage++;
+        if (newPage == _pages.length) {
+          return;
+        }
+      case _ChangePageDirection.down:
+        if (newPage == 0) {
+          return;
+        }
+        newPage--;
+    }
+    HorizontalV3ReaderPage.pageUpdatedEvent.broadcast(Value(newPage));
+    _pageController.animateToPage(
+        newPage,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.decelerate
+    );
   }
 
   @override
@@ -237,15 +183,17 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
   }
 
   _initEbook() async {
-    _contentElements = widget.reader.convertToObjects();
-    _chapter = _contentElements.keys.first;
+    reader = await StorageService.service.getEbookReader(widget.book);
+    _contentElements = await reader.convertToObjects();
 
     double deviceHeight = MediaQuery.of(context).size.height;
     double maxHeight = deviceHeight * 0.8;
     List<List<ContentElement>> pages = [];
-    _contentElements.forEach((key, value) {
-      value.forEach((key, contentElements) {
-        List<double> heights = EbookService.generateHeight(
+    for (String chapter in _contentElements.keys) {
+      for (String filename in _contentElements[chapter]!.keys) {
+        List<ContentElement> contentElements = _contentElements[chapter]![filename]!;
+
+        List<double> heights = await EbookService.generateHeight(
             contentElements,
             MediaQuery.of(context).size.width,
             maxHeight
@@ -265,15 +213,19 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> {
         if (tmpPage.isNotEmpty) {
           pages.add(tmpPage);
         }
-      });
-    });
+      }
+    }
 
-    if (widget.reader.readDirection == ReadDirection.rtl) {
+    if (reader.readDirection == ReadDirection.rtl) {
       _pages.addAll(pages.reversed);
     } else {
       _pages.addAll(pages);
     }
 
+    Progress progress = await widget.book.getProgress();
+    _pageController = PageController(
+        initialPage: getPageFromIndex(progress.currentPage.toInt(), pages)
+    );
 
     setState((){
       _isLoaded = true;

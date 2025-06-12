@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:epubx/epubx.dart';
+import 'package:epubx/epubx.dart' as epubx;
 import 'package:flutter/material.dart' show BoxConstraints, TextDirection, TextSpan, TextStyle;
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:image/image.dart' as image;
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/services/ebook/epub_reader.dart';
+import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
 import 'package:path/path.dart' as p;
 
 import '../../pages/reader/content/content_element.dart';
@@ -13,23 +15,32 @@ import '../../pages/reader/content/multi_part_paragraph.dart';
 import '../../pages/reader/content/single_part_paragraph.dart';
 
 final class EbookService {
-  static Future<BookMeta> parseEpubMeta(String filename, Uint8List data) async {
-    EpubBook ebook = await EpubReader.readBook(data);
+
+  static Future<BookMeta> parseEpubMeta(String filename, Stream<List<int>> data, int length) async {
+    epubx.EpubBookRef ebook = await epubx.EpubReader.openBookStream(data,length);
 
     String baseFilename = p.basenameWithoutExtension(filename);
     RegExp regExp = RegExp(r'(?<name>.*)(Vol.|Volume|Bd.|Band)?( *)(?<volNumber>[0-9]+)(.*)$');
 
-    RegExpMatch? match = regExp.firstMatch(p.basenameWithoutExtension(filename));
+    RegExpMatch? match = regExp.firstMatch(ebook.Schema!.Package!.Metadata!.Titles!.first);
+
+    // count elements for max_page parameter
+    Reader reader = await EpubReader.fromEpubBookRef(ebook);
+    Map<String, Map<String, List<ContentElement>>> elements = await reader.convertToObjects();
+    int maxPage = 0;
+    elements.forEach((chapter, files) => files.forEach((file, contentElements) => maxPage += contentElements.length));
+
     return BookMeta(
         name: match?.namedGroup('name') ?? baseFilename,
         volNumber: int.tryParse(match?.namedGroup('volNumber') ?? '') ?? 1,
         releaseDate: DateTime.now(),
         author: ebook.Author ?? 'Unknown Author',
-        language: ebook.Schema?.Package?.Metadata?.Languages?.first ?? 'und'
+        language: ebook.Schema?.Package?.Metadata?.Languages?.first ?? 'und',
+        maxPage: maxPage
     );
   }
 
-  static List<double> generateHeight(List<ContentElement> elements, double maxWidth, double maxHeight) {
+  static Future<List<double>> generateHeight(List<ContentElement> elements, double maxWidth, double maxHeight) async {
     List<double> heights = [];
     BoxConstraints constraints = BoxConstraints(
       maxWidth: maxWidth, // maxwidth calculated
@@ -39,10 +50,12 @@ final class EbookService {
 
     for (ContentElement element in elements) {
       RenderParagraph renderParagraph;
-      switch(element.runtimeType) {
+      switch (element.runtimeType) {
         case ImageContent:
           ImageContent imageContent = element as ImageContent;
-          image.Image imageObject = image.decodeImage(imageContent.imageData)!;
+          image.Image imageObject = image.decodeImage(
+              Uint8List.fromList(await imageContent.image.readContent())
+          )!;
           double height = imageObject.height.toDouble();
           if (imageObject.width > maxWidth) {
             double multiplication = imageObject.height / imageObject.width;

@@ -1,9 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/services/ebook/ebook.dart';
+import 'package:kuebiko_web_client/services/storage/storage.dart';
 import 'package:kuebiko_web_client/widget/action_button.dart';
 
 class UploadPage extends StatefulWidget {
@@ -22,7 +20,7 @@ class _UploadPageState extends State<UploadPage> {
       type: FileType.custom,
       allowMultiple: true,
       allowedExtensions: ['epub'],
-      withData: true
+      withReadStream: true
     ))?.files;
 
     if (!mounted) return;
@@ -70,15 +68,7 @@ class _UploadPageState extends State<UploadPage> {
                   child: ActionButton(
                       onPressed: () async {
                         for (PlatformFile file in _files) {
-                          BookMeta meta = await EbookService.parseEpubMeta(
-                              file.name,
-                              file.bytes!
-                          );
-                          await ClientService.service.selectedLibrary!.upload(
-                              file.name,
-                              meta,
-                              file.bytes!
-                          );
+                          StorageService.service.uploadEbook(file);
                         }
                         setState(() {
                           _files.clear();

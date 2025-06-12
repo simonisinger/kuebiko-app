@@ -12,7 +12,6 @@ import 'package:kuebiko_web_client/pages/library/upload.dart';
 import 'package:kuebiko_web_client/pages/loading.dart';
 import 'package:kuebiko_web_client/pages/reader/horizontalv3.dart';
 import 'package:kuebiko_web_client/pages/setup/setup.dart';
-import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
 import 'generated/i18n/app_localizations.dart';
 import 'pages/login.dart';
 import 'url_strategy.dart';
@@ -71,8 +70,8 @@ class KuebikoApp extends StatelessWidget {
             Book book = routeSettings.arguments as Book;
             targetPage = BookDetailPage(book: book);
           case '/book/read':
-            Reader reader = routeSettings.arguments as Reader;
-            targetPage = HorizontalV3ReaderPage(reader: reader,);
+            Book book = routeSettings.arguments as Book;
+            targetPage = HorizontalV3ReaderPage(book: book,);
           case SetupPage.route:
             targetPage = const SetupPage();
           case LibraryPage.route:
@@ -194,7 +193,7 @@ class KuebikoApp extends StatelessWidget {
                   )*/
               )
           ),
-          cardTheme: CardTheme(
+          cardTheme: CardThemeData(
             color: backgroundColor,
             elevation: 3,
             shadowColor: shadowColor,

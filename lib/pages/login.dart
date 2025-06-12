@@ -78,6 +78,16 @@ class LoginPage extends StatelessWidget {
                         labelText: 'E-Mail Adresse',
                         border: inputBorder
                     ),
+                    validator: (email) {
+                      if (email == null) {
+                        return 'Bitte gib deine E-Mail ein';
+                      }
+                      RegExp validator = RegExp(r'^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$');
+                      if (validator.hasMatch(email)){
+                        return null;
+                      }
+                      return "Die angegebene E-Mail ist ungültig";
+                    },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                   ),
                 ),
@@ -91,7 +101,6 @@ class LoginPage extends StatelessWidget {
                         labelText: 'Passwort',
                         border: inputBorder
                     ),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
                   ),
                 ),
                 Padding(
@@ -103,6 +112,17 @@ class LoginPage extends StatelessWidget {
                         labelText: 'Servername',
                         border: inputBorder
                     ),
+                    validator: (name) {
+                      if (name == null) {
+                        return "Diese Feld darf nicht leer sein";
+                      }
+
+                      RegExp validator = RegExp(r'^[a-z0-9 ]{3,}$', caseSensitive: false);
+                      if (!validator.hasMatch(name)) {
+                        return "Der Name enthält ungültige Zeichen oder ist Kürzer als drei Zeichen";
+                      }
+                      return null;
+                    },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                   ),
                 ),
@@ -123,14 +143,16 @@ class LoginPage extends StatelessWidget {
                   width: width,
                   child: TextButton(
                     onPressed: () async {
-                      await ClientService.service.addClient(
+                      bool success = await ClientService.service.addClient(
                           Uri.parse(_hostAddress.value.text),
                           _deviceName.value.text,
                           _username.value.text,
                           _password.value.text,
                           _serverName.value.text
                       );
-                      Navigator.of(context).popAndPushNamed('/client-selection');
+                      if (success) {
+                        Navigator.of(context).popAndPushNamed('/client-selection');
+                      }
                     },
                     child: Text(
                       'Login',

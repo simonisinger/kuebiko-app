@@ -1,5 +1,5 @@
 
-import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:epubx/epubx.dart' as epubx;
 import 'package:flutter/rendering.dart';
@@ -19,20 +19,23 @@ import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
 import 'package:path/path.dart' as p;
 
 class EpubReader implements Reader {
-  late final epubx.EpubBook _book;
+  late final epubx.EpubBookRef _book;
   late final List<EpubRawContentElement> rawElements;
 
-  EpubReader(this._book) {
-    convert();
+  static Future<EpubReader> fromEpubBookRef(epubx.EpubBookRef book) async {
+    EpubReader epubReader = EpubReader();
+    epubReader._book = book;
+    await epubReader.convert();
+    return epubReader;
   }
 
   @override
   ReadDirection get readDirection => _book.Schema?.Package?.Spine?.ltr ?? true ? ReadDirection.ltr : ReadDirection.rtl;
 
   @override
-  void convert() {
-    Map<String, CssParser> cssFiles = _parseCssFiles();
-    _EpubReaderTmpDataStorage elements = _getHtmlElements(cssFiles);
+  Future<void> convert() async {
+    Map<String, CssParser> cssFiles = await _parseCssFiles();
+    _EpubReaderTmpDataStorage elements = await _getHtmlElements(cssFiles);
 
     // parse each css file
     cssFiles.forEach((cssFilename, cssFile) {
@@ -40,6 +43,7 @@ class EpubReader implements Reader {
         if (elements.documents[cssFilename] == null) {
           continue;
         }
+        // search through the css files and find matching html elements
         for (int d = 0; d < elements.documents[cssFilename]!.length; d++) {
           dom.Document document = elements.documents[cssFilename]![d];
           List<dom.Element> selectedElements;
@@ -48,9 +52,14 @@ class EpubReader implements Reader {
           } catch (exception) {
             selectedElements = document.querySelectorAll('.' + cssRule.selector);
           }
+          // match the elements to the css rules
           for (dom.Element selectedElement in selectedElements) {
-            EpubRawContentElement rawContentElement = elements.elements[cssFilename]!
-                .firstWhere((element) => selectedElement == element.contentElement);
+            EpubRawContentElement rawContentElement;
+            try {
+              rawContentElement = elements.elements[cssFilename]!.firstWhere((element) => selectedElement == element.contentElement);
+            } catch (e) {
+              continue;
+            }
             _addCssPropertyToRawContent(rawContentElement, cssRule.properties);
           }
         }
@@ -84,7 +93,7 @@ class EpubReader implements Reader {
   }
 
   @override
-  Map<String, Map<String, List<ContentElement>>> convertToObjects() {
+  Future<Map<String, Map<String, List<ContentElement>>>> convertToObjects() async {
     Map<String, Map<String, List<ContentElement>>> results = {};
 
     for (EpubRawContentElement rawContentElement in rawElements) {
@@ -162,16 +171,17 @@ class EpubReader implements Reader {
           results[rawContentElement.chapter]![rawContentElement.fileName]!.add(contentElement);
           break;
         case 'img':
-          List<int> imageContent = _book.Content!.Images![rawContentElement.contentElement.attributes['src']!.replaceAll('../', '')]!.Content!;
+          epubx.EpubByteContentFileRef image = _book.Content!.Images![rawContentElement.contentElement.attributes['src']!.replaceAll('../', '')]!;
           bool fullSize = false;
           if (rawContentElement.contentElement.attributes['src']!.contains('cover')) {
             fullSize = true;
           }
 
-          results[rawContentElement.chapter]![rawContentElement.fileName]!.add(ImageContent(Uint8List.fromList(imageContent), fullSize));
+          results[rawContentElement.chapter]![rawContentElement.fileName]!.add(ImageContent(image, fullSize));
           break;
       }
     }
+    // Thinking about refactor the result type and removing the filename because possible wrong order during rendering
 
     return results;
   }
@@ -248,13 +258,12 @@ class EpubReader implements Reader {
     }
   }
 
-  Map<String, CssParser> _parseCssFiles(){
-    return _book.Content!.Css!.map(
-            (key, value) => MapEntry(
-            key,
-            CssParser.fromString(value.Content!)
-        )
-    );
+  Future<Map<String, CssParser>> _parseCssFiles() async {
+    Map<String, CssParser> cssFiles = {};
+    for (String key in _book.Content!.Css!.keys) {
+      cssFiles[key] = CssParser.fromString(await _book.Content!.Css![key]!.readContentAsText());
+    }
+    return cssFiles;
   }
 
   _removeAElements(dom.Document document) {
@@ -267,19 +276,21 @@ class EpubReader implements Reader {
     }
   }
 
-  _EpubReaderTmpDataStorage _getHtmlElements(Map<String, CssParser> cssFiles){
+  Future<_EpubReaderTmpDataStorage> _getHtmlElements(Map<String, CssParser> cssFiles) async {
     Map<String,List<EpubRawContentElement>> elements = {};
     Map<String, List<dom.Document>> documents = {};
-    String chapter = _book.Chapters!.first.Title!;
+
+    List<epubx.EpubChapterRef> chapters = await _book.getChapters();
+    String chapter = chapters.first.Title!;
     _book.Content!.Html!.forEach((key, value){
       try {
-        epubx.EpubChapter epubChapter = _book.Chapters!.firstWhere((element) => element.ContentFileName == key);
+        epubx.EpubChapterRef epubChapter = chapters.firstWhere((element) => element.ContentFileName == key);
         chapter = epubChapter.Title!;
       } catch(exception){
         // don`t do anything
       }
 
-      dom.Document document = parse(value.Content!);
+      dom.Document document = parse(utf8.decode(value.getContentFileEntry().content));
       _removeAElements(document);
       List<dom.Element> localElements = document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,img,span');
       String stylesheetName = '';

@@ -60,29 +60,27 @@ class _VerticalReaderPageState extends State<VerticalReaderPage> {
   }
 
   _initEbook() async {
-    _contentElements = widget.reader.convertToObjects();
+    _contentElements = await widget.reader.convertToObjects();
     _chapter = _contentElements.keys.first;
     _part = _contentElements[_chapter]!.keys.first;
+    for (String chapter in _contentElements.keys) {
+      _chapterHeight[chapter] = {};
+      for (String filename in _contentElements[chapter]!.keys) {
+        List<ContentElement> contentElements = _contentElements[chapter]![filename]!;
 
-    _chapterHeight.addAll(
-        _contentElements.map((key, value) {
-          Map<String, double> heightMap = value.map((key, contentElements) {
-            List<double> heights = EbookService.generateHeight(
-                contentElements,
-                MediaQuery.of(context).size.width,
-                MediaQuery.of(context).size.height * 0.9
-            );
+        List<double> heights = await EbookService.generateHeight(
+            contentElements,
+            MediaQuery.of(context).size.width,
+            MediaQuery.of(context).size.height * 0.9
+        );
+        double height = 0;
 
-            double height = 0;
-
-            for (double element in heights) {
-              height += element;
-            }
-            return MapEntry(key, height);
-          });
-          return MapEntry(key, heightMap);
-        })
-    );
+        for (double element in heights) {
+          height += element;
+        }
+        _chapterHeight[chapter]![filename] = height;
+      }
+    }
 
     setState(_buildRenderedCache);
   }
