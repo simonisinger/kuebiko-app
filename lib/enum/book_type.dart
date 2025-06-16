@@ -1,0 +1,4 @@
+enum BookType {
+  novel,
+  comic
+}

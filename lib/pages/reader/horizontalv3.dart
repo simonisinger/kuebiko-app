@@ -2,6 +2,7 @@ import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/enum/book_type.dart';
 import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
@@ -190,28 +191,36 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
     double maxHeight = deviceHeight * 0.8;
     List<List<ContentElement>> pages = [];
     for (String chapter in _contentElements.keys) {
-      for (String filename in _contentElements[chapter]!.keys) {
-        List<ContentElement> contentElements = _contentElements[chapter]![filename]!;
+      for (String filename in _contentElements[chapter]!.keys.toList()..sort()) {
+        List<
+            ContentElement> contentElements = _contentElements[chapter]![filename]!;
 
-        List<double> heights = await EbookService.generateHeight(
-            contentElements,
-            MediaQuery.of(context).size.width,
-            maxHeight
-        );
-        double tmpPageSize = 0;
-        List<ContentElement> tmpPage = [];
-        for (int i = 0; i < heights.length; i++) {
-          tmpPageSize += heights[i];
-          if (tmpPageSize > maxHeight) {
-            pages.add(tmpPage);
-            tmpPageSize = heights[i];
-            tmpPage = [contentElements[i]];
-          } else {
-            tmpPage.add(contentElements[i]);
+        if (reader.bookType == BookType.novel) {
+          List<double> heights = await EbookService.generateHeight(
+              contentElements,
+              MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              maxHeight
+          );
+          double tmpPageSize = 0;
+          List<ContentElement> tmpPage = [];
+          for (int i = 0; i < heights.length; i++) {
+            tmpPageSize += heights[i];
+            if (tmpPageSize > maxHeight) {
+              pages.add(tmpPage);
+              tmpPageSize = heights[i];
+              tmpPage = [contentElements[i]];
+            } else {
+              tmpPage.add(contentElements[i]);
+            }
           }
-        }
-        if (tmpPage.isNotEmpty) {
-          pages.add(tmpPage);
+          if (tmpPage.isNotEmpty) {
+            pages.add(tmpPage);
+          }
+        } else {
+          pages.add(contentElements);
         }
       }
     }

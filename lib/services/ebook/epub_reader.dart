@@ -5,6 +5,7 @@ import 'package:epubx/epubx.dart' as epubx;
 import 'package:flutter/rendering.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart';
+import 'package:kuebiko_web_client/enum/book_type.dart';
 import 'package:kuebiko_web_client/enum/read_direction.dart';
 import 'package:kuebiko_web_client/pages/reader/content/content_element.dart';
 import 'package:kuebiko_web_client/pages/reader/content/image.dart';
@@ -320,6 +321,12 @@ class EpubReader implements Reader {
     });
 
     return _EpubReaderTmpDataStorage(elements, documents);
+  }
+
+  @override
+  BookType get bookType {
+    bool isComic = _book.Schema?.Package?.Metadata?.MetaItems?.any((element) => element.Property == 'rendition:layout' && element.Content == 'pre-paginated') ?? false;
+    return isComic ? BookType.comic : BookType.novel;
   }
 }
 
