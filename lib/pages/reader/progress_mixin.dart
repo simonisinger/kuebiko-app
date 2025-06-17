@@ -4,13 +4,12 @@ import 'package:kuebiko_web_client/pages/reader/content/content_element.dart';
 
 mixin ProgressMixin {
   // set new progress index
-  Future<void> updateProgress(ContentElement contentElement, List<List<ContentElement>> pages, Book book) async {
-    // List<ContentElement> contentElements = pages.reduce((old, item) {
-    //   old.addAll(item);
-    //   return old;
-    // });
-    // int position = pages.sublist(0, contentElements.indexOf(contentElement))
-    //     .fold(0, (prevValue, item) => prevValue + item.length);
+  Future<void> updateProgress(
+      ContentElement contentElement,
+      List<List<ContentElement>> pages,
+      Book book,
+      ReadDirection readDirection
+  ) async {
     int position = 0;
     int positionOffset = 0;
     for (List<ContentElement> page in pages) {
@@ -19,6 +18,10 @@ mixin ProgressMixin {
         position = tmpPosition + positionOffset;
       }
       positionOffset += page.length;
+    }
+
+    if (readDirection == ReadDirection.rtl) {
+      position = pages.length - position;
     }
 
     await book.setProgress(

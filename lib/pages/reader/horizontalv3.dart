@@ -114,7 +114,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
 
   _updateChapter(int page) {
     HorizontalV3ReaderPage.pageUpdatedEvent.broadcast(Value(page));
-    updateProgress(_pages[page].first, _pages, widget.book);
+    updateProgress(_pages[page].first, _pages, widget.book, reader.readDirection);
   }
 
   Widget _showReader() {
