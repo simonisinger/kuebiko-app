@@ -89,8 +89,8 @@ class KuebikoApp extends StatelessWidget {
           shadowColor: shadowColor,
           highlightColor: accentColor,
           cardColor: backgroundColor,
-          dividerColor: shadowColor.withOpacity(0.3),
-          disabledColor: textSecondaryColor.withOpacity(0.5),
+          dividerColor: shadowColor.withAlpha(77),
+          disabledColor: textSecondaryColor.withAlpha(127),
           colorScheme: const ColorScheme(
             brightness: Brightness.light,
             primary: primaryColor,
@@ -203,7 +203,7 @@ class KuebikoApp extends StatelessWidget {
             ),
           ),
           dividerTheme: DividerThemeData(
-            color: shadowColor.withOpacity(0.3),
+            color: shadowColor.withAlpha(77),
             thickness: 1,
             space: 24,
           ),
