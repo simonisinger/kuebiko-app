@@ -8,7 +8,12 @@ class ReaderOverlayBottom extends StatefulWidget {
   final ReadDirection readDirection;
   final PageController pageController;
   final int countPages;
-  const ReaderOverlayBottom({super.key, required this.readDirection, required this.pageController, required this.countPages});
+  const ReaderOverlayBottom({
+    super.key,
+    required this.readDirection,
+    required this.pageController,
+    required this.countPages
+  });
 
   @override
   State<ReaderOverlayBottom> createState() => _ReaderOverlayBottomState();
@@ -23,15 +28,16 @@ class _ReaderOverlayBottomState extends State<ReaderOverlayBottom> {
     HorizontalV3ReaderPage.pageUpdatedEvent.subscribe(_updatePage);
     HorizontalV3ReaderPage.showMenuChangedEvent.subscribe(_updateShowMenu);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _page = widget.pageController.page?.toInt() ?? 0);
   }
 
-  _updateShowMenu(Value<bool> value) {
+  void _updateShowMenu(Value<bool> value) {
     setState(() {
       _showMenu = value.value;
     });
   }
 
-  _updatePage(Value<int> value) {
+  void _updatePage(Value<int> value) {
     setState (() {
       _page = value.value;
     });
@@ -44,35 +50,38 @@ class _ReaderOverlayBottomState extends State<ReaderOverlayBottom> {
         bottom: 0,
         width: MediaQuery.of(context).size.width,
         child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.only(top: 10, left: 5, right: 5),
             decoration: BoxDecoration(
                 color: theme.primaryColor
             ),
-            child: Column(
-                children: [
-                  Slider(
-                    value: widget.pageController.page!,
-                    min: 0,
-                    max: widget.countPages.toDouble(),
-                    activeColor: widget.readDirection == ReadDirection.ltr ? theme.scaffoldBackgroundColor : Colors.white,
-                    inactiveColor: widget.readDirection == ReadDirection.ltr ? Colors.white : theme.scaffoldBackgroundColor,
-                    divisions: widget.countPages,
-                    onChanged: (double newPage) {
-                      setState(() {
-                        widget.pageController.jumpToPage(newPage.toInt());
-                      });
-                    },
-                  ),
-                  Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: Text(
-                        "${widget.readDirection == ReadDirection.ltr ? _page + 1 : widget.countPages - _page} / ${widget.countPages}",
-                        style: TextStyle(
-                            color: Theme.of(context).scaffoldBackgroundColor
-                        ),
-                      )
-                  )
-                ]
+            child: SafeArea(
+              top: false,
+              child: Column(
+                  children: [
+                    Slider(
+                      value: _page.toDouble(),
+                      min: 0,
+                      max: widget.countPages.toDouble(),
+                      activeColor: widget.readDirection == ReadDirection.ltr ? theme.scaffoldBackgroundColor : Colors.white,
+                      inactiveColor: widget.readDirection == ReadDirection.ltr ? Colors.white : theme.scaffoldBackgroundColor,
+                      divisions: widget.countPages,
+                      onChanged: (double newPage) {
+                        setState(() {
+                          widget.pageController.jumpToPage(newPage.toInt());
+                        });
+                      },
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          "${widget.readDirection == ReadDirection.ltr ? _page + 1 : widget.countPages - _page} / ${widget.countPages}",
+                          style: TextStyle(
+                              color: Theme.of(context).scaffoldBackgroundColor
+                          ),
+                        )
+                    )
+                  ]
+              ),
             )
         )
     ) : Container();

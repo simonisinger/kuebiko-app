@@ -25,7 +25,7 @@ class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
     _chapter = widget.contentElements.keys.first;
   }
 
-  _updateShowMenu(Value<bool> value) {
+  void _updateShowMenu(Value<bool> value) {
     setState(() {
       _showMenu = value.value;
     });
@@ -58,20 +58,23 @@ class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
         top: 0,
         width: MediaQuery.of(context).size.width,
         child: Container(
-          padding: const EdgeInsets.only(top: 20, bottom: 10),
+          padding: const EdgeInsets.only(top: 10, bottom: 10),
           decoration: BoxDecoration(
               color: theme.primaryColor
           ),
-          child: Column(
-            children: [
-              Text(
-                _chapter,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: theme.scaffoldBackgroundColor
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                Text(
+                  _chapter,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: theme.scaffoldBackgroundColor
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         )
     ) : Container();
