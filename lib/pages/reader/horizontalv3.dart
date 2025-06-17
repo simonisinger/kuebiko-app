@@ -213,7 +213,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
             }
           }
           if (tmpPage.isNotEmpty) {
-            pages.add(tmpPage);
+            pages.add(List.unmodifiable(tmpPage));
           }
         } else {
           pages.add(List.unmodifiable(contentElements));
