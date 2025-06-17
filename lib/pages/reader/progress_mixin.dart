@@ -1,4 +1,5 @@
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/enum/read_direction.dart';
 import 'package:kuebiko_web_client/pages/reader/content/content_element.dart';
 
 mixin ProgressMixin {
@@ -15,7 +16,7 @@ mixin ProgressMixin {
     for (List<ContentElement> page in pages) {
       int tmpPosition = page.indexOf(contentElement);
       if (tmpPosition != -1) {
-        position = positionOffset + positionOffset;
+        position = tmpPosition + positionOffset;
       }
       positionOffset += page.length;
     }
@@ -28,14 +29,16 @@ mixin ProgressMixin {
     );
   }
 
-  int getPageFromIndex(int index, List<List<ContentElement>> pages) {
+  int getPageFromIndex(int index, List<List<ContentElement>> pages, ReadDirection readDirection) {
     int counter = 0;
+    int pageIndex = 0;
     for (List<ContentElement> page in pages) {
       counter += page.length;
       if (counter >= index) {
-        return pages.indexOf(page);
+        pageIndex = pages.indexOf(page);
+        break;
       }
     }
-    return counter;
+    return readDirection == ReadDirection.ltr ? pageIndex : pages.length - counter;
   }
 }

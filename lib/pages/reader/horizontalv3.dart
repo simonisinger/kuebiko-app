@@ -230,8 +230,8 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
     Progress progress = await widget.book.getProgress();
     _pageController = PageController(
         initialPage: getPageFromIndex(
-            progress.currentPage.toInt(),
-            pages,
+            progress.currentPage,
+            _pages,
             reader.readDirection
         )
     );
