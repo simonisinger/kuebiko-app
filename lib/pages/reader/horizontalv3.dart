@@ -22,7 +22,7 @@ class HorizontalV3ReaderPage extends StatefulWidget {
   static final Event<Value<int>> pageUpdatedEvent = Event();
   static final Event<Value<bool>> showMenuChangedEvent = Event();
   final Book book;
-  const HorizontalV3ReaderPage({Key? key, required this.book}) : super(key: key);
+  const HorizontalV3ReaderPage({super.key, required this.book});
 
   @override
   State<StatefulWidget> createState() => _HorizontalV3ReaderPageState();
@@ -112,7 +112,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
     _initialDragPosition = null;
   }
 
-  _updateChapter(int page) {
+  void _updateChapter(int page) {
     HorizontalV3ReaderPage.pageUpdatedEvent.broadcast(Value(page));
     updateProgress(_pages[page].first, _pages, widget.book, reader.readDirection);
   }
