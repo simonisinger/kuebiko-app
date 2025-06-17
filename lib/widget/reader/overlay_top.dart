@@ -69,9 +69,10 @@ class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
                 Text(
                   _chapter,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: theme.scaffoldBackgroundColor
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(color: Theme.of(context).scaffoldBackgroundColor)
                 ),
               ],
             ),

@@ -72,7 +72,7 @@ class _ReaderOverlayBottomState extends State<ReaderOverlayBottom> {
                       },
                     ),
                     Container(
-                        margin: const EdgeInsets.only(bottom: 10),
+                        margin: const EdgeInsets.only(bottom: 5),
                         child: Text(
                           "${widget.readDirection == ReadDirection.ltr ? _page + 1 : widget.countPages - _page} / ${widget.countPages}",
                           style: TextStyle(
