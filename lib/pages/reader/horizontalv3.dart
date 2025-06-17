@@ -31,7 +31,7 @@ class HorizontalV3ReaderPage extends StatefulWidget {
 class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with ProgressMixin {
   late final Reader reader;
   Map<String, Map<String, List<ContentElement>>> _contentElements = {};
-  final List<List<ContentElement>> _pages = [];
+  late final List<List<ContentElement>> _pages;
   bool _showMenu = false;
   late final PageController _pageController;
   double? _initialDragPosition;
@@ -191,17 +191,13 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
     double maxHeight = deviceHeight * 0.8;
     List<List<ContentElement>> pages = [];
     for (String chapter in _contentElements.keys) {
-      for (String filename in _contentElements[chapter]!.keys.toList()..sort()) {
-        List<
-            ContentElement> contentElements = _contentElements[chapter]![filename]!;
+      for (String filename in _contentElements[chapter]!.keys.toList()) {
+        List<ContentElement> contentElements = _contentElements[chapter]![filename]!;
 
         if (reader.bookType == BookType.novel) {
           List<double> heights = await EbookService.generateHeight(
               contentElements,
-              MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              MediaQuery.of(context).size.width,
               maxHeight
           );
           double tmpPageSize = 0;
@@ -220,20 +216,24 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
             pages.add(tmpPage);
           }
         } else {
-          pages.add(contentElements);
+          pages.add(List.unmodifiable(contentElements));
         }
       }
     }
 
     if (reader.readDirection == ReadDirection.rtl) {
-      _pages.addAll(pages.reversed);
+      _pages = List.unmodifiable(pages.reversed);
     } else {
-      _pages.addAll(pages);
+      _pages = List.unmodifiable(pages);
     }
 
     Progress progress = await widget.book.getProgress();
     _pageController = PageController(
-        initialPage: getPageFromIndex(progress.currentPage.toInt(), pages)
+        initialPage: getPageFromIndex(
+            progress.currentPage.toInt(),
+            pages,
+            reader.readDirection
+        )
     );
 
     setState((){
