@@ -5,7 +5,7 @@ import 'package:kuebiko_web_client/widget/book/book_image.dart';
 class BookListItem extends StatelessWidget {
   final Book book;
 
-  const BookListItem({Key? key, required this.book}) : super(key: key);
+  const BookListItem({super.key, required this.book});
 
   @override
   Widget build(BuildContext context) {

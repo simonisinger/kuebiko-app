@@ -6,6 +6,7 @@ import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart';
 
 import '../ebook/epub_reader.dart';
 
@@ -56,19 +57,28 @@ class StorageService {
     }
   }
 
-  Future<EpubReader> getEbookReader(Book book) async {
+  Future<Image?> getCover(Book book) async {
+    if (await ebookIsDownloaded(book)) {
+      return (await _getRawEpubObject(book)).readCover();
+    }
+
+    return book.cover();
+  }
+
+  Future<epubx.EpubBookRef> _getRawEpubObject(Book book) async {
     String path = await _generatePath(book);
     File ebookFile = File(path);
 
     if (!(await ebookIsDownloaded(book))) {
       throw Exception('ebook file doesnt exists');
     }
-
-    return EpubReader.fromEpubBookRef(
-        await epubx.EpubReader.openBookStream(
-          ebookFile.openRead(),
-          ebookFile.lengthSync()
-        )
+    return await epubx.EpubReader.openBookStream(
+        ebookFile.openRead(),
+        ebookFile.lengthSync()
     );
+  }
+
+  Future<EpubReader> getEbookReader(Book book) async {
+    return EpubReader.fromEpubBookRef(await _getRawEpubObject(book));
   }
 }
