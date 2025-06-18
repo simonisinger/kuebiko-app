@@ -38,7 +38,7 @@ class _DownloadButtonState extends State<DownloadButton> {
           width: widget.width,
           height: widget.height,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(widget.height / 2),
             child: Stack(
               children: [
                 Container(
@@ -66,14 +66,19 @@ class _DownloadButtonState extends State<DownloadButton> {
                   height: widget.height,
                   child: TextButton(
                     onPressed: () async {
-                      setState(() {
-                        progressStream = StorageService.service.downloadEbook(widget.book).asBroadcastStream();
-                      });
-                      progressStream?.listen((data){
-                        if (data >= 1.0 && widget.onFinished != null) {
-                          widget.onFinished!();
-                        }
-                      });
+                      if (progressStream == null) {
+                        setState(() {
+                          progressStream = StorageService
+                              .service
+                              .downloadEbook(widget.book)
+                              .asBroadcastStream();
+                        });
+                        progressStream?.listen((data) {
+                          if (data >= 1.0 && widget.onFinished != null) {
+                            widget.onFinished!();
+                          }
+                        });
+                      }
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -85,7 +90,9 @@ class _DownloadButtonState extends State<DownloadButton> {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            '${localizations.download} ${(progress * 100).toInt()}%',
+                            snapshot.connectionState == ConnectionState.none
+                                ? localizations.download
+                                : '${localizations.downloading} ${(progress * 100).toInt()}%',
                             style: TextStyle(
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,
@@ -100,7 +107,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                             child: Text(
                               '${localizations.download} ${(progress * 100).toInt()}%',
                               style: TextStyle(
-                                color: Colors.white, // oder eine andere Kontrastfarbe
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

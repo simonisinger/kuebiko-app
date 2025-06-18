@@ -10,8 +10,8 @@
   "libraryName": "Library name",
   "selectFiles": "Select files",
   "upload": "Upload",
-  "downloadRead": "Download and read",
   "read": "Read",
   "home": "Home",
-  "download": "Download"
+  "download": "Download",
+  "downloading": "Downloading"
 }

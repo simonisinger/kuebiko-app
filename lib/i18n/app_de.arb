@@ -10,8 +10,8 @@
   "libraryName": "Bibliotheksname",
   "selectFiles": "Dateien auswählen",
   "upload": "Hochladen",
-  "downloadRead": "Herunterladen & Lesen",
   "read": "Lesen",
   "home": "Startseite",
-  "download": "Herunterladen"
+  "download": "Herunterladen",
+  "downloading": "Lädt herunter"
 }
