@@ -85,12 +85,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          _ebookDownloaded ? Flexible(child: ActionButton(
-                              onPressed: () {
-                                Navigator.of(context).pushNamed('/book/read', arguments: widget.book);
-                              },
-                              buttonText: localizations.read
-                          )) : DownloadButton(
+                          _ebookDownloaded ? Flexible(
+                              child: ActionButton(
+                                onPressed: () {
+                                  Navigator.of(context).pushNamed('/book/read', arguments: widget.book);
+                                },
+                                buttonText: localizations.read
+                              )
+                          ) : DownloadButton(
                             book: widget.book,
                             width: width * 0.9,
                             onFinished: _updatePageOnEbookFinished,
