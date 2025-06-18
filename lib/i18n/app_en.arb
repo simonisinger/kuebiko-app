@@ -13,5 +13,8 @@
   "read": "Read",
   "home": "Home",
   "download": "Download",
-  "downloading": "Downloading"
+  "downloading": "Downloading",
+  "continueRead": "Continue",
+  "readAgain": "Read again",
+  "suggestions": "Suggestions"
 }

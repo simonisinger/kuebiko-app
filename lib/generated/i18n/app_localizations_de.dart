@@ -52,4 +52,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get downloading => 'Lädt herunter';
+
+  @override
+  String get continueRead => 'Weiterlesen';
+
+  @override
+  String get readAgain => 'Nochmal lesen';
+
+  @override
+  String get suggestions => 'Verschläge';
 }

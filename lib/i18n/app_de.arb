@@ -13,5 +13,8 @@
   "read": "Lesen",
   "home": "Startseite",
   "download": "Herunterladen",
-  "downloading": "Lädt herunter"
+  "downloading": "Lädt herunter",
+  "continueRead": "Weiterlesen",
+  "readAgain": "Nochmal lesen",
+  "suggestions": "Verschläge"
 }

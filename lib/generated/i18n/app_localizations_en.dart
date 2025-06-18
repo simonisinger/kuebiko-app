@@ -52,4 +52,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloading => 'Downloading';
+
+  @override
+  String get continueRead => 'Continue';
+
+  @override
+  String get readAgain => 'Read again';
+
+  @override
+  String get suggestions => 'Suggestions';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 
@@ -49,14 +50,15 @@ class _OverviewPageState extends State<OverviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations localizations = AppLocalizations.of(context)!;
     return BaseScaffold(
       ListView(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(20),
+          Padding(
+            padding: const EdgeInsets.all(20),
             child: Text(
-              'Weiterlesen',
-              style: TextStyle(
+              localizations.continueRead,
+              style: const TextStyle(
                 fontSize: 40,
               ),
             ),
@@ -64,11 +66,11 @@ class _OverviewPageState extends State<OverviewPage> {
           !_readingInitialized ? SpinKitFadingCircle(
             color: Theme.of(context).shadowColor,
           ) : BookListHorizontalWidget(books: _reading),
-          const Padding(
-            padding: EdgeInsets.all(20),
+          Padding(
+            padding: const EdgeInsets.all(20),
             child: Text(
-              'Vorschläge',
-              style: TextStyle(
+              localizations.suggestions,
+              style: const TextStyle(
                 fontSize: 40,
               ),
             ),
@@ -76,11 +78,11 @@ class _OverviewPageState extends State<OverviewPage> {
           !_unreadInitialized ? SpinKitFadingCircle(
             color: Theme.of(context).shadowColor,
           ) : BookListHorizontalWidget(books: _unread),
-          const Padding(
-            padding: EdgeInsets.all(20),
+          Padding(
+            padding: const EdgeInsets.all(20),
             child: Text(
-              'Nochmal lesen',
-              style: TextStyle(
+              localizations.readAgain,
+              style: const TextStyle(
                 fontSize: 40,
               ),
             ),

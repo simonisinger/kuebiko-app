@@ -187,6 +187,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Downloading'**
   String get downloading;
+
+  /// No description provided for @continueRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueRead;
+
+  /// No description provided for @readAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Read again'**
+  String get readAgain;
+
+  /// No description provided for @suggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions'**
+  String get suggestions;
 }
 
 class _AppLocalizationsDelegate
