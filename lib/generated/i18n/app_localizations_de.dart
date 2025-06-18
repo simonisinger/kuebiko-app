@@ -42,9 +42,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get upload => 'Hochladen';
 
   @override
-  String get downloadRead => 'Herunterladen & Lesen';
-
-  @override
   String get read => 'Lesen';
 
   @override
@@ -52,4 +49,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get download => 'Herunterladen';
+
+  @override
+  String get downloading => 'Lädt herunter';
 }

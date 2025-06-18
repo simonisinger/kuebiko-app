@@ -42,9 +42,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get upload => 'Upload';
 
   @override
-  String get downloadRead => 'Download and read';
-
-  @override
   String get read => 'Read';
 
   @override
@@ -52,4 +49,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get download => 'Download';
+
+  @override
+  String get downloading => 'Downloading';
 }
