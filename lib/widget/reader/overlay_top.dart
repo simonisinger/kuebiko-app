@@ -58,7 +58,7 @@ class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
         top: 0,
         width: MediaQuery.of(context).size.width,
         child: Container(
-          padding: const EdgeInsets.only(top: 10, bottom: 10),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
               color: theme.primaryColor
           ),
@@ -66,6 +66,19 @@ class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
             bottom: false,
             child: Column(
               children: [
+                Row(
+                  children: [
+                    GestureDetector(
+                      child: Icon(
+                          Icons.close,
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                ),
                 Text(
                   _chapter,
                   textAlign: TextAlign.center,
