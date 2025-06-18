@@ -80,29 +80,32 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        _ebookDownloaded ? ActionButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('/book/read', arguments: widget.book);
-                            },
-                            buttonText: localizations.read
-                        ) : DownloadButton(
-                          book: widget.book,
-                          width: width * 0.9,
-                          onFinished: _updatePageOnEbookFinished,
-                        ),
-                        _ebookDownloaded ? IconButton(
-                            onPressed: () async {
-                              await StorageService.service.deleteEbook(widget.book);
-                              setState(() {
-                                _ebookDownloaded = false;
-                              });
-                            },
-                            icon: const Icon(Icons.delete_forever)
-                        ) : Container()
-                      ],
+                    Container(
+                      margin: EdgeInsets.only(top: 12),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          _ebookDownloaded ? Flexible(child: ActionButton(
+                              onPressed: () {
+                                Navigator.of(context).pushNamed('/book/read', arguments: widget.book);
+                              },
+                              buttonText: localizations.read
+                          )) : DownloadButton(
+                            book: widget.book,
+                            width: width * 0.9,
+                            onFinished: _updatePageOnEbookFinished,
+                          ),
+                          _ebookDownloaded ? IconButton(
+                              onPressed: () async {
+                                await StorageService.service.deleteEbook(widget.book);
+                                setState(() {
+                                  _ebookDownloaded = false;
+                                });
+                              },
+                              icon: const Icon(Icons.delete_forever)
+                          ) : Container()
+                        ],
+                      ),
                     ),
                   ],
                 )
