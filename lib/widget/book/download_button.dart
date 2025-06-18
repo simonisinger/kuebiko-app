@@ -105,7 +105,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                           child: Align(
                             alignment: Alignment.center,
                             child: Text(
-                              '${localizations.download} ${(progress * 100).toInt()}%',
+                              '${localizations.downloading} ${(progress * 100).toInt()}%',
                               style: TextStyle(
                                 color: Theme.of(context).scaffoldBackgroundColor,
                                 fontWeight: FontWeight.bold,
