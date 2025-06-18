@@ -15,7 +15,7 @@ class StorageService {
   Future<String> _generatePath(Book book) async {
     Directory baseDirectory = await getApplicationDocumentsDirectory();
     String domain = ClientService.service.selectedClient!.getConfig().baseUrl.host;
-    return baseDirectory.path + '/$domain-${book.id}.epub';
+    return '${baseDirectory.path}/$domain-${book.id}.epub';
   }
 
   Future<bool> ebookIsDownloaded(Book book) async {
@@ -38,13 +38,19 @@ class StorageService {
     );
   }
 
-  Future<void> downloadEbook(Book book) async {
+  Stream<double> downloadEbook(Book book) async* {
     String path = await _generatePath(book);
     File ebookFile = File(path);
     if (!(await ebookIsDownloaded(book))) {
       final download = await book.download(Formats.epub);
       ebookFile.createSync();
-      await ebookFile.openWrite().addStream(download.stream);
+      RandomAccessFile raFile = await ebookFile.open(mode: FileMode.writeOnlyAppend);
+      int lengthCounter = 0;
+      await for (List<int> data in download.stream) {
+        await raFile.writeFrom(data);
+        lengthCounter += data.length;
+        yield lengthCounter / download.length;
+      }
     } else {
       throw Exception('ebook already exists');
     }

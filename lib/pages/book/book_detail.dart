@@ -6,11 +6,12 @@ import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
 import 'package:kuebiko_web_client/widget/action_button.dart';
+import 'package:kuebiko_web_client/widget/library/download_button.dart';
 
 class BookDetailPage extends StatefulWidget {
   static const route = '/book/detail';
   final Book book;
-  const BookDetailPage({Key? key, required this.book}) : super(key: key);
+  const BookDetailPage({super.key, required this.book});
 
   @override
   State<StatefulWidget> createState() => _BookDetailPageState();
@@ -54,10 +55,17 @@ class _BookDetailPageState extends State<BookDetailPage> {
     }
   }
 
+  void _updatePageOnEbookFinished() {
+    setState(() {
+      _ebookDownloaded = true;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     AppLocalizations localizations = AppLocalizations.of(context)!;
+    double width = MediaQuery.of(context).size.width;
     return BaseScaffold(
       ListView(
         children: [
@@ -80,14 +88,10 @@ class _BookDetailPageState extends State<BookDetailPage> {
                               Navigator.of(context).pushNamed('/book/read', arguments: widget.book);
                             },
                             buttonText: localizations.read
-                        ) : ActionButton(
-                            onPressed: () async {
-                              await StorageService.service.downloadEbook(widget.book);
-                              setState(() {
-                                _ebookDownloaded = true;
-                              });
-                            },
-                            buttonText: localizations.download
+                        ) : DownloadButton(
+                          book: widget.book,
+                          width: width * 0.9,
+                          onFinished: _updatePageOnEbookFinished,
                         ),
                         _ebookDownloaded ? IconButton(
                             onPressed: () async {
