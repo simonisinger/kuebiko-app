@@ -12,6 +12,7 @@ mixin ProgressMixin {
   ) async {
     int position = 0;
     int positionOffset = 0;
+    int lastPageIndex = pages.length - 1;
     for (List<ContentElement> page in pages) {
       int tmpPosition = page.indexOf(contentElement);
       if (tmpPosition != -1) {
@@ -21,7 +22,12 @@ mixin ProgressMixin {
     }
 
     if (readDirection == ReadDirection.rtl) {
+      lastPageIndex = 0;
       position = pages.length - position;
+    }
+
+    if (contentElement == pages[lastPageIndex].first) {
+      position = positionOffset;
     }
 
     await book.setProgress(
