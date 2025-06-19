@@ -31,15 +31,21 @@ class _LibraryPageState extends State<LibraryPage> {
             case ConnectionState.active:
               return SpinKitDualRing(color: Theme.of(context).shadowColor,);
             case ConnectionState.done:
-              return GridView.builder(
-                itemCount: snapshot.data.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                itemBuilder: (BuildContext context, int index) => Column(
-                  children: [
-                    BookImage(book: snapshot.data[index])
-                  ],
-                ),
-              );
+              if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              } else {
+                return GridView.builder(
+                  itemCount: snapshot.data.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3),
+                  itemBuilder: (BuildContext context, int index) =>
+                      Column(
+                        children: [
+                          BookImage(book: snapshot.data[index])
+                        ],
+                      ),
+                );
+              }
           }
         },
       ),
