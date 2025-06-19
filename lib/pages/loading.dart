@@ -3,7 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 
 class LoadingPage extends StatefulWidget {
-  const LoadingPage({Key? key}) : super(key: key);
+  const LoadingPage({super.key});
 
   @override
   State<StatefulWidget> createState() => _LoadingPageState();

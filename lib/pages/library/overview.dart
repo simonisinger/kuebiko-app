@@ -8,7 +8,7 @@ import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import '../../widget/library/books_list_horizontal.dart';
 
 class OverviewPage extends StatefulWidget {
-  const OverviewPage({Key? key}) : super(key: key);
+  const OverviewPage({super.key});
   static const String route = '/home';
 
   @override

@@ -51,7 +51,7 @@ class EpubReader implements Reader {
           try {
             selectedElements = document.querySelectorAll(cssRule.selector);
           } catch (exception) {
-            selectedElements = document.querySelectorAll('.' + cssRule.selector);
+            selectedElements = document.querySelectorAll('.${cssRule.selector}');
           }
           // match the elements to the css rules
           for (dom.Element selectedElement in selectedElements) {
@@ -125,7 +125,7 @@ class EpubReader implements Reader {
             List<PartParagraphElement> parts = [];
             String innerHtml = rawContentElement.contentElement.innerHtml;
             for (dom.Element spanElement in spanElements) {
-              innerHtml = innerHtml.replaceAll(spanElement.outerHtml.trim(), ';%;{{' + spanElements.indexOf(spanElement).toString() + '}};%;');
+              innerHtml = innerHtml.replaceAll(spanElement.outerHtml.trim(), ';%;{{${spanElements.indexOf(spanElement)}}};%;');
             }
 
             List<String> partsRaw = innerHtml.split(';%;');
@@ -246,7 +246,7 @@ class EpubReader implements Reader {
     );
   }
 
-  _addCssPropertyToRawContent(EpubRawContentElement contentElement, List<CssProperty> properties) {
+  void _addCssPropertyToRawContent(EpubRawContentElement contentElement, List<CssProperty> properties) {
     for (int i = 0; i < properties.length; i++) {
       CssProperty property = properties[i];
       try {
@@ -267,7 +267,7 @@ class EpubReader implements Reader {
     return cssFiles;
   }
 
-  _removeAElements(dom.Document document) {
+  void _removeAElements(dom.Document document) {
     List<dom.Element> elements = document.querySelectorAll('a');
     for(dom.Element element in elements) {
       if(element.parent!.localName! == 'p'){

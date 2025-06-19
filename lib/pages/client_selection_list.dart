@@ -4,7 +4,7 @@ import 'package:kuebiko_web_client/pages/library/overview.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 
 class ClientSelectionListWidget extends StatefulWidget {
-  const ClientSelectionListWidget({Key? key}) : super(key: key);
+  const ClientSelectionListWidget({super.key});
 
   @override
   State<StatefulWidget> createState() => _ClientSelectionListWidgetState();

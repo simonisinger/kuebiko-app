@@ -3,7 +3,7 @@ import 'package:version/version.dart';
 import 'client.dart';
 
 class SetupService {
-  static setupServer(
+  static Future<void> setupServer(
       String deviceName,
       String smtpHost,
       int smtpPort,

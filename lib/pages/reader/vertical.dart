@@ -12,7 +12,7 @@ class VerticalReaderPage extends StatefulWidget {
 
   final Reader reader;
 
-  const VerticalReaderPage({Key? key, required this.reader}) : super(key: key);
+  const VerticalReaderPage({super.key, required this.reader});
 
   @override
   State<StatefulWidget> createState() => _VerticalReaderPageState();
@@ -59,7 +59,8 @@ class _VerticalReaderPageState extends State<VerticalReaderPage> {
     }
   }
 
-  _initEbook() async {
+  Future<void> _initEbook() async {
+    Size size = MediaQuery.of(context).size;
     _contentElements = await widget.reader.convertToObjects();
     _chapter = _contentElements.keys.first;
     _part = _contentElements[_chapter]!.keys.first;
@@ -70,8 +71,8 @@ class _VerticalReaderPageState extends State<VerticalReaderPage> {
 
         List<double> heights = await EbookService.generateHeight(
             contentElements,
-            MediaQuery.of(context).size.width,
-            MediaQuery.of(context).size.height * 0.9
+            size.width,
+            size.height * 0.9
         );
         double height = 0;
 

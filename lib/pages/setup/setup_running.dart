@@ -3,7 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SetupRunningPage extends StatelessWidget {
   final String message;
-  const SetupRunningPage(this.message, {Key? key}) : super(key: key);
+  const SetupRunningPage(this.message, {super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -5,7 +5,7 @@ import 'package:kuebiko_web_client/widget/library/book_list_item.dart';
 
 class SeriesViewPage extends StatefulWidget {
   final Series series;
-  const SeriesViewPage({Key? key, required this.series}) : super(key: key);
+  const SeriesViewPage({super.key, required this.series});
 
   @override
   State<StatefulWidget> createState() => _SeriesViewPageState();

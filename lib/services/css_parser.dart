@@ -89,7 +89,7 @@ class CssParser {
     return properties;
   }
 
-  _parse(String content) {
+  void _parse(String content) {
     RegExp regExp = RegExp(
         r"(?<selector>[a-zA-Z0-9 \-._\n\r>#]+){(?<properties>[a-zA-Z0-9\-: ;.\n\r]+)}$",
         multiLine: true

@@ -22,7 +22,7 @@ void main() {
 }
 
 class KuebikoApp extends StatelessWidget {
-  const KuebikoApp({Key? key}) : super(key: key);
+  const KuebikoApp({super.key});
 
   // This widget is the root of your application.
   @override

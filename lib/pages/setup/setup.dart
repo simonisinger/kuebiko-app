@@ -3,7 +3,7 @@ import 'package:kuebiko_web_client/services/setup.dart';
 
 class SetupPage extends StatefulWidget {
   static const route = '/setup';
-  const SetupPage({Key? key}) : super(key: key);
+  const SetupPage({super.key});
 
   @override
   State<StatefulWidget> createState() => _SetupPageState();

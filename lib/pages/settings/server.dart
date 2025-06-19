@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ServerSettingsPage extends StatefulWidget {
-  const ServerSettingsPage({Key? key}) : super(key: key);
+  const ServerSettingsPage({super.key});
 
   @override
   State<StatefulWidget> createState() => _ServerSettingsPageState();

@@ -3,7 +3,7 @@ import 'package:kuebiko_web_client/services/client.dart';
 
 class LoginPage extends StatelessWidget {
   static const route = '/login';
-  LoginPage({Key? key}) : super(key: key);
+  LoginPage({super.key});
 
   final TextEditingController _hostAddress = TextEditingController();
   final TextEditingController _username = TextEditingController();

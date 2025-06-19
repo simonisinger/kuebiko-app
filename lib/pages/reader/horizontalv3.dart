@@ -126,17 +126,17 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
 
             },
             child: GestureDetector(
+              onTapUp: _readerTap,
+              onHorizontalDragStart: _readerHorizontalDragStart,
+              onHorizontalDragUpdate: _readerHorizontalDragUpdate,
+              onHorizontalDragCancel: _readerHorizontalDragCancel,
+              onHorizontalDragEnd: _readerHorizontalDragEnd,
               child: PageView.builder(
                 controller: _pageController,
                 onPageChanged: _updateChapter,
                 itemBuilder: _getPageWidget,
                 itemCount: _pages.length,
               ),
-              onTapUp: _readerTap,
-              onHorizontalDragStart: _readerHorizontalDragStart,
-              onHorizontalDragUpdate: _readerHorizontalDragUpdate,
-              onHorizontalDragCancel: _readerHorizontalDragCancel,
-              onHorizontalDragEnd: _readerHorizontalDragEnd,
             ),
           ),
           ReaderOverlayTop(
@@ -183,11 +183,12 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
     );
   }
 
-  _initEbook() async {
+  Future<void> _initEbook() async {
+    Size size = MediaQuery.of(context).size;
+    double deviceHeight = size.height;
     reader = await StorageService.service.getEbookReader(widget.book);
     _contentElements = await reader.convertToObjects();
 
-    double deviceHeight = MediaQuery.of(context).size.height;
     double maxHeight = deviceHeight * 0.8;
     List<List<ContentElement>> pages = [];
     for (String chapter in _contentElements.keys) {
@@ -197,7 +198,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
         if (reader.bookType == BookType.novel) {
           List<double> heights = await EbookService.generateHeight(
               contentElements,
-              MediaQuery.of(context).size.width,
+              size.width,
               maxHeight
           );
           double tmpPageSize = 0;

@@ -5,7 +5,7 @@ import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import '../widget/add_button.dart';
 
 class ClientSelectionPage extends StatelessWidget {
-  const ClientSelectionPage({Key? key}) : super(key: key);
+  const ClientSelectionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
