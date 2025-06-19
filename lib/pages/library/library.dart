@@ -16,33 +16,32 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  late List<Book> _books;
-  bool _booksInitialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    ClientService.service
-        .selectedLibrary!
-        .books(BookSorting.name, SortingDirection.asc)
-        .then((books) {
-          _books = books;
-          _booksInitialized = true;
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      _booksInitialized ? GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemBuilder: (BuildContext context, int index) => Column(
-          children: [
-            BookImage(book: _books[index])
-          ],
-        ),
-      ) : SpinKitDualRing(
-        color: Theme.of(context).shadowColor,
+      FutureBuilder(
+        future: ClientService.service
+            .selectedLibrary!
+            .books(BookSorting.name, SortingDirection.asc),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return SpinKitDualRing(color: Theme.of(context).shadowColor,);
+            case ConnectionState.done:
+              return GridView.builder(
+                itemCount: snapshot.data.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                itemBuilder: (BuildContext context, int index) => Column(
+                  children: [
+                    BookImage(book: snapshot.data[index])
+                  ],
+                ),
+              );
+          }
+        },
       ),
       floatingActionButton: const AddWidget(targetPath: UploadPage.route),
     );
