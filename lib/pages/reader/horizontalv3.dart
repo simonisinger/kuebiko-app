@@ -7,6 +7,7 @@ import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
+import 'package:kuebiko_web_client/widget/cacheable_page_view.dart';
 import 'package:kuebiko_web_client/widget/reader/overlay_bottom.dart';
 import 'package:kuebiko_web_client/widget/reader/overlay_top.dart';
 
@@ -131,11 +132,12 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
               onHorizontalDragUpdate: _readerHorizontalDragUpdate,
               onHorizontalDragCancel: _readerHorizontalDragCancel,
               onHorizontalDragEnd: _readerHorizontalDragEnd,
-              child: PageView.builder(
+              child: CacheablePageView.builder(
                 controller: _pageController,
                 onPageChanged: _updateChapter,
                 itemBuilder: _getPageWidget,
                 itemCount: _pages.length,
+                cachePageExtent: 1,
               ),
             ),
           ),
