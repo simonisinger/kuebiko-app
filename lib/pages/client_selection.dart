@@ -5,6 +5,7 @@ import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import '../widget/add_button.dart';
 
 class ClientSelectionPage extends StatelessWidget {
+  static const String route = '/client-selection';
   const ClientSelectionPage({super.key});
 
   @override

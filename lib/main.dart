@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/cache/storage.dart';
 import 'package:kuebiko_web_client/pages/404.dart';
 import 'package:kuebiko_web_client/pages/book/book_detail.dart';
 import 'package:kuebiko_web_client/pages/client_selection.dart';
@@ -11,13 +12,16 @@ import 'package:kuebiko_web_client/pages/library/library_add.dart';
 import 'package:kuebiko_web_client/pages/library/upload.dart';
 import 'package:kuebiko_web_client/pages/loading.dart';
 import 'package:kuebiko_web_client/pages/reader/horizontalv3.dart';
+import 'package:kuebiko_web_client/pages/settings/app.dart';
 import 'package:kuebiko_web_client/pages/setup/setup.dart';
 import 'generated/i18n/app_localizations.dart';
 import 'pages/login.dart';
 import 'url_strategy.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
+  await setupSettings();
   runApp(const KuebikoApp());
 }
 
@@ -54,7 +58,7 @@ class KuebikoApp extends StatelessWidget {
             return null;
           case '/init':
             targetPage = const LoadingPage();
-          case '/client-selection':
+          case ClientSelectionPage.route:
             targetPage = const ClientSelectionPage();
           case LoginPage.route:
             targetPage = LoginPage();
@@ -76,6 +80,8 @@ class KuebikoApp extends StatelessWidget {
             targetPage = const SetupPage();
           case LibraryPage.route:
             targetPage = const LibraryPage();
+          case AppSettingsPage.route:
+            targetPage = const AppSettingsPage();
           default:
             targetPage = const PageNotFoundPage();
         }

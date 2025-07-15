@@ -61,4 +61,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suggestions => 'Suggestions';
+
+  @override
+  String get fontSize => 'Font size';
+
+  @override
+  String get fontFamily => 'Font family';
+
+  @override
+  String selectedFontFamily(Object fontFamily) {
+    return 'Selected font family: $fontFamily';
+  }
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get previewText => 'This is a preview';
 }

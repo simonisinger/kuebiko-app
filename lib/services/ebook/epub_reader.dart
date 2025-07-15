@@ -5,6 +5,7 @@ import 'package:epubx/epubx.dart' as epubx;
 import 'package:flutter/rendering.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart';
+import 'package:kuebiko_web_client/cache/storage.dart';
 import 'package:kuebiko_web_client/enum/book_type.dart';
 import 'package:kuebiko_web_client/enum/read_direction.dart';
 import 'package:kuebiko_web_client/pages/reader/content/content_element.dart';
@@ -197,7 +198,7 @@ class EpubReader implements Reader {
         //fontSize = double.tryParse(property.propertyValue.replaceAll('px', ''));
         fontSizeFactor = double.tryParse(property.propertyValue.replaceAll('em', ''));
         // 14 is the default font size of flutter
-        fontSize = (fontSizeFactor ?? 1) * 14;
+        fontSize = (fontSizeFactor ?? 1) * settings.fontSize;
       }
 
       if (property.propertyName == 'font-weight') {

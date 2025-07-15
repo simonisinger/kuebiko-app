@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
+import 'package:kuebiko_web_client/pages/client_selection.dart';
+import 'package:kuebiko_web_client/pages/library/overview.dart';
+import 'package:kuebiko_web_client/pages/settings/app.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -24,16 +27,22 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             title: Text(localizations.home),
             onTap: () {
-              Navigator.of(context).pushNamed('/home');
+              Navigator.of(context).pushNamed(OverviewPage.route);
             },
           ),
           _generateLibrariesButton(localizations, context),
           ListTile(
             title: Text(localizations.serverSelection),
             onTap: () {
-              Navigator.of(context).pushNamed('/client-selection');
+              Navigator.of(context).pushNamed(ClientSelectionPage.route);
             },
           ),
+          ListTile(
+            title: Text(localizations.settings),
+            onTap: () {
+              Navigator.of(context).pushNamed(AppSettingsPage.route);
+            },
+          )
         ],
       ),
     );

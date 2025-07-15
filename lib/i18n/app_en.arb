@@ -16,5 +16,11 @@
   "downloading": "Downloading",
   "continueRead": "Continue",
   "readAgain": "Read again",
-  "suggestions": "Suggestions"
+  "suggestions": "Suggestions",
+  "fontSize": "Font size",
+  "fontFamily": "Font family",
+  "selectedFontFamily": "Selected font family: {fontFamily}",
+  "settings": "Settings",
+  "preview": "Preview",
+  "previewText": "This is a preview"
 }

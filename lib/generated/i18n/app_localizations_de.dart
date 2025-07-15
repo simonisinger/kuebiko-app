@@ -61,4 +61,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get suggestions => 'Verschläge';
+
+  @override
+  String get fontSize => 'Schriftgröße';
+
+  @override
+  String get fontFamily => 'Schriftart';
+
+  @override
+  String selectedFontFamily(Object fontFamily) {
+    return 'Ausgewählte Schriftart: $fontFamily';
+  }
+
+  @override
+  String get settings => 'Einstellungen';
+
+  @override
+  String get preview => 'Vorschau';
+
+  @override
+  String get previewText => 'Das ist eine Vorschau';
 }

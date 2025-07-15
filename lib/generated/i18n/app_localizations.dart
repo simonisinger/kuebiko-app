@@ -205,6 +205,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Suggestions'**
   String get suggestions;
+
+  /// No description provided for @fontSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Font size'**
+  String get fontSize;
+
+  /// No description provided for @fontFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Font family'**
+  String get fontFamily;
+
+  /// No description provided for @selectedFontFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected font family: {fontFamily}'**
+  String selectedFontFamily(Object fontFamily);
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @previewText.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a preview'**
+  String get previewText;
 }
 
 class _AppLocalizationsDelegate
