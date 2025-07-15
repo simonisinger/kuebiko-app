@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kuebiko_web_client/services/settings/app.dart';
 
 const FlutterSecureStorage storage = FlutterSecureStorage(
   aOptions: AndroidOptions(
@@ -8,3 +9,9 @@ const FlutterSecureStorage storage = FlutterSecureStorage(
     accessibility: KeychainAccessibility.first_unlock
   )
 );
+
+late SettingService settings;
+
+Future<void> setupSettings() async {
+  settings = await SettingService.init();
+}

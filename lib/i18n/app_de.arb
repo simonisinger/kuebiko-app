@@ -16,5 +16,11 @@
   "downloading": "Lädt herunter",
   "continueRead": "Weiterlesen",
   "readAgain": "Nochmal lesen",
-  "suggestions": "Verschläge"
+  "suggestions": "Verschläge",
+  "fontSize": "Schriftgröße",
+  "fontFamily": "Schriftart",
+  "selectedFontFamily": "Ausgewählte Schriftart: {fontFamily}",
+  "settings": "Einstellungen",
+  "preview": "Vorschau",
+  "previewText": "Das ist eine Vorschau"
 }
