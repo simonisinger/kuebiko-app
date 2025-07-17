@@ -50,9 +50,8 @@ final class EbookService {
 
     for (ContentElement element in elements) {
       RenderParagraph renderParagraph;
-      switch (element.runtimeType) {
-        case ImageContent:
-          ImageContent imageContent = element as ImageContent;
+      switch (element) {
+        case ImageContent imageContent:
           image.Image imageObject = image.decodeImage(
               Uint8List.fromList(await imageContent.image.readContent())
           )!;
@@ -65,8 +64,7 @@ final class EbookService {
             height = maxHeight;
           }
           heights.add(height);
-        case SinglePartParagraph:
-          SinglePartParagraph singlePartParagraph = element as SinglePartParagraph;
+        case SinglePartParagraph singlePartParagraph:
           renderParagraph = RenderParagraph(
             TextSpan(
                 text: singlePartParagraph.text,
@@ -77,8 +75,7 @@ final class EbookService {
 
           renderParagraph.layout(constraints);
           heights.add(renderParagraph.size.height + 10);
-        case MultiPartParagraphElement:
-          MultiPartParagraphElement multiPartParagraphElement = element as MultiPartParagraphElement;
+        case MultiPartParagraphElement multiPartParagraphElement:
           renderParagraph = RenderParagraph(
             TextSpan(
                 text: '',
