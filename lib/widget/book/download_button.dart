@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
+import 'package:provider/provider.dart';
 
 class DownloadButton extends StatefulWidget {
   final double width;
@@ -68,8 +69,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                     onPressed: () async {
                       if (progressStream == null) {
                         setState(() {
-                          progressStream = StorageService
-                              .service
+                          progressStream = Provider.of<StorageService>(context)
                               .downloadEbook(widget.book)
                               .asBroadcastStream();
                         });

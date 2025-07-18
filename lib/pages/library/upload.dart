@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
+import 'package:kuebiko_web_client/services/di/service_locator.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
 import 'package:kuebiko_web_client/widget/action_button.dart';
 
@@ -68,7 +69,7 @@ class _UploadPageState extends State<UploadPage> {
                   child: ActionButton(
                       onPressed: () async {
                         for (PlatformFile file in _files) {
-                          StorageService.service.uploadEbook(file);
+                          ServiceLocator.instance.get<StorageService>().uploadEbook(file);
                         }
                         setState(() {
                           _files.clear();

@@ -1,6 +1,6 @@
-import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/pages/reader/horizontalv3.dart';
+import 'package:provider/provider.dart';
 
 import '../../enum/read_direction.dart';
 
@@ -20,33 +20,21 @@ class ReaderOverlayBottom extends StatefulWidget {
 }
 
 class _ReaderOverlayBottomState extends State<ReaderOverlayBottom> {
-  bool _showMenu = false;
-  int _page = 0;
 
   @override
   void initState() {
-    HorizontalV3ReaderPage.pageUpdatedEvent.subscribe(_updatePage);
-    HorizontalV3ReaderPage.showMenuChangedEvent.subscribe(_updateShowMenu);
+    context.watch<ReaderChanges>();
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _page = widget.pageController.page?.toInt() ?? 0);
-  }
-
-  void _updateShowMenu(Value<bool> value) {
-    setState(() {
-      _showMenu = value.value;
-    });
-  }
-
-  void _updatePage(Value<int> value) {
-    setState (() {
-      _page = value.value;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final ReaderChanges readerChanges = context.read<ReaderChanges>();
+    final page = readerChanges.page;
+    final bool showMenu = readerChanges.showMenu;
+
     final ThemeData theme = Theme.of(context);
-    return _showMenu ? Positioned(
+    return showMenu ? Positioned(
         bottom: 0,
         width: MediaQuery.of(context).size.width,
         child: Container(
@@ -59,7 +47,7 @@ class _ReaderOverlayBottomState extends State<ReaderOverlayBottom> {
               child: Column(
                   children: [
                     Slider(
-                      value: _page.toDouble(),
+                      value: page.toDouble(),
                       min: 0,
                       max: widget.countPages.toDouble(),
                       activeColor: widget.readDirection == ReadDirection.ltr ? theme.scaffoldBackgroundColor : Colors.white,
@@ -74,7 +62,7 @@ class _ReaderOverlayBottomState extends State<ReaderOverlayBottom> {
                     Container(
                         margin: const EdgeInsets.only(bottom: 5),
                         child: Text(
-                          "${widget.readDirection == ReadDirection.ltr ? _page + 1 : widget.countPages - _page} / ${widget.countPages}",
+                          "${widget.readDirection == ReadDirection.ltr ? page + 1 : widget.countPages - page} / ${widget.countPages}",
                           style: TextStyle(
                               color: Theme.of(context).scaffoldBackgroundColor
                           ),
@@ -85,12 +73,5 @@ class _ReaderOverlayBottomState extends State<ReaderOverlayBottom> {
             )
         )
     ) : Container();
-  }
-
-  @override
-  void dispose() {
-    HorizontalV3ReaderPage.showMenuChangedEvent.unsubscribe(_updateShowMenu);
-    HorizontalV3ReaderPage.pageUpdatedEvent.unsubscribe(_updatePage);
-    super.dispose();
   }
 }

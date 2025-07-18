@@ -1,6 +1,6 @@
-import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/pages/reader/horizontalv3.dart';
+import 'package:provider/provider.dart';
 
 import '../../pages/reader/content/content_element.dart';
 
@@ -14,25 +14,15 @@ class ReaderOverlayTop extends StatefulWidget {
 }
 
 class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
-  String _chapter = '';
-  bool _showMenu = false;
 
   @override
   void initState() {
-    HorizontalV3ReaderPage.pageUpdatedEvent.subscribe(_updateChapter);
-    HorizontalV3ReaderPage.showMenuChangedEvent.subscribe(_updateShowMenu);
+    context.watch<ReaderChanges>();
     super.initState();
-    _chapter = widget.contentElements.keys.first;
   }
 
-  void _updateShowMenu(Value<bool> value) {
-    setState(() {
-      _showMenu = value.value;
-    });
-  }
-
-  void _updateChapter(Value<int> value) {
-    int page = value.value;
+  String _updateChapter(int page) {
+    String chapter = widget.contentElements.keys.first;
     if (widget.pages[page].isNotEmpty) {
       ContentElement targetElement = widget.pages[page].first;
       // iterate through the elements to find the right chapter
@@ -43,18 +33,23 @@ class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
         });
         if (chapterElements.contains(targetElement)) {
           setState(() {
-            _chapter = key;
+            chapter = key;
           });
           break;
         }
       }
     }
+    return chapter;
   }
 
   @override
   Widget build(BuildContext context) {
+    ReaderChanges readerChanges = context.read<ReaderChanges>();
+    String chapter = _updateChapter(readerChanges.page);
+    bool showMenu = readerChanges.showMenu;
+
     final ThemeData theme = Theme.of(context);
-    return _showMenu ? Positioned(
+    return showMenu ? Positioned(
         top: 0,
         width: MediaQuery.of(context).size.width,
         child: Container(
@@ -80,7 +75,7 @@ class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
                   ],
                 ),
                 Text(
-                  _chapter,
+                  chapter,
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
@@ -92,12 +87,5 @@ class _ReaderOverlayTopState extends State<ReaderOverlayTop> {
           ),
         )
     ) : Container();
-  }
-
-  @override
-  void dispose() {
-    HorizontalV3ReaderPage.showMenuChangedEvent.unsubscribe(_updateShowMenu);
-    HorizontalV3ReaderPage.pageUpdatedEvent.unsubscribe(_updateChapter);
-    super.dispose();
   }
 }

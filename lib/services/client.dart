@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/cache/storage.dart';
+import 'package:kuebiko_web_client/services/di/service_locator.dart';
 import 'package:version/version.dart';
 
 Event clientsLoaded = Event();
@@ -18,6 +19,7 @@ class ClientService {
   }
 
   Future<List<String>> _loadHosts() async {
+    FlutterSecureStorage storage = ServiceLocator.instance.get<FlutterSecureStorage>();
     String? rawHostsJson = await storage.read(key: 'hostNames');
     if (rawHostsJson == null) {
       rawHostsJson = jsonEncode([]);
@@ -28,6 +30,7 @@ class ClientService {
   }
 
   Future<void> setupClient(KuebikoConfig config, String localName) async {
+    FlutterSecureStorage storage = ServiceLocator.instance.get<FlutterSecureStorage>();
     if(_hostNames.contains(config.baseUrl.toString())){
       return;
     }
@@ -40,11 +43,13 @@ class ClientService {
   }
 
   Future<void> _addHostName(String hostName) async {
+    FlutterSecureStorage storage = ServiceLocator.instance.get<FlutterSecureStorage>();
     _hostNames.add(hostName);
     await storage.write(key: 'hostNames', value: jsonEncode(_hostNames));
   }
 
   Future<bool> addClient(Uri hostAddress, String deviceName, String username, String password, String localName) async {
+    FlutterSecureStorage storage = ServiceLocator.instance.get<FlutterSecureStorage>();
     KuebikoClient newClient = await KuebikoClient.login(
         KuebikoConfig(
             appName: 'Official Kuebiko App',
@@ -67,6 +72,7 @@ class ClientService {
   }
 
    Future<bool> removeClient(String localName) async {
+     FlutterSecureStorage storage = ServiceLocator.instance.get<FlutterSecureStorage>();
     String hostAddress = _clients[localName]!.getConfig().baseUrl.toString();
     _clients.remove(localName);
     await storage.write(key: 'hosts', value: jsonEncode(_clients.keys));
@@ -75,6 +81,7 @@ class ClientService {
   }
 
   Future<void> _initClient() async {
+    FlutterSecureStorage storage = ServiceLocator.instance.get<FlutterSecureStorage>();
     List hostNames = await _loadHosts();
     Map<String, KuebikoClient> configMap = {};
     for (String hostName in hostNames) {

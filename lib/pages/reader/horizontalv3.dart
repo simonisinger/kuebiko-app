@@ -4,12 +4,14 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/enum/book_type.dart';
 import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
+import 'package:kuebiko_web_client/services/di/service_locator.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
 import 'package:kuebiko_web_client/widget/cacheable_page_view.dart';
 import 'package:kuebiko_web_client/widget/reader/overlay_bottom.dart';
 import 'package:kuebiko_web_client/widget/reader/overlay_top.dart';
+import 'package:provider/provider.dart';
 
 import '../../enum/read_direction.dart';
 import 'content/content_element.dart';
@@ -19,8 +21,22 @@ enum _ChangePageDirection {
   down
 }
 
+class ReaderChanges extends ChangeNotifier {
+  int page = 0;
+  bool showMenu = false;
+
+  void changePage(int pageNumber) {
+    page = pageNumber;
+    notifyListeners();
+  }
+
+  void changeShowMenu(bool value) {
+    showMenu = value;
+    notifyListeners();
+  }
+}
+
 class HorizontalV3ReaderPage extends StatefulWidget {
-  static final Event<Value<int>> pageUpdatedEvent = Event();
   static final Event<Value<bool>> showMenuChangedEvent = Event();
   final Book book;
   const HorizontalV3ReaderPage({super.key, required this.book});
@@ -30,6 +46,7 @@ class HorizontalV3ReaderPage extends StatefulWidget {
 }
 
 class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with ProgressMixin {
+  final ReaderChanges readerChanges = ReaderChanges();
   late final Reader reader;
   Map<String, Map<String, List<ContentElement>>> _contentElements = {};
   late final List<List<ContentElement>> _pages;
@@ -82,6 +99,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
   );
 
   void _readerTap(TapUpDetails details) {
+    ReaderChanges readerChanges = context.read<ReaderChanges>();
     final width = MediaQuery.of(context).size.width;
     final prevPage = width / 3;
     final nextPage = prevPage * 2;
@@ -92,7 +110,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
       _changePage(_ChangePageDirection.up);
     } else {
       _showMenu = !_showMenu;
-      HorizontalV3ReaderPage.showMenuChangedEvent.broadcast(Value(_showMenu));
+      readerChanges.changeShowMenu(_showMenu);
     }
   }
 
@@ -114,7 +132,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
   }
 
   void _updateChapter(int page) {
-    HorizontalV3ReaderPage.pageUpdatedEvent.broadcast(Value(page));
+    readerChanges.changePage(page);
     updateProgress(_pages[page].first, _pages, widget.book, reader.readDirection);
   }
 
@@ -141,14 +159,20 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
               ),
             ),
           ),
-          ReaderOverlayTop(
-            pages: _pages,
-            contentElements: _contentElements,
+          ChangeNotifierProvider(
+            create: (_) => readerChanges,
+            child: ReaderOverlayTop(
+              pages: _pages,
+              contentElements: _contentElements,
+            ),
           ),
-          ReaderOverlayBottom(
-            readDirection: reader.readDirection,
-            pageController: _pageController,
-            countPages: _pages.length
+          ChangeNotifierProvider(
+            create: (_) => readerChanges,
+            child: ReaderOverlayBottom(
+              readDirection: reader.readDirection,
+              pageController: _pageController,
+              countPages: _pages.length
+            ),
           ),
         ]
     );
@@ -168,7 +192,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
         }
         newPage--;
     }
-    HorizontalV3ReaderPage.pageUpdatedEvent.broadcast(Value(newPage));
+    readerChanges.changePage(newPage);
     _pageController.animateToPage(
         newPage,
         duration: const Duration(milliseconds: 400),
@@ -188,7 +212,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
   Future<void> _initEbook() async {
     Size size = MediaQuery.of(context).size;
     double deviceHeight = size.height;
-    reader = await StorageService.service.getEbookReader(widget.book);
+    reader = await ServiceLocator.instance.get<StorageService>().getEbookReader(widget.book);
     _contentElements = await reader.convertToObjects();
 
     double maxHeight = deviceHeight * 0.8;

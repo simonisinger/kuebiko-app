@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/cache/storage.dart';
 import 'package:kuebiko_web_client/pages/404.dart';
 import 'package:kuebiko_web_client/pages/book/book_detail.dart';
 import 'package:kuebiko_web_client/pages/client_selection.dart';
@@ -14,6 +13,7 @@ import 'package:kuebiko_web_client/pages/loading.dart';
 import 'package:kuebiko_web_client/pages/reader/horizontalv3.dart';
 import 'package:kuebiko_web_client/pages/settings/app.dart';
 import 'package:kuebiko_web_client/pages/setup/setup.dart';
+import 'package:kuebiko_web_client/services/di/service_locator.dart';
 import 'generated/i18n/app_localizations.dart';
 import 'pages/login.dart';
 import 'url_strategy.dart';
@@ -21,8 +21,11 @@ import 'url_strategy.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
-  await setupSettings();
-  runApp(const KuebikoApp());
+
+  // Initialize the service locator
+  await ServiceLocator.instance.initialize();
+
+  runApp(KuebikoApp());
 }
 
 class KuebikoApp extends StatelessWidget {

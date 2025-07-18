@@ -3,6 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:image/image.dart' as image;
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
+import 'package:kuebiko_web_client/services/di/service_locator.dart';
 import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
 import 'package:kuebiko_web_client/widget/action_button.dart';
@@ -31,7 +32,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
         _imageLoaded = true;
       });
     });
-    StorageService.service.ebookIsDownloaded(widget.book).then((bool value) {
+    ServiceLocator.instance.get<StorageService>().ebookIsDownloaded(widget.book).then((bool value) {
       setState(() {
         _ebookDownloaded = value;
       });
@@ -99,7 +100,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           ),
                           _ebookDownloaded ? IconButton(
                               onPressed: () async {
-                                await StorageService.service.deleteEbook(widget.book);
+                                await ServiceLocator.instance.get<StorageService>().deleteEbook(widget.book);
                                 setState(() {
                                   _ebookDownloaded = false;
                                 });
