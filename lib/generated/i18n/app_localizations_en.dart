@@ -87,4 +87,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reader => 'Reader';
+
+  @override
+  String volume(Object volNumber) {
+    return 'Vol. $volNumber';
+  }
 }

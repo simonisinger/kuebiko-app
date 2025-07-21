@@ -24,5 +24,6 @@
   "preview": "Vorschau",
   "previewText": "Das ist eine Vorschau",
   "clearRenderCache": "Rendercache leeren",
-  "reader": "Reader"
+  "reader": "Reader",
+  "volume": "Bd. {volNumber}"
 }

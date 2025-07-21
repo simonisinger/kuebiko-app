@@ -24,5 +24,6 @@
   "preview": "Preview",
   "previewText": "This is a preview",
   "clearRenderCache": "Clear render cache",
-  "reader": "Reader"
+  "reader": "Reader",
+  "volume": "Vol. {volNumber}"
 }

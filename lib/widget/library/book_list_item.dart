@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/widget/book/book_image.dart';
 
 class BookListItem extends StatelessWidget {
@@ -9,6 +10,9 @@ class BookListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations localizations = AppLocalizations.of(context)!;
+    Future metadataFuture = book.metadata();
+    const EdgeInsets textPadding = EdgeInsets.symmetric(horizontal: 4);
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed('/book/detail', arguments: book);
@@ -16,6 +20,7 @@ class BookListItem extends StatelessWidget {
       child: SizedBox(
         width: 120,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ClipRRect(
@@ -30,14 +35,27 @@ class BookListItem extends StatelessWidget {
                 )
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              margin: const EdgeInsets.only(bottom: 4),
+              padding: textPadding,
               child: Text(
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   book.name,
               ),
             ),
+            FutureBuilder(
+                future: metadataFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                    return Container(
+                      padding: textPadding,
+                      child: Text(
+                        localizations.volume(snapshot.data!['number_of_volume']),
+                      ),
+                    );
+                  }
+                  return Container();
+                }
+            )
           ],
         ),
       ),

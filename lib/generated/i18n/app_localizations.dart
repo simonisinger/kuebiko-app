@@ -253,6 +253,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reader'**
   String get reader;
+
+  /// No description provided for @volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Vol. {volNumber}'**
+  String volume(Object volNumber);
 }
 
 class _AppLocalizationsDelegate
