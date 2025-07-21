@@ -25,5 +25,6 @@
   "previewText": "This is a preview",
   "clearRenderCache": "Clear render cache",
   "reader": "Reader",
-  "volume": "Vol. {volNumber}"
+  "volume": "Vol. {volNumber}",
+  "licenses": "Licenses"
 }

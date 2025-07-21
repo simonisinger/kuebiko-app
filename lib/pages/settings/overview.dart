@@ -18,6 +18,12 @@ class OverviewSettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pushNamed(ReaderSettingsPage.route);
             },
+          ),
+          ListTile(
+            title: Text(localizations.licenses),
+            onTap: () {
+              showLicensePage(context: context);
+            },
           )
         ],
       )

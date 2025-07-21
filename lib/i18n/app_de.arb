@@ -25,5 +25,6 @@
   "previewText": "Das ist eine Vorschau",
   "clearRenderCache": "Rendercache leeren",
   "reader": "Reader",
-  "volume": "Bd. {volNumber}"
+  "volume": "Bd. {volNumber}",
+  "licenses": "Lizenzen"
 }
