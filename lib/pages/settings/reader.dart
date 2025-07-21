@@ -5,16 +5,16 @@ import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 
 import '../../widget/base_scaffold.dart';
 
-final class AppSettingsPage extends StatefulWidget {
-  static const String route = '/settings';
+final class ReaderSettingsPage extends StatefulWidget {
+  static const String route = '/settings/reader';
 
-  const AppSettingsPage({super.key});
+  const ReaderSettingsPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _AppSettingsPageState();
+  State<StatefulWidget> createState() => _ReaderSettingsPageState();
 }
 
-final class _AppSettingsPageState extends State<AppSettingsPage> {
+final class _ReaderSettingsPageState extends State<ReaderSettingsPage> {
   List<String> fontSearchResults = [];
 
   @override
@@ -27,6 +27,13 @@ final class _AppSettingsPageState extends State<AppSettingsPage> {
         spacing: 16,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            width: double.infinity,
+            child: TextButton(
+                onPressed: () {},
+                child: Text(localizations.clearRenderCache)
+            ),
+          ),
           Text(
             localizations.fontSize,
             style: textTheme.titleLarge,

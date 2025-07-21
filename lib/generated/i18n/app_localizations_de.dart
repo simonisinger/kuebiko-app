@@ -81,4 +81,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get previewText => 'Das ist eine Vorschau';
+
+  @override
+  String get clearRenderCache => 'Rendercache leeren';
+
+  @override
+  String get reader => 'Reader';
 }

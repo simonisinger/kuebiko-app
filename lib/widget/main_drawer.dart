@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/pages/client_selection.dart';
 import 'package:kuebiko_web_client/pages/library/overview.dart';
-import 'package:kuebiko_web_client/pages/settings/app.dart';
 import 'package:kuebiko_web_client/services/client.dart';
+
+import '../pages/settings/overview.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -40,7 +41,7 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             title: Text(localizations.settings),
             onTap: () {
-              Navigator.of(context).pushNamed(AppSettingsPage.route);
+              Navigator.of(context).pushNamed(OverviewSettingsPage.route);
             },
           )
         ],

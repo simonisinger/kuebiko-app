@@ -246,10 +246,10 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
                 })
             );
 
-            List pageConfigKeys = jsonDecode(await storage.read(key: 'pageConfigList') ?? '[]');
+            List pageConfigKeys = jsonDecode(await storage.read(key: EbookService.readerCacheKey) ?? '[]');
             if (!pageConfigKeys.contains(configKey)) {
               pageConfigKeys.add(configKey);
-              await storage.write(key: 'pageConfigList', value: jsonEncode(pageConfigKeys));
+              await storage.write(key: EbookService.readerCacheKey, value: jsonEncode(pageConfigKeys));
             }
           } else {
             pages.add(List.unmodifiable(contentElements));

@@ -241,6 +241,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This is a preview'**
   String get previewText;
+
+  /// No description provided for @clearRenderCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear render cache'**
+  String get clearRenderCache;
+
+  /// No description provided for @reader.
+  ///
+  /// In en, this message translates to:
+  /// **'Reader'**
+  String get reader;
 }
 
 class _AppLocalizationsDelegate

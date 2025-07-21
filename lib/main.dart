@@ -12,7 +12,8 @@ import 'package:kuebiko_web_client/pages/library/library_add.dart';
 import 'package:kuebiko_web_client/pages/library/upload.dart';
 import 'package:kuebiko_web_client/pages/loading.dart';
 import 'package:kuebiko_web_client/pages/reader/horizontalv3.dart';
-import 'package:kuebiko_web_client/pages/settings/app.dart';
+import 'package:kuebiko_web_client/pages/settings/overview.dart';
+import 'package:kuebiko_web_client/pages/settings/reader.dart';
 import 'package:kuebiko_web_client/pages/setup/setup.dart';
 import 'generated/i18n/app_localizations.dart';
 import 'pages/login.dart';
@@ -80,8 +81,10 @@ class KuebikoApp extends StatelessWidget {
             targetPage = const SetupPage();
           case LibraryPage.route:
             targetPage = const LibraryPage();
-          case AppSettingsPage.route:
-            targetPage = const AppSettingsPage();
+          case OverviewSettingsPage.route:
+            targetPage = const OverviewSettingsPage();
+          case ReaderSettingsPage.route:
+            targetPage = const ReaderSettingsPage();
           default:
             targetPage = const PageNotFoundPage();
         }

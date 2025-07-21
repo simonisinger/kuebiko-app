@@ -22,5 +22,7 @@
   "selectedFontFamily": "Ausgewählte Schriftart: {fontFamily}",
   "settings": "Einstellungen",
   "preview": "Vorschau",
-  "previewText": "Das ist eine Vorschau"
+  "previewText": "Das ist eine Vorschau",
+  "clearRenderCache": "Rendercache leeren",
+  "reader": "Reader"
 }

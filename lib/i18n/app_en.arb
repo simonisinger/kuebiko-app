@@ -22,5 +22,7 @@
   "selectedFontFamily": "Selected font family: {fontFamily}",
   "settings": "Settings",
   "preview": "Preview",
-  "previewText": "This is a preview"
+  "previewText": "This is a preview",
+  "clearRenderCache": "Clear render cache",
+  "reader": "Reader"
 }
