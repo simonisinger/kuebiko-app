@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/cache/storage.dart';
 import 'package:kuebiko_web_client/enum/book_type.dart';
 import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
+import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
@@ -186,61 +190,90 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
   }
 
   Future<void> _initEbook() async {
-    Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery
+        .of(context)
+        .size;
     double deviceHeight = size.height;
     reader = await StorageService.service.getEbookReader(widget.book);
     _contentElements = await reader.convertToObjects();
 
     double maxHeight = deviceHeight * 0.8;
     List<List<ContentElement>> pages = [];
-    for (String chapter in _contentElements.keys) {
-      for (String filename in _contentElements[chapter]!.keys.toList()) {
-        List<ContentElement> contentElements = _contentElements[chapter]![filename]!;
 
-        if (reader.bookType == BookType.novel) {
-          List<double> heights = await EbookService.generateHeight(
-              contentElements,
-              size.width,
-              maxHeight
-          );
-          double tmpPageSize = 0;
-          List<ContentElement> tmpPage = [];
-          for (int i = 0; i < heights.length; i++) {
-            tmpPageSize += heights[i];
-            if (tmpPageSize > maxHeight) {
-              pages.add(tmpPage);
-              tmpPageSize = heights[i];
-              tmpPage = [contentElements[i]];
-            } else {
-              tmpPage.add(contentElements[i]);
+    String configKey = '${ClientService.service.getCurrentLocalName()}-${widget.book.id}-pageconfig';
+
+    String? pageConfigString = await storage.read(key: configKey);
+    Map<String, dynamic>? pageConfig;
+    if (pageConfigString != null) {
+      pageConfig = jsonDecode(pageConfigString);
+    }
+    if (
+        pageConfig == null ||
+        pageConfig['fontSize'] != settings.fontSize ||
+        pageConfig['fontFamily'] != settings.fontFamily
+    ) {
+      for (String chapter in _contentElements.keys) {
+        for (String filename in _contentElements[chapter]!.keys.toList()) {
+          List<ContentElement> contentElements = _contentElements[chapter]![filename]!;
+
+          if (reader.bookType == BookType.novel) {
+            List<double> heights = await EbookService.generateHeight(
+                contentElements,
+                size.width,
+                maxHeight
+            );
+            double tmpPageSize = 0;
+            List<ContentElement> tmpPage = [];
+            for (int i = 0; i < heights.length; i++) {
+              tmpPageSize += heights[i];
+              if (tmpPageSize > maxHeight) {
+                pages.add(tmpPage);
+                tmpPageSize = heights[i];
+                tmpPage = [contentElements[i]];
+              } else {
+                tmpPage.add(contentElements[i]);
+              }
             }
+            if (tmpPage.isNotEmpty) {
+              pages.add(List.unmodifiable(tmpPage));
+            }
+            await storage.write(
+                key: configKey,
+                value: jsonEncode({
+                  'fontSize': settings.fontSize,
+                  'fontFamily': settings.fontFamily,
+                  'pageMapping': pages.map((element) => element.length)
+                })
+            );
+          } else {
+            pages.add(List.unmodifiable(contentElements));
           }
-          if (tmpPage.isNotEmpty) {
-            pages.add(List.unmodifiable(tmpPage));
-          }
-        } else {
-          pages.add(List.unmodifiable(contentElements));
         }
       }
+
+      List<String> pageConfigKeys = jsonDecode(await storage.read(key: 'pageConfigList') ?? '[]');
+      if (!pageConfigKeys.contains(configKey)) {
+        return pageConfigKeys.add(configKey);
+      }
+
+      if (reader.readDirection == ReadDirection.rtl) {
+        _pages = List.unmodifiable(pages.reversed);
+      } else {
+        _pages = List.unmodifiable(pages);
+      }
+
+      Progress progress = await widget.book.getProgress();
+      _pageController = PageController(
+          initialPage: getPageFromIndex(
+              progress.currentPage,
+              _pages,
+              reader.readDirection
+          )
+      );
+
+      setState(() {
+        _isLoaded = true;
+      });
     }
-
-    if (reader.readDirection == ReadDirection.rtl) {
-      _pages = List.unmodifiable(pages.reversed);
-    } else {
-      _pages = List.unmodifiable(pages);
-    }
-
-    Progress progress = await widget.book.getProgress();
-    _pageController = PageController(
-        initialPage: getPageFromIndex(
-            progress.currentPage,
-            _pages,
-            reader.readDirection
-        )
-    );
-
-    setState((){
-      _isLoaded = true;
-    });
   }
 }

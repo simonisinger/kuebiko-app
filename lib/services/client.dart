@@ -74,6 +74,15 @@ class ClientService {
     return true;
   }
 
+  String? getCurrentLocalName() {
+    for (String localName in _clients.keys) {
+      if (_clients[localName] == selectedClient) {
+        return localName;
+      }
+    }
+    return null;
+  }
+
   Future<void> _initClient() async {
     List hostNames = await _loadHosts();
     Map<String, KuebikoClient> configMap = {};
