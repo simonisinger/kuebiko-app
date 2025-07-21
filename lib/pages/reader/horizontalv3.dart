@@ -242,38 +242,54 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
                 value: jsonEncode({
                   'fontSize': settings.fontSize,
                   'fontFamily': settings.fontFamily,
-                  'pageMapping': pages.map((element) => element.length)
+                  'pageMapping': pages.map((element) => element.length).toList()
                 })
             );
+
+            List pageConfigKeys = jsonDecode(await storage.read(key: 'pageConfigList') ?? '[]');
+            if (!pageConfigKeys.contains(configKey)) {
+              pageConfigKeys.add(configKey);
+              await storage.write(key: 'pageConfigList', value: jsonEncode(pageConfigKeys));
+            }
           } else {
             pages.add(List.unmodifiable(contentElements));
           }
         }
       }
-
-      List<String> pageConfigKeys = jsonDecode(await storage.read(key: 'pageConfigList') ?? '[]');
-      if (!pageConfigKeys.contains(configKey)) {
-        return pageConfigKeys.add(configKey);
+    } else {
+      List<ContentElement> contentElementsList = [];
+      for (String chapter in _contentElements.keys) {
+        Map<String, List<ContentElement>> files = _contentElements[chapter]!;
+        for (String fileName in files.keys) {
+          contentElementsList.addAll(files[fileName]!);
+        }
       }
 
-      if (reader.readDirection == ReadDirection.rtl) {
-        _pages = List.unmodifiable(pages.reversed);
-      } else {
-        _pages = List.unmodifiable(pages);
+      int startIndex = 0;
+      for (int pageElementCount in pageConfig['pageMapping']) {
+        int endIndex = startIndex + pageElementCount;
+        pages.add(contentElementsList.sublist(startIndex, endIndex));
+        startIndex = endIndex;
       }
-
-      Progress progress = await widget.book.getProgress();
-      _pageController = PageController(
-          initialPage: getPageFromIndex(
-              progress.currentPage,
-              _pages,
-              reader.readDirection
-          )
-      );
-
-      setState(() {
-        _isLoaded = true;
-      });
     }
+
+    if (reader.readDirection == ReadDirection.rtl) {
+      _pages = List.unmodifiable(pages.reversed);
+    } else {
+      _pages = List.unmodifiable(pages);
+    }
+
+    Progress progress = await widget.book.getProgress();
+    _pageController = PageController(
+        initialPage: getPageFromIndex(
+            progress.currentPage,
+            _pages,
+            reader.readDirection
+        )
+    );
+
+    setState(() {
+      _isLoaded = true;
+    });
   }
 }
