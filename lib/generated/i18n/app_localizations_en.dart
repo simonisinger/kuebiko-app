@@ -92,4 +92,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String volume(Object volNumber) {
     return 'Vol. $volNumber';
   }
+
+  @override
+  String get licenses => 'Licenses';
 }

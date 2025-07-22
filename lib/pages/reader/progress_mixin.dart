@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/cache/storage.dart';
 import 'package:kuebiko_web_client/enum/read_direction.dart';
 import 'package:kuebiko_web_client/pages/reader/content/content_element.dart';
+import 'package:kuebiko_web_client/services/client.dart';
+import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 
 mixin ProgressMixin {
   // set new progress index
@@ -30,12 +35,50 @@ mixin ProgressMixin {
       position = positionOffset;
     }
 
-    await book.setProgress(
-        Progress(
-            currentPage: position,
-            maxPage: positionOffset - 1
-        )
-    );
+    await storage.write(key: _getLocalStorageKey(book), value: position.toString());
+    try {
+      await book.setProgress(
+          Progress(
+              currentPage: position,
+              maxPage: positionOffset - 1
+          )
+      );
+    } catch (e) {
+      String unsynchedString = await storage.read(key: EbookService.progressUnsynchedKey) ?? '[]';
+      List unsynched = jsonDecode(unsynchedString);
+      unsynched.add(_getLocalStorageKey(book));
+      await storage.write(key: EbookService.progressUnsynchedKey, value: jsonEncode({
+        'currentPage': position,
+        'maxPage': positionOffset - 1
+      }));
+    }
+  }
+
+  int _getMaxPage(List<List<ContentElement>> pages) {
+    int positionOffset = 0;
+    for (List<ContentElement> page in pages) {
+      positionOffset += page.length;
+    }
+    return positionOffset;
+  }
+
+  String _getLocalStorageKey(Book book) => 'progress.${ClientService.service.getCurrentLocalName()}.${book.id}';
+
+  Future<Progress> getProgress(Book book, List<List<ContentElement>> pages) async {
+    Progress progress;
+    int maxPage = _getMaxPage(pages);
+    try {
+      progress = await book.getProgress();
+    } catch(e) {
+      String? progressString = await storage.read(key: _getLocalStorageKey(book));
+      if (progressString != null) {
+        Map progressMap = jsonDecode(progressString);
+        progress = Progress(currentPage: progressMap['currentPage'], maxPage: maxPage);
+      } else {
+        progress = Progress(currentPage: 0, maxPage: maxPage);
+      }
+    }
+    return progress;
   }
 
   int getPageFromIndex(int index, List<List<ContentElement>> pages, ReadDirection readDirection) {

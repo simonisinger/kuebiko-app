@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:epubx/epubx.dart' as epubx;
+import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
 import 'package:flutter/material.dart' show BoxConstraints, TextDirection, TextSpan, TextStyle;
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:image/image.dart' as image;
@@ -18,6 +18,7 @@ import '../../cache/storage.dart';
 
 final class EbookService {
   static const readerCacheKey = 'pageConfigList';
+  static const progressUnsynchedKey = 'progress.unsynched';
 
   static Future<BookMeta> parseEpubMeta(String filename, Stream<List<int>> data, int length) async {
     epubx.EpubBookRef ebook = await epubx.EpubReader.openBookStream(data,length);

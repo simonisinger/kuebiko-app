@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:epubx/epubx.dart' as epubx;
+import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
 import 'package:flutter/rendering.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart';
