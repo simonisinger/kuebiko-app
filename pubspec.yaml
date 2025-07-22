@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   kuebiko_client:
-    path: ../kuebiko-dart-client-library
+    git: https://github.com/simonisinger/kuebiko-client.git
   flutter_web_plugins:
     sdk: flutter
   flutter:
