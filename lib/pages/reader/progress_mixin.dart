@@ -35,7 +35,7 @@ mixin ProgressMixin {
       position = positionOffset;
     }
 
-    await storage.write(key: _getLocalStorageKey(book), value: position.toString());
+    await storage.write(key: getLocalStorageKey(book), value: position.toString());
     try {
       await book.setProgress(
           Progress(
@@ -46,7 +46,7 @@ mixin ProgressMixin {
     } catch (e) {
       String unsynchedString = await storage.read(key: EbookService.progressUnsynchedKey) ?? '[]';
       List unsynched = jsonDecode(unsynchedString);
-      unsynched.add(_getLocalStorageKey(book));
+      unsynched.add(getLocalStorageKey(book));
       await storage.write(key: EbookService.progressUnsynchedKey, value: jsonEncode({
         'currentPage': position,
         'maxPage': positionOffset - 1
@@ -62,7 +62,7 @@ mixin ProgressMixin {
     return positionOffset;
   }
 
-  String _getLocalStorageKey(Book book) => 'progress.${ClientService.service.getCurrentLocalName()}.${book.id}';
+  static String getLocalStorageKey(Book book) => 'progress.${ClientService.service.getCurrentLocalName()}.${book.id}';
 
   Future<Progress> getProgress(Book book, List<List<ContentElement>> pages) async {
     Progress progress;
@@ -70,7 +70,7 @@ mixin ProgressMixin {
     try {
       progress = await book.getProgress();
     } catch(e) {
-      String? progressString = await storage.read(key: _getLocalStorageKey(book));
+      String? progressString = await storage.read(key: getLocalStorageKey(book));
       if (progressString != null) {
         Map progressMap = jsonDecode(progressString);
         progress = Progress(currentPage: progressMap['currentPage'], maxPage: maxPage);

@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/cache/storage.dart';
+import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
+import 'package:kuebiko_web_client/services/client.dart';
 
 class LocalUser implements User {
   @override
@@ -9,8 +14,10 @@ class LocalUser implements User {
 
   @override
   Future<List<Book>> finishedBooks() {
-    // TODO: implement finishedBooks
-    throw UnimplementedError();
+    return _getBooksByReadingByStatus((progressMap) {
+      return progressMap['currentPage'] != 0 &&
+          progressMap['currentPage'] == progressMap['maxPage'];
+    });
   }
 
   @override
@@ -36,9 +43,27 @@ class LocalUser implements User {
   int get id => throw UnimplementedError();
 
   @override
-  Future<List<Book>> readingBooks() {
-    // TODO: implement readingBooks
-    throw UnimplementedError();
+  Future<List<Book>> readingBooks() async {
+    return _getBooksByReadingByStatus((progressMap) {
+      return progressMap['currentPage'] != 0 &&
+          progressMap['currentPage'] != progressMap['maxPage'];
+    });
+  }
+
+  Future<List<Book>> _getBooksByReadingByStatus(bool Function(Map) checkFunction) async {
+    List<Book> books = await ClientService.service
+        .selectedClient!
+        .getBooks(BookSorting.name, SortingDirection.asc);
+
+    List<Book> statusBooks = [];
+    for (Book book in books) {
+      String key = ProgressMixin.getLocalStorageKey(book);
+      Map progressMap = jsonDecode(await storage.read(key: key) ?? '{"currentPage": 0, "maxPage": 1000}');
+      if (checkFunction(progressMap)) {
+        statusBooks.add(book);
+      }
+    }
+    return statusBooks;
   }
 
   @override
@@ -48,8 +73,9 @@ class LocalUser implements User {
 
   @override
   Future<List<Book>> unreadBooks() {
-    // TODO: implement unreadBooks
-    throw UnimplementedError();
+    return _getBooksByReadingByStatus((progressMap) {
+      return progressMap['currentPage'] == 0;
+    });
   }
 
   @override

@@ -1,22 +1,25 @@
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:image/image.dart';
 
+import 'library.dart';
+
 class LocalBook implements Book {
 
-  LocalBook(this.name);
+  LocalBook(this.name, this.library);
 
   @override
   String name;
+  final LocalLibrary library;
 
   @override
   Future<String> convert(Formats format) {
-    // TODO: implement convert
+    // no need at them moment
     throw UnimplementedError();
   }
 
   @override
   Future<String> convertStatus(String convertId) {
-    // TODO: implement convertStatus
+    // no need at the moment
     throw UnimplementedError();
   }
 
@@ -28,7 +31,7 @@ class LocalBook implements Book {
 
   @override
   void delete() {
-    // TODO: implement delete
+
   }
 
   @override
@@ -44,7 +47,7 @@ class LocalBook implements Book {
   }
 
   @override
-  // TODO: implement id
+  // not needed
   int get id => throw UnimplementedError();
 
   @override

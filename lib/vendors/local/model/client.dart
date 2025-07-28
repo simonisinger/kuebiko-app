@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/vendors/local/model/library.dart';
 import 'package:kuebiko_web_client/vendors/local/model/user.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../cache/storage.dart';
 import 'package:path/path.dart' as p;
@@ -19,9 +20,12 @@ class LocalClient implements Client {
   }
 
   @override
-  Future<Library> createLibrary(String name, String path) {
-    // TODO: implement createLibrary
-    throw UnimplementedError();
+  Future<Library> createLibrary(String name, String path) async {
+    LocalLibrary library = LocalLibrary(name, (await getApplicationDocumentsDirectory()).path + path);
+    List libraryNames = jsonDecode(await storage.read(key: librariesListKey) ?? '[]')
+      ..add(name);
+    await storage.write(key: librariesListKey, value: jsonEncode(libraryNames));
+    return library;
   }
 
   @override
@@ -52,9 +56,19 @@ class LocalClient implements Client {
   }
 
   @override
-  Future<List<Book>> getBooks(BookSorting sorting, SortingDirection sortingDirection) {
-    // TODO: implement getBooks
-    throw UnimplementedError();
+  Future<List<Book>> getBooks(BookSorting sorting, SortingDirection sortingDirection) async {
+    List<Library> libraries = await getLibraries();
+    List<Book> ebooks = [];
+    for (Library library in libraries) {
+      ebooks.addAll(await library.books(sorting, sortingDirection));
+    }
+    return ebooks..sort((Book a, Book b) {
+      if (sortingDirection == SortingDirection.desc) {
+        return a.name.compareTo(b.name);
+      } else {
+        return b.name.compareTo(a.name);
+      }
+    });
   }
 
   @override
@@ -75,11 +89,11 @@ class LocalClient implements Client {
 
   @override
   Future<List<Library>> getLibraries() async {
+    String basePath = (await getApplicationDocumentsDirectory()).path;
     String librariesString = await storage.read(key: librariesListKey) ?? '[]';
     List librariesRaw = jsonDecode(librariesString);
     return librariesRaw
-        // TODO: set correct path
-        .map((libraryName) => LocalLibrary(libraryName, ''))
+        .map((libraryName) => LocalLibrary(libraryName, '$basePath/$libraryName'))
         .toList();
   }
 
