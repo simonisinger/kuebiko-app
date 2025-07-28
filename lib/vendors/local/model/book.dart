@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:image/image.dart';
 
@@ -31,7 +33,7 @@ class LocalBook implements Book {
 
   @override
   void delete() {
-
+    File('${library.path}/$name').deleteSync();
   }
 
   @override

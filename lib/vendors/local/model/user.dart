@@ -39,7 +39,7 @@ class LocalUser implements User {
   }
 
   @override
-  // TODO: implement id
+  // no need to implement
   int get id => throw UnimplementedError();
 
   @override
