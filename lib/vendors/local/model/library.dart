@@ -17,10 +17,13 @@ class LocalLibrary implements Library {
   String path;
 
   String get ebookListKey => 'local.$name.ebooks';
+  // get the latest ebook id
+  String get ebookMaxIdKey => 'local.$name.maxId';
 
   @override
   Future<List<Book>> books(BookSorting sorting, SortingDirection direction) async {
-    return (await _ebooksList).map((filename) => LocalBook(filename, this))
+    return (await _ebooksList).map((id,filename) => MapEntry(id, LocalBook(filename, this, int.parse(id))))
+        .values
         .toList()
         ..sort((LocalBook a, LocalBook b) {
           if (direction == SortingDirection.desc) {
@@ -33,7 +36,7 @@ class LocalLibrary implements Library {
 
   @override
   Future<void> delete() async {
-    (await _ebooksList).map((filename) => File(path).deleteSync(recursive: true));
+    (await _ebooksList).forEach((_,filename) => File(path).deleteSync(recursive: true));
   }
 
   @override
@@ -68,7 +71,7 @@ class LocalLibrary implements Library {
     );
   }
 
-  Future<List<String>> get _ebooksList async => jsonDecode(await storage.read(key: ebookListKey) ?? '[]');
+  Future<Map<String, dynamic>> get _ebooksList async => jsonDecode(await storage.read(key: ebookListKey) ?? '[]');
 
   @override
   Future<Book> upload(String filename, BookMeta meta, Stream<List<int>> fileContent, int fileLength) async {
@@ -85,9 +88,13 @@ class LocalLibrary implements Library {
       ..addStream(fileContent);
     await sink.done;
 
-    List<String> ebookList = (await _ebooksList)..add(filename);
-    storage.write(key: ebookListKey, value: jsonEncode(ebookList));
+    int maxId = int.parse(await storage.read(key: ebookMaxIdKey) ?? '0');
+    await storage.write(key: ebookMaxIdKey, value: (++maxId).toString());
 
-    return LocalBook(filename, this);
+    Map<String, dynamic> ebookList = (await _ebooksList);
+    ebookList[maxId.toString()] = filename;
+    await storage.write(key: ebookListKey, value: jsonEncode(ebookList));
+
+    return LocalBook(filename, this, maxId);
   }
 }

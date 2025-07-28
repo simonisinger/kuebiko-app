@@ -7,7 +7,9 @@ import 'library.dart';
 
 class LocalBook implements Book {
 
-  LocalBook(this.name, this.library);
+  LocalBook(this.name, this.library, this.id);
+
+  final int id;
 
   @override
   String name;
@@ -47,10 +49,6 @@ class LocalBook implements Book {
     // dont implement this to prevent doubled data saving
     throw UnimplementedError();
   }
-
-  @override
-  // not needed
-  int get id => throw UnimplementedError();
 
   @override
   Future<Map> metadata() {
