@@ -10,8 +10,13 @@ import '../../../cache/storage.dart';
 import 'package:path/path.dart' as p;
 
 class LocalClient implements Client {
+
+  final String name;
   final LocalUser user = LocalUser();
-  static const String librariesListKey = 'localClient.libraries';
+
+  LocalClient(this.name);
+  String get librariesListKey => 'localClient.$name.libraries';
+
 
   @override
   Future<void> createFolder(String path) {
@@ -24,6 +29,13 @@ class LocalClient implements Client {
     LocalLibrary library = LocalLibrary(name, (await getApplicationDocumentsDirectory()).path + path);
     List libraryNames = jsonDecode(await storage.read(key: librariesListKey) ?? '[]')
       ..add(name);
+
+    Directory baseDirectory = await getApplicationDocumentsDirectory();
+    Directory libraryFolder = Directory('${baseDirectory.path}/${this.name}$path');
+    if (!libraryFolder.existsSync()) {
+      libraryFolder.createSync();
+    }
+
     await storage.write(key: librariesListKey, value: jsonEncode(libraryNames));
     return library;
   }

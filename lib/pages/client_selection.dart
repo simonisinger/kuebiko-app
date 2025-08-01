@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/pages/client_selection_list.dart';
+import 'package:kuebiko_web_client/pages/login/login_selector.dart';
 import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 
 import '../widget/add_button.dart';
@@ -18,7 +19,7 @@ class ClientSelectionPage extends StatelessWidget {
     }
 
     return BaseScaffold(
-      floatingActionButton: const AddWidget(targetPath: '/login'),
+      floatingActionButton: const AddWidget(targetPath: LoginSelectorPage.route),
       Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(

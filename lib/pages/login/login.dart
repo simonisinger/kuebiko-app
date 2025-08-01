@@ -143,7 +143,7 @@ class LoginPage extends StatelessWidget {
                   width: width,
                   child: TextButton(
                     onPressed: () async {
-                      bool success = await ClientService.service.addClient(
+                      bool success = await ClientService.service.addKuebikoClient(
                           Uri.parse(_hostAddress.value.text),
                           _deviceName.value.text,
                           _username.value.text,

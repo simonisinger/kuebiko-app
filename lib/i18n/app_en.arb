@@ -26,5 +26,8 @@
   "clearRenderCache": "Clear render cache",
   "reader": "Reader",
   "volume": "Vol. {volNumber}",
-  "licenses": "Licenses"
+  "licenses": "Licenses",
+  "localServer": "Local",
+  "name": "Name",
+  "createClient": "Create client"
 }

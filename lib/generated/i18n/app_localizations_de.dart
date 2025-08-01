@@ -95,4 +95,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get licenses => 'Lizenzen';
+
+  @override
+  String get localServer => 'Lokal';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get createClient => 'Client erstellen';
 }

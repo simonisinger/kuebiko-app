@@ -26,5 +26,8 @@
   "clearRenderCache": "Rendercache leeren",
   "reader": "Reader",
   "volume": "Bd. {volNumber}",
-  "licenses": "Lizenzen"
+  "licenses": "Lizenzen",
+  "localServer": "Lokal",
+  "name": "Name",
+  "createClient": "Client erstellen"
 }

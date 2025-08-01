@@ -1,34 +1,39 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:event/event.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/cache/storage.dart';
+import 'package:kuebiko_web_client/vendors/local/model/client.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:version/version.dart';
 
 Event clientsLoaded = Event();
 class ClientService {
   static final ClientService service = ClientService();
-  final List<String> _hostNames = [];
-  final Map<String, KuebikoClient> _clients = {};
-  KuebikoClient? selectedClient;
+  final List<String> _localNames = [];
+  final Map<String, Client> _clients = {};
+  Client? selectedClient;
   Library? selectedLibrary;
 
   ClientService() {
-    _initClient();
+    _initClients();
   }
 
-  Future<List<String>> _loadHosts() async {
-    String? rawHostsJson = await storage.read(key: 'hostNames');
+  final String _clientIndexKey = 'localNames';
+
+  Future<List<String>> _loadLocalNames() async {
+    String? rawHostsJson = await storage.read(key: _clientIndexKey);
     if (rawHostsJson == null) {
       rawHostsJson = jsonEncode([]);
-      await storage.write(key: 'hostNames', value: rawHostsJson);
+      await storage.write(key: _clientIndexKey, value: rawHostsJson);
     }
     List<String> jsonHosts = jsonDecode(rawHostsJson).cast<String>();
     return jsonHosts;
   }
 
   Future<void> setupClient(KuebikoConfig config, String localName) async {
-    if(_hostNames.contains(config.baseUrl.toString())){
+    if(_localNames.contains(config.baseUrl.toString())){
       return;
     }
     await storage.write(key: config.baseUrl.toString(), value: jsonEncode({
@@ -36,15 +41,19 @@ class ClientService {
       'deviceName': config.deviceName,
       'name': localName
     }));
-    _addHostName(config.baseUrl.toString());
+    await _addLocalName(localName);
   }
 
-  Future<void> _addHostName(String hostName) async {
-    _hostNames.add(hostName);
-    await storage.write(key: 'hostNames', value: jsonEncode(_hostNames));
+  Future<void> _addLocalName(String localName) async {
+    _localNames.add(localName);
+    await storage.write(key: _clientIndexKey, value: jsonEncode(_localNames));
   }
 
-  Future<bool> addClient(Uri hostAddress, String deviceName, String username, String password, String localName) async {
+  Future<bool> addLocalClient(String name) async {
+    return await addClient(LocalClient(name), name);
+  }
+
+  Future<bool> addKuebikoClient(Uri hostAddress, String deviceName, String username, String password, String localName) async {
     KuebikoClient newClient = await KuebikoClient.login(
         KuebikoConfig(
             appName: 'Official Kuebiko App',
@@ -55,22 +64,53 @@ class ClientService {
         username,
         password
     );
-    _clients.addAll({localName: newClient});
-    _hostNames.add(localName);
-    await storage.write(key: 'hostNames', value: jsonEncode(_hostNames));
-    await storage.write(key: localName, value: jsonEncode({
-      'apiKey': newClient.getConfig().apiKey,
-      'deviceName': deviceName,
-      'host': hostAddress.toString()
-    }));
+
+    await addClient(newClient, localName);
     return true;
   }
 
+  String _getClientKey(String localName) => 'clients.$localName'; 
+
+  Future<bool> addClient(Client client, String localName) async {
+    String className = client.runtimeType.toString();
+    if (_localNames.contains(localName)) {
+      throw Exception('clientname already used');
+    }
+
+    Directory baseDirectory = await getApplicationDocumentsDirectory();
+    Directory('${baseDirectory.path}/$localName').createSync();
+
+    Map<String, dynamic> data = _getClientSpecificData(client);
+    data['type'] = className;
+
+    _clients.addAll({localName: client});
+    await _addLocalName(localName);
+
+    await storage.write(key: _getClientKey(localName), value: jsonEncode(data));
+    return true;
+  }
+  
+  Map<String, dynamic> _getClientSpecificData(Client client) {
+    Map<String, dynamic> data = {};
+    
+    switch(client) {
+      case KuebikoClient kuebikoClient:
+        KuebikoConfig config = kuebikoClient.getConfig();
+        data = {
+          'apiKey': config.apiKey,
+          'deviceName': config.deviceName,
+          'host': config.baseUrl.toString()
+        };
+    }
+    
+    return data;
+  }
+
    Future<bool> removeClient(String localName) async {
-    String hostAddress = _clients[localName]!.getConfig().baseUrl.toString();
     _clients.remove(localName);
-    await storage.write(key: 'hosts', value: jsonEncode(_clients.keys));
-    await storage.delete(key: hostAddress.toString());
+    _localNames.remove(localName);
+    await storage.write(key: _clientIndexKey, value: jsonEncode(_clients.keys));
+    await storage.delete(key: _getClientKey(localName));
     return true;
   }
 
@@ -83,25 +123,30 @@ class ClientService {
     return null;
   }
 
-  Future<void> _initClient() async {
-    List hostNames = await _loadHosts();
-    Map<String, KuebikoClient> configMap = {};
-    for (String hostName in hostNames) {
-      String? configStringRaw = await storage.read(key: hostName);
+  Future<void> _initClients() async {
+    List localNames = await _loadLocalNames();
+    Map<String, Client> configMap = {};
+    for (String localName in localNames) {
+      String? configStringRaw = await storage.read(key: _getClientKey(localName));
       if (configStringRaw == null) {
         continue;
       }
       Map configRaw = jsonDecode(configStringRaw);
       try {
-        configMap[hostName] = KuebikoClient(
-            KuebikoConfig(
-                appName: 'Official Kuebiko App',
-                appVersion: Version(1, 0, 0),
-                baseUrl: Uri.parse(configRaw['host']),
-                deviceName: configRaw['deviceName'],
-                apiKey: configRaw['apiKey']
-            )
-        );
+        switch(configRaw['type']) {
+          case 'KuebikoClient':
+            configMap[localName] = KuebikoClient(
+                KuebikoConfig(
+                    appName: 'Official Kuebiko App',
+                    appVersion: Version(1, 0, 0),
+                    baseUrl: Uri.parse(configRaw['host']),
+                    deviceName: configRaw['deviceName'],
+                    apiKey: configRaw['apiKey']
+                )
+            );
+          case 'LocalClient':
+            configMap[localName] = LocalClient(localName);
+        }
       } catch(exception){
         // do nothing
       }
@@ -112,5 +157,5 @@ class ClientService {
     clientsLoaded.broadcast();
   }
 
-  Map<String, KuebikoClient> get clients => _clients;
+  Map<String, Client> get clients => _clients;
 }

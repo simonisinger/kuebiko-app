@@ -265,6 +265,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Licenses'**
   String get licenses;
+
+  /// No description provided for @localServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Local'**
+  String get localServer;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @createClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Create client'**
+  String get createClient;
 }
 
 class _AppLocalizationsDelegate

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/cache/storage.dart';
+import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/vendors/local/model/book.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -67,11 +68,11 @@ class LocalLibrary implements Library {
   Future<Directory> getEbooksDirectory() async {
     Directory baseDirectory = await getApplicationDocumentsDirectory();
     return Directory(
-        '${baseDirectory.path}${p.separator}localClients${p.separator}$name'
+        '${baseDirectory.path}${p.separator}${ClientService.service.getCurrentLocalName()}${p.separator}$name'
     );
   }
 
-  Future<Map<String, dynamic>> get _ebooksList async => jsonDecode(await storage.read(key: ebookListKey) ?? '[]');
+  Future<Map<String, dynamic>> get _ebooksList async => jsonDecode(await storage.read(key: ebookListKey) ?? '{}');
 
   @override
   Future<Book> upload(String filename, BookMeta meta, Stream<List<int>> fileContent, int fileLength) async {
