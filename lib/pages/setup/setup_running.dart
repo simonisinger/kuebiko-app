@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SetupRunningPage extends StatelessWidget {
   final String message;
@@ -16,9 +15,8 @@ class SetupRunningPage extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   alignment: Alignment.topCenter,
-                  child: SpinKitDualRing(
+                  child: CircularProgressIndicator(
                     color: Theme.of(context).shadowColor,
-                    size: 100,
                   ),
                 ),
               ),

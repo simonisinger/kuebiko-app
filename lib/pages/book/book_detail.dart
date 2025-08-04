@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:image/image.dart' as image;
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
@@ -40,7 +39,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
 
   Widget _showCover() {
     if (!_imageLoaded) {
-      return SpinKitSpinningCircle(
+      return CircularProgressIndicator(
         color: Theme.of(context).shadowColor,
       );
     } else if (cover != null) {

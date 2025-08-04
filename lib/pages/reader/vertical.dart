@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:kuebiko_web_client/services/ebook/epub_reader.dart';
@@ -157,9 +156,8 @@ class _VerticalReaderPageState extends State<VerticalReaderPage> {
           Positioned.fill(
             child: Container(
               alignment: Alignment.topCenter,
-              child: SpinKitDualRing(
+              child: CircularProgressIndicator(
                 color: Theme.of(context).shadowColor,
-                size: 100,
               ),
             ),
           ),

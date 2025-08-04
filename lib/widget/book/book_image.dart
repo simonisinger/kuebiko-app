@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
 
@@ -18,7 +17,7 @@ class BookImage extends StatelessWidget {
           case ConnectionState.none:
           case ConnectionState.active:
           case ConnectionState.waiting:
-            return SpinKitDualRing(
+            return CircularProgressIndicator(
               color: Theme.of(context).shadowColor,
             );
           case ConnectionState.done:

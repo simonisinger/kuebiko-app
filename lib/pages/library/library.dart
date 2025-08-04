@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/pages/library/upload.dart';
 import 'package:kuebiko_web_client/services/client.dart';
@@ -29,7 +28,7 @@ class _LibraryPageState extends State<LibraryPage> {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return SpinKitDualRing(color: Theme.of(context).shadowColor,);
+              return CircularProgressIndicator(color: Theme.of(context).shadowColor,);
             case ConnectionState.done:
               if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
