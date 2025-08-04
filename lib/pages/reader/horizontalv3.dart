@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/cache/storage.dart';
 import 'package:kuebiko_web_client/enum/book_type.dart';
@@ -54,10 +53,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
           Positioned.fill(
             child: Container(
               alignment: Alignment.topCenter,
-              child: SpinKitDualRing(
-                color: Theme.of(context).shadowColor,
-                size: 100,
-              ),
+              child: CircularProgressIndicator(),
             ),
           ),
           Positioned.fill(

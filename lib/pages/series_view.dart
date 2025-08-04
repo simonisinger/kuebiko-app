@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/widget/library/book_list_item.dart';
 
-class SeriesViewPage extends StatefulWidget {
+class SeriesViewPage extends StatelessWidget {
   final Series series;
   const SeriesViewPage({super.key, required this.series});
-
-  @override
-  State<StatefulWidget> createState() => _SeriesViewPageState();
-}
-
-class _SeriesViewPageState extends State<SeriesViewPage> {
-
-  List<Book>? _books;
 
   @override
   Widget build(BuildContext context) {
@@ -22,21 +13,35 @@ class _SeriesViewPageState extends State<SeriesViewPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
-                child: Text(widget.series.getName()),
+                child: Text(series.getName()),
               ),
-              Wrap(
-                children: _books == null ? [SpinKitFadingCircle()] : _generateBookWidgets(),
-              )
+              FutureBuilder(
+                    future: series.books(BookSorting.name, SortingDirection.asc),
+                    builder: (context, snapshot) {
+                      switch(snapshot.connectionState) {
+                        case ConnectionState.none:
+                        case ConnectionState.waiting:
+                        case ConnectionState.active:
+                          return CircularProgressIndicator();
+                        case ConnectionState.done:
+                          if (snapshot.hasData) {
+                            return Wrap(children: _generateBookWidgets(snapshot.data!));
+                          } else {
+                            // TODO add detailed error message
+                            return Text(snapshot.error.toString());
+                          }
+                      }
+              })
             ]
         )
     );
   }
 
-  List<Widget> _generateBookWidgets() {
-    List<Widget> books = [];
-    for (Book book in _books!) {
-      books.add(BookListItem(book: book));
+  List<Widget> _generateBookWidgets(List<Book> books) {
+    List<Widget> bookWidgets = [];
+    for (Book book in books) {
+      bookWidgets.add(BookListItem(book: book));
     }
-    return books;
+    return bookWidgets;
   }
 }

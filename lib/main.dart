@@ -10,7 +10,6 @@ import 'package:kuebiko_web_client/pages/library/library.dart';
 import 'package:kuebiko_web_client/pages/library/overview.dart';
 import 'package:kuebiko_web_client/pages/library/library_add.dart';
 import 'package:kuebiko_web_client/pages/library/upload.dart';
-import 'package:kuebiko_web_client/pages/loading.dart';
 import 'package:kuebiko_web_client/pages/login/local.dart';
 import 'package:kuebiko_web_client/pages/login/login_selector.dart';
 import 'package:kuebiko_web_client/pages/reader/horizontalv3.dart';
@@ -59,8 +58,6 @@ class KuebikoApp extends StatelessWidget {
         switch (routeName) {
           case '/':
             return null;
-          case '/init':
-            targetPage = const LoadingPage();
           case ClientSelectionPage.route:
             targetPage = const ClientSelectionPage();
           case LoginPage.route:

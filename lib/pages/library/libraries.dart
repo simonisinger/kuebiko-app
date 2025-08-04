@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/services/client.dart';
@@ -44,34 +43,47 @@ class _LibrariesPageState extends State<LibrariesPage> {
 
   Widget _showLibraries() {
     List<Widget> widgets = [];
-    if (libraries.isEmpty) {
-      widgets.add(
-          SizedBox(
-            width: double.infinity,
-            child: Text(
-              AppLocalizations.of(context)!.noLibraries,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.bold
-              ),
-            )
-        )
-      );
-    }
-    widgets.addAll(
-        libraries.map((Library element) => OutlinedButton(
-            onPressed: () {
-              ClientService.service.selectedLibrary = element;
-              Navigator.of(context).pushNamed('/library');
-            },
-            child: Text(element.name)
-        ))
-    );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ListView(
-          children: widgets,
+      child: FutureBuilder(
+              future: ClientService.service.selectedClient!.getLibraries(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                  case ConnectionState.active:
+                    return CircularProgressIndicator();
+                  case ConnectionState.done:
+                    if (snapshot.hasData) {
+
+                      if (libraries.isEmpty) {
+                        widgets.add(
+                            SizedBox(
+                                width: double.infinity,
+                                child: Text(
+                                  AppLocalizations.of(context)!.noLibraries,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                )
+                            )
+                        );
+                      }
+
+                      return ListView(children: snapshot.data!.map((Library element) => OutlinedButton(
+                          onPressed: () {
+                            ClientService.service.selectedLibrary = element;
+                            Navigator.of(context).pushNamed('/library');
+                          },
+                          child: Text(element.name)
+                      )).toList());
+                    } else {
+                      return Text(snapshot.error.toString());
+                    }
+                }
+              },
       ),
     );
   }
@@ -80,10 +92,7 @@ class _LibrariesPageState extends State<LibrariesPage> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SpinKitDualRing(
-              color: Theme.of(context).shadowColor,
-              size: 100,
-            ),
+            CircularProgressIndicator(),
             Container(
                 margin: const EdgeInsets.only(top: 16),
                 child: Text(AppLocalizations.of(context)!.librariesLoading)
