@@ -29,14 +29,15 @@ class StorageService {
     File(await _generatePath(book)).deleteSync();
   }
 
-  Future<void> uploadEbook(PlatformFile file) async {
+  Future<KuebikoUpload> uploadEbook(PlatformFile file) async {
     BookMeta meta = await EbookService.parseEpubMeta(file.name, file.xFile.openRead(), file.size);
-    await ClientService.service.selectedLibrary!.upload(
+    return ClientService.service.selectedLibrary!.upload(
         file.name,
         meta,
         file.xFile.openRead(),
         file.size
     );
+
   }
 
   Stream<double> downloadEbook(Book book) async* {

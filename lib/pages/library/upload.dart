@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/pages/library/library.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
 import 'package:kuebiko_web_client/widget/action_button.dart';
+import 'package:kuebiko_web_client/widget/library/upload_book.dart';
 
 class UploadPage extends StatefulWidget {
   static const route = '/library/upload';
@@ -14,7 +18,7 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
-  final List<PlatformFile> _files = [];
+  final Map<PlatformFile, StreamController<double>> _files = {};
 
   void _pickFiles() async {
     List<PlatformFile>? pickedFiles = (await FilePicker.platform.pickFiles(
@@ -28,7 +32,7 @@ class _UploadPageState extends State<UploadPage> {
 
     setState(() {
       if (pickedFiles != null) {
-        _files.addAll(pickedFiles);
+        _files.addEntries(pickedFiles.map((file) => MapEntry(file, StreamController())));
       }
     });
   }
@@ -37,20 +41,19 @@ class _UploadPageState extends State<UploadPage> {
   Widget build(BuildContext context) {
     AppLocalizations localizations = AppLocalizations.of(context)!;
     double padding = MediaQuery.of(context).size.width * .1;
-    List fileWidgets = _files.map((PlatformFile file) => Container(
-      margin: EdgeInsets.symmetric(horizontal: padding),
-      child: OutlinedButton(
-          onPressed: () {
-            setState(() {
-              _files.remove(file);
-            });
-          },
-          child: Text(
-            file.name
-          )
-        ),
-    )
-    ).toList();
+
+    List fileWidgets = _files.keys.map((PlatformFile file) => Container(
+        margin: EdgeInsets.symmetric(horizontal: padding),
+          child: UploadBook(
+            onTap: () {
+              setState(() {
+                _files.remove(file);
+              });
+            },
+            progressStream: _files[file]!.stream,
+            book: file,
+          ),
+      )).toList();
     return Scaffold(
         body: SafeArea(
             child: Column(
@@ -68,11 +71,10 @@ class _UploadPageState extends State<UploadPage> {
                   margin: EdgeInsets.symmetric(horizontal: padding),
                   child: ActionButton(
                       onPressed: () async {
-                        for (PlatformFile file in _files) {
-                          await StorageService.service.uploadEbook(file);
-                          setState(() {
-                            _files.remove(file);
-                          });
+                        for (PlatformFile file in _files.keys) {
+                          KuebikoUpload upload = await StorageService.service.uploadEbook(file);
+                          await _files[file]!.addStream(upload.stream);
+                          await _files[file]!.done;
                         }
                         if (context.mounted) {
                           Navigator.of(context).pushNamed(LibraryPage.route);

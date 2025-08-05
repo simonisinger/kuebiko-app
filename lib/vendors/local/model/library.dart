@@ -74,28 +74,54 @@ class LocalLibrary implements Library {
 
   Future<Map<String, dynamic>> get _ebooksList async => jsonDecode(await storage.read(key: ebookListKey) ?? '{}');
 
-  @override
-  Future<Book> upload(String filename, BookMeta meta, Stream<List<int>> fileContent, int fileLength) async {
+
+  Stream<double> _getUploadProgressStream(String filename, Stream<List<int>> fileContent, int fileLength) async* {
     Directory localEbooksDirectory = await getEbooksDirectory();
     bool fileExists = localEbooksDirectory
         .listSync()
         .any((element) => p.basename(element.path) == filename);
+    if (!fileExists) {
+      fileContent = fileContent.asBroadcastStream();
+      File(localEbooksDirectory.path + p.separator + filename).openWrite()
+        .addStream(fileContent);
 
-    if (fileExists) {
-      throw Exception('ebook already exists');
+      double onePercent = fileLength / 100;
+      int writtenLength = 0;
+      await for (List<int> chunk in fileContent) {
+        writtenLength += chunk.length;
+        yield writtenLength / onePercent;
+      }
+    } else {
+      return;
     }
+  }
 
-    IOSink sink = File(localEbooksDirectory.path + p.separator + filename).openWrite()
-      ..addStream(fileContent);
-    await sink.done;
+  @override
+  KuebikoUpload upload(String filename, BookMeta meta, Stream<List<int>> fileContent, int fileLength) {
+    int maxId = 0;
+    Stream<double> progressStream = _getUploadProgressStream(filename, fileContent, fileLength);
+    Future<LocalBook> book = getEbooksDirectory()
+        .then((Directory localEbooksDirectory) {
+          bool fileExists = localEbooksDirectory
+            .listSync()
+            .any((element) => p.basename(element.path) == filename);
 
-    int maxId = int.parse(await storage.read(key: ebookMaxIdKey) ?? '0');
-    await storage.write(key: ebookMaxIdKey, value: (++maxId).toString());
+          if (fileExists) {
+            throw Exception('ebook already exists');
+          }
+          return storage.read(key: ebookMaxIdKey);
+        })
+        .then((String? ebookMaxId) {
+          maxId = int.parse(ebookMaxId ?? '0');
+          return storage.write(key: ebookMaxIdKey, value: (++maxId).toString());
+        })
+        .then((_)  => _ebooksList)
+        .then((Map<String, dynamic> ebookList) {
+          ebookList[maxId.toString()] = filename;
+          return storage.write(key: ebookListKey, value: jsonEncode(ebookList));
+        })
+        .then((_) => LocalBook(filename, this, id));
 
-    Map<String, dynamic> ebookList = (await _ebooksList);
-    ebookList[maxId.toString()] = filename;
-    await storage.write(key: ebookListKey, value: jsonEncode(ebookList));
-
-    return LocalBook(filename, this, maxId);
+    return KuebikoUpload(progressStream, book);
   }
 }
