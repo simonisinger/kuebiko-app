@@ -19,6 +19,7 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   final Map<PlatformFile, StreamController<double>> _files = {};
+  bool uploadActive = false;
 
   void _pickFiles() async {
     List<PlatformFile>? pickedFiles = (await FilePicker.platform.pickFiles(
@@ -42,42 +43,61 @@ class _UploadPageState extends State<UploadPage> {
     AppLocalizations localizations = AppLocalizations.of(context)!;
     double padding = MediaQuery.of(context).size.width * .1;
 
-    List fileWidgets = _files.keys.map((PlatformFile file) => Container(
-        margin: EdgeInsets.symmetric(horizontal: padding),
-          child: UploadBook(
-            onTap: () {
-              setState(() {
-                _files.remove(file);
-              });
-            },
-            progressStream: _files[file]!.stream,
-            book: file,
-          ),
-      )).toList();
     return Scaffold(
         body: SafeArea(
             child: Column(
               spacing: 16,
               children: [
-                Container(
+                uploadActive ? Container() : Container(
                   padding: EdgeInsets.symmetric(horizontal: padding),
                   child: ActionButton(
                     onPressed: _pickFiles,
                     buttonText: localizations.selectFiles,
                   ),
                 ),
-                ...fileWidgets,
+
+                ..._files.keys.map((PlatformFile file) => Container(
+                  margin: EdgeInsets.symmetric(horizontal: padding),
+                  child: UploadBook(
+                    onTap: () {
+                      setState(() {
+                        _files.remove(file);
+                      });
+                    },
+                    progressStream: _files[file]!.stream,
+                    book: file,
+                  ),
+                )),
+
                 _files.isEmpty ? Container() : Container(
                   margin: EdgeInsets.symmetric(horizontal: padding),
                   child: ActionButton(
                       onPressed: () async {
-                        for (PlatformFile file in _files.keys) {
-                          KuebikoUpload upload = await StorageService.service.uploadEbook(file);
-                          await _files[file]!.addStream(upload.stream);
-                          await _files[file]!.done;
-                        }
-                        if (context.mounted) {
-                          Navigator.of(context).pushNamed(LibraryPage.route);
+                        if (!uploadActive) {
+                          setState(() {
+                            uploadActive = true;
+                          });
+                          try {
+                            for (PlatformFile file in _files.keys) {
+                              KuebikoUpload upload = await StorageService
+                                  .service
+                                  .uploadEbook(file);
+                              await _files[file]!.addStream(upload.stream);
+                              await _files[file]!.done;
+                            }
+                            if (context.mounted) {
+                              Navigator.of(context).pushNamed(LibraryPage.route);
+                            }
+                          } catch(exception) {
+                            if (context.mounted) {
+                              setState(() {
+                                uploadActive = false;
+                              });
+                              ScaffoldMessenger.of (context) .showSnackBar(
+                                  SnackBar(content: Text('Error: $exception'))
+                              );
+                            }
+                          }
                         }
                       },
                       buttonText: localizations.upload
