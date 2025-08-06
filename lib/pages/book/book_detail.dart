@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
@@ -37,9 +38,37 @@ class _BookDetailPageState extends State<BookDetailPage> {
       future: StorageService.service.getCover(widget.book),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return Image.memory(
-              snapshot.data,
-              width: MediaQuery.of(context).size.width * .1,
+          return Container(
+            height: 250,
+            width: double.infinity,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.memory(
+                    snapshot.data,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                ),
+                Positioned.fill(
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      child: Container(
+                        color: Colors.transparent,
+                      ),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Image.memory(
+                    snapshot.data,
+                    height: 220,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ],
+            ),
           );
         } else {
           return SizedBox(
