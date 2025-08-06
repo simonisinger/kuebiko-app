@@ -104,4 +104,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get createClient => 'Client erstellen';
+
+  @override
+  String get deleteOnServer => 'Auf dem Server löschen';
 }

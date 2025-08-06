@@ -283,6 +283,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create client'**
   String get createClient;
+
+  /// No description provided for @deleteOnServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete on server'**
+  String get deleteOnServer;
 }
 
 class _AppLocalizationsDelegate

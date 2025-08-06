@@ -34,8 +34,8 @@ class LocalBook implements Book {
   }
 
   @override
-  void delete() {
-    File('${library.path}/$name').deleteSync();
+  Future<void> delete() {
+    return File('${library.path}/$name').delete();
   }
 
   @override

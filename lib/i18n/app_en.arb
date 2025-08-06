@@ -29,5 +29,6 @@
   "licenses": "Licenses",
   "localServer": "Local",
   "name": "Name",
-  "createClient": "Create client"
+  "createClient": "Create client",
+  "deleteOnServer": "Delete on server"
 }

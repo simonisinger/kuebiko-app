@@ -38,7 +38,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
       future: StorageService.service.getCover(widget.book),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return Container(
+          return SizedBox(
             height: 250,
             width: double.infinity,
             child: Stack(
@@ -139,6 +139,13 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 )
               ),
             ],
+          ),
+          ActionButton(
+              onPressed: () async {
+                await widget.book.delete();
+                if (context.mounted) Navigator.pop(context);
+              },
+              buttonText: localizations.deleteOnServer
           )
         ],
       )
