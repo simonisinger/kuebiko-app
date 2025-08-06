@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
 import 'package:file_picker/file_picker.dart';
@@ -6,7 +7,6 @@ import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart';
 
 import '../ebook/epub_reader.dart';
 
@@ -58,12 +58,13 @@ class StorageService {
     }
   }
 
-  Future<Image?> getCover(Book book) async {
+  Future<Uint8List> getCover(Book book) async {
+    Uint8List? localBookCover;
     if (await ebookIsDownloaded(book)) {
-      return (await _getRawEpubObject(book)).readCover();
+      localBookCover = await (await _getRawEpubObject(book)).readCoverRaw();
     }
 
-    return book.cover();
+    return localBookCover ?? book.cover();
   }
 
   Future<epubx.EpubBookRef> _getRawEpubObject(Book book) async {

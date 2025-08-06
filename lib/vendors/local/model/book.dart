@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:image/image.dart';
 
 import 'library.dart';
 
@@ -28,7 +28,7 @@ class LocalBook implements Book {
   }
 
   @override
-  Future<Image?> cover() {
+  Future<Uint8List> cover() {
     // TODO: implement cover
     throw UnimplementedError();
   }

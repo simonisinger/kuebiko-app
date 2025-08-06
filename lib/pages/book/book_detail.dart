@@ -1,6 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:image/image.dart' as image;
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
@@ -17,19 +18,13 @@ class BookDetailPage extends StatefulWidget {
 }
 
 class _BookDetailPageState extends State<BookDetailPage> {
-  image.Image? cover;
-  bool _imageLoaded = false;
+  Uint8List? cover;
   bool _ebookDownloaded = false;
 
   @override
   void initState() {
     super.initState();
-    widget.book.cover().then((coverData) {
-      setState(() {
-        cover = coverData;
-        _imageLoaded = true;
-      });
-    });
+    
     StorageService.service.ebookIsDownloaded(widget.book).then((bool value) {
       setState(() {
         _ebookDownloaded = value;
@@ -38,20 +33,23 @@ class _BookDetailPageState extends State<BookDetailPage> {
   }
 
   Widget _showCover() {
-    if (!_imageLoaded) {
-      return CircularProgressIndicator(
-        color: Theme.of(context).shadowColor,
-      );
-    } else if (cover != null) {
-      return Image.memory(cover!.buffer.asUint8List());
-    } else {
-      return Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).shadowColor,
-          borderRadius: const BorderRadius.all(Radius.circular(12))
-        ),
-      );
-    }
+    return FutureBuilder(
+      future: StorageService.service.getCover(widget.book),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Image.memory(
+              snapshot.data,
+              width: MediaQuery.of(context).size.width * .1,
+          );
+        } else {
+          return SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator()
+          );
+        }
+      }
+    );
   }
 
   void _updatePageOnEbookFinished() {
@@ -68,9 +66,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
     return BaseScaffold(
       ListView(
         children: [
+          _showCover(),
           Row(
             children: [
-              _showCover(),
               Expanded(
                 child: Column(
                   children: [

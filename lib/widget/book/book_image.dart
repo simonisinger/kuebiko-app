@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
+import 'package:image/image.dart' as image;
 
 class BookImage extends StatelessWidget {
   final Book book;
@@ -22,7 +23,7 @@ class BookImage extends StatelessWidget {
             );
           case ConnectionState.done:
             if (snapshot.hasData) {
-              return Image.memory(snapshot.data.buffer.asUint8List());
+              return Image.memory(snapshot.data);
             } else {
               return Container(
                 decoration: BoxDecoration(

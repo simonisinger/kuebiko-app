@@ -30,7 +30,9 @@ class LibraryAddPage extends StatelessWidget {
                 await ClientService.service
                     .selectedClient!
                     .createLibrary(_libraryName.text, '/${_libraryName.text}');
-                Navigator.of(context).pushNamed('/libraries');
+                if (context.mounted) {
+                  Navigator.of(context).pushNamed('/libraries');
+                }
               },
               buttonText: AppLocalizations.of(context)!.createLibrary
           )

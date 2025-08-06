@@ -150,7 +150,7 @@ class LoginPage extends StatelessWidget {
                           _password.value.text,
                           _serverName.value.text
                       );
-                      if (success) {
+                      if (success && context.mounted) {
                         Navigator.of(context).popAndPushNamed('/client-selection');
                       }
                     },
