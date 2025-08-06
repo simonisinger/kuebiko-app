@@ -27,7 +27,7 @@ class BookListItem extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
                 child: Container(
                     width: double.infinity,
-                    height: 180,
+                    height: 164,
                     decoration: BoxDecoration(
                       color: Theme.of(context).shadowColor
                     ),
