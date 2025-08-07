@@ -5,8 +5,7 @@ class SetupCompletePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future.delayed(
-        const Duration(seconds: 10),
-            (){
+        const Duration(seconds: 10), (){
           Navigator.pushReplacementNamed(context, '/');
         }
     );

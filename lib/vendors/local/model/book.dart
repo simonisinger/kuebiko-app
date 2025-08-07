@@ -40,7 +40,7 @@ class LocalBook implements Book {
 
   @override
   Future<KuebikoDownload> download(Formats format) {
-    // TODO: implement download
+    // wont be implemented
     throw UnimplementedError();
   }
 

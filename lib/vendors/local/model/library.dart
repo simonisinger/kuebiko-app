@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/cache/storage.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/vendors/local/model/book.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import '../../../cache/storage.dart';
+import '../../../services/client.dart';
+import '../../../services/storage/storage.dart';
+import '../../../vendors/local/model/book.dart';
 
 class LocalLibrary implements Library {
   LocalLibrary(this.name, this.path);
@@ -17,9 +16,9 @@ class LocalLibrary implements Library {
   @override
   String path;
 
-  String get ebookListKey => 'local.$name.ebooks';
+  String get ebookListKey => 'local.${ClientService.service.getCurrentLocalName()}.$name.ebooks';
   // get the latest ebook id
-  String get ebookMaxIdKey => 'local.$name.maxId';
+  String get ebookMaxIdKey => 'local.${ClientService.service.getCurrentLocalName()}.$name.maxId';
 
   @override
   Future<List<Book>> books(BookSorting sorting, SortingDirection direction) async {
@@ -65,25 +64,16 @@ class LocalLibrary implements Library {
     // TODO: implement update
   }
 
-  Future<Directory> getEbooksDirectory() async {
-    Directory baseDirectory = await getApplicationDocumentsDirectory();
-    return Directory(
-        '${baseDirectory.path}${p.separator}${ClientService.service.getCurrentLocalName()}${p.separator}$name'
-    );
-  }
-
   Future<Map<String, dynamic>> get _ebooksList async => jsonDecode(await storage.read(key: ebookListKey) ?? '{}');
 
 
   Stream<double> _getUploadProgressStream(String filename, Stream<List<int>> fileContent, int fileLength) async* {
-    Directory localEbooksDirectory = await getEbooksDirectory();
-    bool fileExists = localEbooksDirectory
-        .listSync()
-        .any((element) => p.basename(element.path) == filename);
-    if (!fileExists) {
+    int maxId = int.parse(await storage.read(key: ebookMaxIdKey) ?? '0');
+    String path = await StorageService.service.generatePath(LocalBook(filename, this, maxId+1));
+    File file = File(path);
+    if (!file.existsSync()) {
       fileContent = fileContent.asBroadcastStream();
-      File(localEbooksDirectory.path + p.separator + filename).openWrite()
-        .addStream(fileContent);
+      file.openWrite().addStream(fileContent);
 
       double onePercent = fileLength / 100;
       int writtenLength = 0;
@@ -100,17 +90,8 @@ class LocalLibrary implements Library {
   KuebikoUpload upload(String filename, BookMeta meta, Stream<List<int>> fileContent, int fileLength) {
     int maxId = 0;
     Stream<double> progressStream = _getUploadProgressStream(filename, fileContent, fileLength);
-    Future<LocalBook> book = getEbooksDirectory()
-        .then((Directory localEbooksDirectory) {
-          bool fileExists = localEbooksDirectory
-            .listSync()
-            .any((element) => p.basename(element.path) == filename);
 
-          if (fileExists) {
-            throw Exception('ebook already exists');
-          }
-          return storage.read(key: ebookMaxIdKey);
-        })
+    Future<LocalBook> book = storage.read(key: ebookMaxIdKey)
         .then((String? ebookMaxId) {
           maxId = int.parse(ebookMaxId ?? '0');
           return storage.write(key: ebookMaxIdKey, value: (++maxId).toString());
@@ -120,7 +101,7 @@ class LocalLibrary implements Library {
           ebookList[maxId.toString()] = filename;
           return storage.write(key: ebookListKey, value: jsonEncode(ebookList));
         })
-        .then((_) => LocalBook(filename, this, id));
+        .then((_) => LocalBook(filename, this, maxId));
 
     return KuebikoUpload(progressStream, book);
   }

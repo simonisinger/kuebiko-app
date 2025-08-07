@@ -13,20 +13,20 @@ import '../ebook/epub_reader.dart';
 class StorageService {
   static final StorageService service = StorageService();
 
-  Future<String> _generatePath(Book book) async {
+  Future<String> generatePath(Book book) async {
     Directory baseDirectory = await getApplicationDocumentsDirectory();
-    String domain = ClientService.service.selectedClient!.getConfig().baseUrl.host;
-    return '${baseDirectory.path}/$domain-${book.id}.epub';
+    String localName = ClientService.service.getCurrentLocalName()!;
+    return '${baseDirectory.path}/$localName-${book.id}.epub';
   }
 
   Future<bool> ebookIsDownloaded(Book book) async {
-    String path = await _generatePath(book);
+    String path = await generatePath(book);
     File ebookFile = File(path);
     return ebookFile.existsSync();
   }
 
   Future<void> deleteEbook(Book book) async {
-    File(await _generatePath(book)).deleteSync();
+    File(await generatePath(book)).deleteSync();
   }
 
   Future<KuebikoUpload> uploadEbook(PlatformFile file) async {
@@ -37,14 +37,13 @@ class StorageService {
         file.xFile.openRead(),
         file.size
     );
-
   }
 
   Stream<double> downloadEbook(Book book) async* {
-    String path = await _generatePath(book);
+    String path = await generatePath(book);
     File ebookFile = File(path);
     if (!(await ebookIsDownloaded(book))) {
-      final download = await book.download(Formats.epub);
+      final KuebikoDownload download = await book.download(Formats.epub);
       ebookFile.createSync();
       RandomAccessFile raFile = await ebookFile.open(mode: FileMode.writeOnlyAppend);
       int lengthCounter = 0;
@@ -68,7 +67,7 @@ class StorageService {
   }
 
   Future<epubx.EpubBookRef> _getRawEpubObject(Book book) async {
-    String path = await _generatePath(book);
+    String path = await generatePath(book);
     File ebookFile = File(path);
 
     if (!(await ebookIsDownloaded(book))) {
