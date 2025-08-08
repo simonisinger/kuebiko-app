@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/pages/reader/content/content_element.dart';
+
+import 'content_element.dart';
 
 class PartParagraphElement extends ContentElement {
 
