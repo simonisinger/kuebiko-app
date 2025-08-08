@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/widget/library/book_list_item.dart';
+import '../../widget/library/book_list_item.dart';
 
 class BookListHorizontalWidget extends StatelessWidget {
   final List<Book> books;

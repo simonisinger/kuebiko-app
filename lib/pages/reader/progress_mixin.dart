@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/cache/storage.dart';
-import 'package:kuebiko_web_client/enum/read_direction.dart';
-import 'package:kuebiko_web_client/pages/reader/content/content_element.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/services/ebook/ebook.dart';
+
+import '../../cache/storage.dart';
+import '../../enum/read_direction.dart';
+import '../../pages/reader/content/content_element.dart';
+import '../../services/client.dart';
+import '../../services/ebook/ebook.dart';
 
 mixin ProgressMixin {
   // set new progress index

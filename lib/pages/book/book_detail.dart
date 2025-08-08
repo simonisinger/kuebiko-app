@@ -3,12 +3,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/widget/base_scaffold.dart';
-import 'package:kuebiko_web_client/services/storage/storage.dart';
-import 'package:kuebiko_web_client/widget/action_button.dart';
-import 'package:kuebiko_web_client/widget/book/download_button.dart';
+
+import '../../generated/i18n/app_localizations.dart';
+import '../../services/client.dart';
+import '../../widget/base_scaffold.dart';
+import '../../services/storage/storage.dart';
+import '../../widget/action_button.dart';
+import '../../widget/book/download_button.dart';
 
 class BookDetailPage extends StatefulWidget {
   static const route = '/book/detail';

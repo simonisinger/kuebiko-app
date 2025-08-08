@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:event/event.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/cache/storage.dart';
-import 'package:kuebiko_web_client/vendors/local/model/client.dart';
+import '../../cache/storage.dart';
+import '../../vendors/local/model/client.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:version/version.dart';
 

@@ -1,6 +1,6 @@
 import 'package:html/dom.dart';
-import 'package:kuebiko_web_client/services/css/property.dart';
-import 'package:kuebiko_web_client/services/css_parser.dart';
+import '../../../services/css/property.dart';
+import '../../../services/css_parser.dart';
 
 class EpubRawContentElement {
   final CssParser css;

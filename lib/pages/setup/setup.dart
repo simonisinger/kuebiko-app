@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/services/setup.dart';
+import '../../services/setup.dart';
 
 class SetupPage extends StatefulWidget {
   static const route = '/setup';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/pages/client_selection_list.dart';
-import 'package:kuebiko_web_client/pages/login/login_selector.dart';
-import 'package:kuebiko_web_client/widget/base_scaffold.dart';
+import '../../pages/client_selection_list.dart';
+import '../../pages/login/login_selector.dart';
+import '../../widget/base_scaffold.dart';
 
 import '../widget/add_button.dart';
 

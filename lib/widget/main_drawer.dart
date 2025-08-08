@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/pages/client_selection.dart';
-import 'package:kuebiko_web_client/pages/library/overview.dart';
-import 'package:kuebiko_web_client/services/client.dart';
+import '../generated/i18n/app_localizations.dart';
+import '../pages/client_selection.dart';
+import '../pages/library/overview.dart';
+import '../services/client.dart';
 
 import '../pages/settings/overview.dart';
 

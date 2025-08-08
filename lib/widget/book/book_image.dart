@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/services/storage/storage.dart';
-import 'package:image/image.dart' as image;
+import '../../services/storage/storage.dart';
 
 class BookImage extends StatelessWidget {
   final Book book;

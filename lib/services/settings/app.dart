@@ -1,4 +1,4 @@
-import 'package:kuebiko_web_client/cache/storage.dart';
+import '../../cache/storage.dart';
 
 final class SettingService {
     final String _fontFamilyKey = 'settings.reader.font.family';

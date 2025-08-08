@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/cache/storage.dart';
-import 'package:kuebiko_web_client/enum/book_type.dart';
-import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/services/ebook/ebook.dart';
-import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
-import 'package:kuebiko_web_client/services/storage/storage.dart';
-import 'package:kuebiko_web_client/widget/cacheable_page_view.dart';
-import 'package:kuebiko_web_client/widget/reader/overlay_bottom.dart';
-import 'package:kuebiko_web_client/widget/reader/overlay_top.dart';
 
+import '../../cache/storage.dart';
+import '../../enum/book_type.dart';
+import '../../pages/reader/progress_mixin.dart';
+import '../../services/client.dart';
+import '../../services/ebook/ebook.dart';
+import '../../services/ebook/reader_interface.dart';
+import '../../services/storage/storage.dart';
+import '../../widget/cacheable_page_view.dart';
+import '../../widget/reader/overlay_bottom.dart';
+import '../../widget/reader/overlay_top.dart';
 import '../../enum/read_direction.dart';
 import 'content/content_element.dart';
 

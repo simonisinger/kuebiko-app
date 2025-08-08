@@ -6,8 +6,6 @@ import 'package:flutter/material.dart' show BoxConstraints, TextDirection, TextS
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:image/image.dart' as image;
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/services/ebook/epub_reader.dart';
-import 'package:kuebiko_web_client/services/ebook/reader_interface.dart';
 import 'package:path/path.dart' as p;
 
 import '../../pages/reader/content/content_element.dart';
@@ -15,6 +13,8 @@ import '../../pages/reader/content/image.dart';
 import '../../pages/reader/content/multi_part_paragraph.dart';
 import '../../pages/reader/content/single_part_paragraph.dart';
 import '../../cache/storage.dart';
+import '../../services/ebook/epub_reader.dart';
+import '../../services/ebook/reader_interface.dart';
 
 final class EbookService {
   static const readerCacheKey = 'pageConfigList';

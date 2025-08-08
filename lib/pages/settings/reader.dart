@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kuebiko_web_client/cache/storage.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
 
+import '../../cache/storage.dart';
+import '../../generated/i18n/app_localizations.dart';
 import '../../widget/base_scaffold.dart';
 
 final class ReaderSettingsPage extends StatefulWidget {

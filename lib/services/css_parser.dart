@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:kuebiko_web_client/services/css/property.dart';
-import 'package:kuebiko_web_client/services/css/rule.dart';
+import '../../services/css/property.dart';
+import '../../services/css/rule.dart';
 
 class CssParser {
   final List<CssRule> rules = [];

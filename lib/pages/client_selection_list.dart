@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/pages/library/overview.dart';
-import 'package:kuebiko_web_client/services/client.dart';
+import '../../generated/i18n/app_localizations.dart';
+import '../../pages/library/overview.dart';
+import '../../services/client.dart';
 
 class ClientSelectionListWidget extends StatefulWidget {
   const ClientSelectionListWidget({super.key});

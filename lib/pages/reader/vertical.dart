@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import 'package:kuebiko_web_client/services/ebook/ebook.dart';
-import 'package:kuebiko_web_client/services/ebook/epub_reader.dart';
+import '../../services/ebook/ebook.dart';
+import '../../services/ebook/epub_reader.dart';
 
 import '../../services/ebook/reader_interface.dart';
 import 'content/content_element.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/widget/main_drawer.dart';
+import '../widget/main_drawer.dart';
 
 class BaseScaffold extends StatelessWidget {
   final Widget child;

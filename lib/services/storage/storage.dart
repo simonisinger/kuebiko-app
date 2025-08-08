@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
 import 'package:file_picker/file_picker.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/services/ebook/ebook.dart';
+import '../../services/client.dart';
+import '../../services/ebook/ebook.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../ebook/epub_reader.dart';

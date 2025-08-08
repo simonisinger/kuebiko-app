@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/services/storage/storage.dart';
+import '../../generated/i18n/app_localizations.dart';
+import '../../services/storage/storage.dart';
 
 class DownloadButton extends StatefulWidget {
   final double width;

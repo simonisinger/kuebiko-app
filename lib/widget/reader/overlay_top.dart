@@ -1,7 +1,7 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/pages/reader/horizontalv3.dart';
 
+import '../../pages/reader/horizontalv3.dart';
 import '../../pages/reader/content/content_element.dart';
 
 class ReaderOverlayTop extends StatefulWidget {
