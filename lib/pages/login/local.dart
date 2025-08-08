@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/pages/client_selection.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/widget/base_scaffold.dart';
+import '../../generated/i18n/app_localizations.dart';
+import '../../pages/client_selection.dart';
+import '../../services/client.dart';
+import '../../widget/base_scaffold.dart';
 
 class LocalLoginPage extends StatefulWidget {
   static const route = '/login/local';

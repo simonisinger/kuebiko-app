@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/services/client.dart';
+import '../../services/client.dart';
 
 class LoginPage extends StatelessWidget {
   static const route = '/login';

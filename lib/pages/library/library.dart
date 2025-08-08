@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/pages/library/upload.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/widget/add_button.dart';
-import 'package:kuebiko_web_client/widget/base_scaffold.dart';
-import 'package:kuebiko_web_client/widget/book/book_image.dart';
+import '../../pages/library/upload.dart';
+import '../../services/client.dart';
+import '../../widget/add_button.dart';
+import '../../widget/base_scaffold.dart';
+import '../../widget/book/book_image.dart';
 
 class LibraryPage extends StatefulWidget {
   static const route = '/library';
@@ -36,7 +36,8 @@ class _LibraryPageState extends State<LibraryPage> {
                 return GridView.builder(
                   itemCount: snapshot.data.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3),
+                      crossAxisCount: 3,
+                  ),
                   itemBuilder: (BuildContext context, int index) =>
                       Column(
                         children: [
@@ -48,7 +49,9 @@ class _LibraryPageState extends State<LibraryPage> {
           }
         },
       ),
-      floatingActionButton: const AddWidget(targetPath: UploadPage.route),
+      floatingActionButton: ClientService().clientHasFeature(ClientFeature.uploadEbooks)
+        ? const AddWidget(targetPath: UploadPage.route)
+        : Container(),
     );
   }
 }

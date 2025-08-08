@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/pages/login/local.dart';
 import '../../generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/pages/login/login.dart';
-import 'package:kuebiko_web_client/widget/base_scaffold.dart';
+import '../../pages/login/login.dart';
+import '../../widget/base_scaffold.dart';
 
 class LoginSelectorPage extends StatelessWidget {
   static const String route = '/login-selection';

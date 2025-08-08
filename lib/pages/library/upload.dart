@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/pages/library/library.dart';
-import 'package:kuebiko_web_client/services/storage/storage.dart';
-import 'package:kuebiko_web_client/widget/action_button.dart';
-import 'package:kuebiko_web_client/widget/library/upload_book.dart';
+import '../../generated/i18n/app_localizations.dart';
+import '../../pages/library/library.dart';
+import '../../services/storage/storage.dart';
+import '../../widget/action_button.dart';
+import '../../widget/library/upload_book.dart';
 
 class UploadPage extends StatefulWidget {
   static const route = '/library/upload';

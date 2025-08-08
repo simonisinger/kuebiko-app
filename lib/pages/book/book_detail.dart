@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
+import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
 import 'package:kuebiko_web_client/widget/action_button.dart';
@@ -140,13 +141,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
               ),
             ],
           ),
-          ActionButton(
+          ClientService.service.clientHasFeature(ClientFeature.deleteOnServer) ?
+            ActionButton(
               onPressed: () async {
                 await widget.book.delete();
                 if (context.mounted) Navigator.pop(context);
               },
               buttonText: localizations.deleteOnServer
-          )
+            ) : Container()
         ],
       )
     );

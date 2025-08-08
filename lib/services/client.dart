@@ -8,6 +8,15 @@ import 'package:kuebiko_web_client/vendors/local/model/client.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:version/version.dart';
 
+enum ClientFeature {
+  deleteOnServer,
+  downloadEbooks,
+  serverSettings,
+  series,
+  uploadEbooks,
+  libraries
+}
+
 Event clientsLoaded = Event();
 class ClientService {
   static final ClientService service = ClientService();
@@ -20,7 +29,26 @@ class ClientService {
     _initClients();
   }
 
+  final Map<Type, Set<Enum>> featureSet = {
+    KuebikoClient: {
+      ClientFeature.deleteOnServer,
+      ClientFeature.downloadEbooks,
+      ClientFeature.serverSettings,
+      ClientFeature.series,
+      ClientFeature.uploadEbooks,
+      ClientFeature.libraries
+    },
+    LocalClient: {
+      ClientFeature.series,
+      ClientFeature.uploadEbooks,
+      ClientFeature.libraries
+    }
+  };
+
   final String _clientIndexKey = 'localNames';
+
+  bool clientHasFeature(ClientFeature feature)
+    => featureSet[selectedClient.runtimeType]!.contains(feature);
 
   Future<List<String>> _loadLocalNames() async {
     String? rawHostsJson = await storage.read(key: _clientIndexKey);

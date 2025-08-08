@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/services/client.dart';
-import 'package:kuebiko_web_client/widget/base_scaffold.dart';
+import '../../generated/i18n/app_localizations.dart';
+import '../../services/client.dart';
+import '../../widget/base_scaffold.dart';
 
 import '../../widget/library/books_list_horizontal.dart';
 
