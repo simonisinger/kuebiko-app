@@ -13,8 +13,8 @@ import '../../pages/reader/content/image.dart';
 import '../../pages/reader/content/multi_part_paragraph.dart';
 import '../../pages/reader/content/single_part_paragraph.dart';
 import '../../cache/storage.dart';
-import '../../services/ebook/epub_reader.dart';
-import '../../services/ebook/reader_interface.dart';
+import '../ebook/epub_reader.dart';
+import '../ebook/reader_interface.dart';
 
 final class EbookService {
   static const readerCacheKey = 'pageConfigList';

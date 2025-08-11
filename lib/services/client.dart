@@ -14,7 +14,11 @@ enum ClientFeature {
   serverSettings,
   series,
   uploadEbooks,
-  libraries
+  libraries,
+  progressCache,
+  librariesCache,
+  ebooksCache,
+  seriesCache
 }
 
 Event clientsLoaded = Event();
@@ -36,12 +40,17 @@ class ClientService {
       ClientFeature.serverSettings,
       ClientFeature.series,
       ClientFeature.uploadEbooks,
-      ClientFeature.libraries
+      ClientFeature.libraries,
+      ClientFeature.progressCache,
+      ClientFeature.librariesCache,
+      ClientFeature.ebooksCache,
+      ClientFeature.seriesCache
     },
     LocalClient: {
       ClientFeature.series,
       ClientFeature.uploadEbooks,
-      ClientFeature.libraries
+      ClientFeature.libraries,
+      ClientFeature.progressCache,
     }
   };
 

@@ -36,7 +36,9 @@ mixin ProgressMixin {
       position = positionOffset;
     }
 
-    await storage.write(key: getLocalStorageKey(book), value: position.toString());
+    if (ClientService.service.clientHasFeature(ClientFeature.progressCache)) {
+      await storage.write(key: getLocalStorageKey(book), value: position.toString());
+    }
     try {
       await book.setProgress(
           Progress(
@@ -71,7 +73,10 @@ mixin ProgressMixin {
     try {
       progress = await book.getProgress();
     } catch(e) {
-      String? progressString = await storage.read(key: getLocalStorageKey(book));
+      String? progressString;
+      if (ClientService.service.clientHasFeature(ClientFeature.progressCache)) {
+        progressString = await storage.read(key: getLocalStorageKey(book));
+      }
       if (progressString != null) {
         Map progressMap = jsonDecode(progressString);
         progress = Progress(currentPage: progressMap['currentPage'], maxPage: maxPage);
