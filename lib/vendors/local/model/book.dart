@@ -3,8 +3,6 @@ import 'dart:typed_data';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
 
-import 'library.dart';
-
 class LocalBook implements Book {
 
   LocalBook(this.name, this.library, this.id);
@@ -13,7 +11,7 @@ class LocalBook implements Book {
 
   @override
   String name;
-  final LocalLibrary library;
+  final Library library;
 
   @override
   Future<String> convert(Formats format) {

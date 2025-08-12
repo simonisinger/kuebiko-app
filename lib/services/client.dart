@@ -18,7 +18,8 @@ enum ClientFeature {
   progressCache,
   librariesCache,
   ebooksCache,
-  seriesCache
+  seriesCache,
+  ebookMetadataCache
 }
 
 Event clientsLoaded = Event();

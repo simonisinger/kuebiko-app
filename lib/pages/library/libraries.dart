@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/services/storage/storage.dart';
 import '../../generated/i18n/app_localizations.dart';
 import '../../pages/library/library.dart';
 import '../../services/client.dart';
@@ -56,6 +57,7 @@ class _LibrariesPageState extends State<LibrariesPage> {
                 return CircularProgressIndicator();
               case ConnectionState.done:
                 if (snapshot.hasData) {
+                  StorageService.service.writeLibrariesCache(snapshot.data!);
                   if (libraries.isEmpty) {
                     widgets.add(
                         SizedBox(
