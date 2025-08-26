@@ -39,17 +39,22 @@ class _LibraryPageState extends State<LibraryPage> {
                       crossAxisCount: 3,
                   ),
                   itemBuilder: (BuildContext context, int index) =>
-                      Column(
-                        children: [
-                          BookImage(book: snapshot.data[index])
-                        ],
+                      Container(
+                        margin: EdgeInsets.all(4),
+                        child: GestureDetector(
+                          child: Column(
+                            children: [
+                              BookImage(book: snapshot.data[index])
+                            ],
+                          ),
+                        ),
                       ),
                 );
               }
           }
         },
       ),
-      floatingActionButton: ClientService().clientHasFeature(ClientFeature.uploadEbooks)
+      floatingActionButton: ClientService.service.clientHasFeature(ClientFeature.uploadEbooks)
         ? const AddWidget(targetPath: UploadPage.route)
         : Container(),
     );

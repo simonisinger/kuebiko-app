@@ -82,8 +82,12 @@ class _UploadPageState extends State<UploadPage> {
                               KuebikoUpload upload = await StorageService
                                   .service
                                   .uploadEbook(file);
-                              await _files[file]!.addStream(upload.stream);
-                              await _files[file]!.done;
+
+                              StreamController controller = _files[file]!;
+                              await controller.addStream(upload.stream);
+                              while (!controller.isClosed) {
+                                await Future.delayed(Duration(milliseconds: 100));
+                              }
                             }
                             if (context.mounted) {
                               Navigator.of(context).pushNamed(LibraryPage.route);
@@ -93,7 +97,7 @@ class _UploadPageState extends State<UploadPage> {
                               setState(() {
                                 uploadActive = false;
                               });
-                              ScaffoldMessenger.of (context) .showSnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Error: $exception'))
                               );
                             }

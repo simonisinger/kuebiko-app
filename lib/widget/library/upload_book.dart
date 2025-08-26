@@ -2,9 +2,7 @@ import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-import '../../generated/i18n/app_localizations.dart';
-
-class UploadBook extends StatefulWidget {
+class   UploadBook extends StatefulWidget {
   final double width;
   final double height;
   final PlatformFile book;
@@ -18,7 +16,7 @@ class UploadBook extends StatefulWidget {
     required this.progressStream,
     this.onTap,
     this.onFinished,
-    this.width = 200.0,
+    this.width = 400.0,
     this.height = 50.0,
   });
 
@@ -30,7 +28,6 @@ class _UploadBookState extends State<UploadBook> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations localizations = AppLocalizations.of(context)!;
     return StreamBuilder<double>(
       stream: widget.progressStream,
       initialData: 0.0,
@@ -92,7 +89,7 @@ class _UploadBookState extends State<UploadBook> {
                             child: Text(
                               snapshot.connectionState == ConnectionState.none
                                   ? widget.book.name
-                                  : '${widget.book.name} ${(progress * 100).toInt()}%',
+                                  : '${widget.book.name} ${(progress).toInt()}%',
                               style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontWeight: FontWeight.bold,
@@ -105,7 +102,7 @@ class _UploadBookState extends State<UploadBook> {
                             child: Align(
                               alignment: Alignment.center,
                               child: Text(
-                                '${localizations.downloading} ${(progress * 100).toInt()}%',
+                                '${widget.book.name} ${(progress).toInt()}%',
                                 style: TextStyle(
                                   color: Theme.of(context).scaffoldBackgroundColor,
                                   fontWeight: FontWeight.bold,

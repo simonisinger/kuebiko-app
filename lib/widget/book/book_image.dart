@@ -21,16 +21,21 @@ class BookImage extends StatelessWidget {
               color: Theme.of(context).shadowColor,
             );
           case ConnectionState.done:
+            Widget image;
             if (snapshot.hasData) {
-              return Image.memory(snapshot.data);
+              image = Image.memory(snapshot.data);
             } else {
-              return Container(
-                decoration: BoxDecoration(
+                image = Container(
+                  decoration: BoxDecoration(
                     color: Theme.of(context).shadowColor,
                     borderRadius: const BorderRadius.all(Radius.circular(12))
                 ),
               );
             }
+            return SizedBox(
+              height: 120,
+              child: image,
+            );
         }
       },
     );

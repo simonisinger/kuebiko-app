@@ -140,7 +140,7 @@ class StorageService {
       localBookCover = await (await _getRawEpubObject(book)).readCoverRaw();
     }
 
-    return localBookCover ?? book.cover();
+    return localBookCover ?? await book.cover();
   }
 
   Future<epubx.EpubBookRef> _getRawEpubObject(Book book) async {
