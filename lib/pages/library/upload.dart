@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import '../../generated/i18n/app_localizations.dart';
-import '../../pages/library/library.dart';
 import '../../services/storage/storage.dart';
 import '../../widget/action_button.dart';
 import '../../widget/library/upload_book.dart';
@@ -18,7 +17,8 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
-  final Map<PlatformFile, StreamController<double>> _files = {};
+  final Map<PlatformFile, StreamController<double>> _fileStreamControllers = {};
+  final Map<PlatformFile, Stream<double>> _fileStreams = {};
   bool uploadActive = false;
 
   void _pickFiles() async {
@@ -33,9 +33,33 @@ class _UploadPageState extends State<UploadPage> {
 
     setState(() {
       if (pickedFiles != null) {
-        _files.addEntries(pickedFiles.map((file) => MapEntry(file, StreamController())));
+        _fileStreamControllers.addEntries(pickedFiles.map((file) => MapEntry(file, StreamController())));
+        _fileStreams.addEntries(pickedFiles.map((file) => MapEntry(file, _fileStreamControllers[file]!.stream.asBroadcastStream())));
       }
     });
+  }
+
+  Future<bool> _uploadNextEbook(PlatformFile? lastFile) async {
+    List<PlatformFile> keyList = _fileStreamControllers.keys.toList();
+    PlatformFile file;
+
+    if (lastFile != null) {
+      int index = keyList.indexOf(lastFile);
+      if (_fileStreamControllers.keys.last != lastFile) {
+        file = keyList[index+1];
+      } else {
+        return false;
+      }
+    } else {
+      file = keyList.first;
+    }
+
+    KuebikoUpload upload = await StorageService
+        .service
+        .uploadEbook(file);
+    StreamController controller = _fileStreamControllers[file]!;
+    await controller.addStream(upload.stream);
+    return true;
   }
 
   @override
@@ -56,20 +80,29 @@ class _UploadPageState extends State<UploadPage> {
                   ),
                 ),
 
-                ..._files.keys.map((PlatformFile file) => Container(
+                ..._fileStreamControllers.keys.map((PlatformFile file) => Container(
                   margin: EdgeInsets.symmetric(horizontal: padding),
                   child: UploadBook(
+                    onFinished: () async {
+                      bool uploadStarted = await _uploadNextEbook(file);
+                      if (!uploadStarted) {
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      }
+                    },
                     onTap: () {
                       setState(() {
-                        _files.remove(file);
+                        _fileStreamControllers.remove(file);
+                        _fileStreams.remove(file);
                       });
                     },
-                    progressStream: _files[file]!.stream,
+                    progressStream: _fileStreams[file]!,
                     book: file,
                   ),
                 )),
 
-                _files.isEmpty ? Container() : Container(
+               _fileStreamControllers.isEmpty || uploadActive ? Container() : Container(
                   margin: EdgeInsets.symmetric(horizontal: padding),
                   child: ActionButton(
                       onPressed: () async {
@@ -78,20 +111,7 @@ class _UploadPageState extends State<UploadPage> {
                             uploadActive = true;
                           });
                           try {
-                            for (PlatformFile file in _files.keys) {
-                              KuebikoUpload upload = await StorageService
-                                  .service
-                                  .uploadEbook(file);
-
-                              StreamController controller = _files[file]!;
-                              await controller.addStream(upload.stream);
-                              while (!controller.isClosed) {
-                                await Future.delayed(Duration(milliseconds: 100));
-                              }
-                            }
-                            if (context.mounted) {
-                              Navigator.of(context).pushNamed(LibraryPage.route);
-                            }
+                            await _uploadNextEbook(null);
                           } catch(exception) {
                             if (context.mounted) {
                               setState(() {

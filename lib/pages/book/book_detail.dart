@@ -40,38 +40,42 @@ class _BookDetailPageState extends State<BookDetailPage> {
       future: StorageService.service.getCover(widget.book),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return SizedBox(
-            height: 250,
-            width: double.infinity,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Image.memory(
-                    snapshot.data,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
+          if (snapshot.hasData) {
+            return SizedBox(
+              height: 250,
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.memory(
+                      snapshot.data,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                    ),
                   ),
-                ),
-                Positioned.fill(
-                  child: ClipRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                      child: Container(
-                        color: Colors.transparent,
+                  Positioned.fill(
+                    child: ClipRect(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                        child: Container(
+                          color: Colors.transparent,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Center(
-                  child: Image.memory(
-                    snapshot.data,
-                    height: 220,
-                    fit: BoxFit.contain,
+                  Center(
+                    child: Image.memory(
+                      snapshot.data,
+                      height: 220,
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
+                ],
+              ),
+            );
+          } else {
+            return Container();
+          }
         } else {
           return SizedBox(
               width: 100,
@@ -109,7 +113,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       textAlign: TextAlign.center,
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 12),
+                      margin: EdgeInsets.only(top: 12, bottom: 12),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
