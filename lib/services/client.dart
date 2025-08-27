@@ -25,7 +25,6 @@ enum ClientFeature {
 Event clientsLoaded = Event();
 class ClientService {
   static final ClientService service = ClientService();
-  final List<String> _localNames = [];
   final Map<String, Client> _clients = {};
   Client? selectedClient;
   Library? selectedLibrary;
@@ -71,20 +70,19 @@ class ClientService {
   }
 
   Future<void> setupClient(KuebikoConfig config, String localName) async {
-    if(_localNames.contains(config.baseUrl.toString())){
+    if (_clients.keys.contains(localName)) {
       return;
     }
-    await storage.write(key: config.baseUrl.toString(), value: jsonEncode({
+    await storage.write(key: _getClientKey(localName), value: jsonEncode({
       'apiKey': config.apiKey,
       'deviceName': config.deviceName,
       'name': localName
     }));
-    await _addLocalName(localName);
+    await _saveLocalNames();
   }
 
-  Future<void> _addLocalName(String localName) async {
-    _localNames.add(localName);
-    await storage.write(key: _clientIndexKey, value: jsonEncode(_localNames));
+  Future<void> _saveLocalNames() async {
+    await storage.write(key: _clientIndexKey, value: jsonEncode(_clients.keys.toList()));
   }
 
   Future<bool> addLocalClient(String name) async {
@@ -111,7 +109,7 @@ class ClientService {
 
   Future<bool> addClient(Client client, String localName) async {
     String className = client.runtimeType.toString();
-    if (_localNames.contains(localName)) {
+    if (_clients.keys.contains(localName)) {
       throw Exception('clientname already used');
     }
 
@@ -122,7 +120,7 @@ class ClientService {
     data['type'] = className;
 
     _clients.addAll({localName: client});
-    await _addLocalName(localName);
+    await _saveLocalNames();
 
     await storage.write(key: _getClientKey(localName), value: jsonEncode(data));
     return true;
@@ -131,7 +129,7 @@ class ClientService {
   Map<String, dynamic> _getClientSpecificData(Client client) {
     Map<String, dynamic> data = {};
     
-    switch(client) {
+    switch (client) {
       case KuebikoClient kuebikoClient:
         KuebikoConfig config = kuebikoClient.getConfig();
         data = {
@@ -146,8 +144,7 @@ class ClientService {
 
    Future<bool> removeClient(String localName) async {
     _clients.remove(localName);
-    _localNames.remove(localName);
-    await storage.write(key: _clientIndexKey, value: jsonEncode(_clients.keys));
+    await _saveLocalNames();
     await storage.delete(key: _getClientKey(localName));
     return true;
   }
