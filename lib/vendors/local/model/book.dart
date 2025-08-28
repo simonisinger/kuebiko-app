@@ -1,12 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/cache/storage.dart';
+
+import '../../../services/client.dart';
 
 class LocalBook implements Book {
-
   LocalBook(this.name, this.library, this.id);
 
+  String get metadataKey => 'local.${ClientService.service.getCurrentLocalName()}.${library.name}.$id';
+
+  @override
   final int id;
 
   @override
@@ -49,9 +55,26 @@ class LocalBook implements Book {
   }
 
   @override
-  Future<Map> metadata() {
-    // TODO: implement metadata
-    throw UnimplementedError();
+  Future<Map> metadata() async {
+    String? data = await storage.read(key: metadataKey);
+    if (data != null) {
+      return jsonDecode(data);
+    } else {
+      return {
+        'name': name,
+        'author': 'Unknown Author',
+        'description': '',
+        'series': null,
+        'number_of_volume': null,
+        'publisher': null,
+        'language': 'und',
+        'genre': null,
+        'tag': null,
+        'age_rating': null,
+        "release_date": null,
+        "type": null
+      };
+    }
   }
 
   @override

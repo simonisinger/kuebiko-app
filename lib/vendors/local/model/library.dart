@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import '../../../cache/storage.dart';
 import '../../../services/client.dart';
 import '../../../services/storage/storage.dart';
@@ -71,24 +72,22 @@ class LocalLibrary implements Library {
     int maxId = int.parse(await storage.read(key: ebookMaxIdKey) ?? '0');
     String path = await StorageService.service.generatePath(LocalBook(filename, this, maxId+1));
     File file = File(path);
-    if (!file.existsSync()) {
-      fileContent = fileContent.asBroadcastStream();
-      file.openWrite().addStream(fileContent);
 
-      double onePercent = fileLength / 100;
-      int writtenLength = 0;
-      await for (List<int> chunk in fileContent) {
-        writtenLength += chunk.length;
-        yield writtenLength / onePercent;
-      }
-    } else {
-      return;
+    file.openWrite().addStream(fileContent);
+
+    double onePercent = fileLength / 100;
+    int writtenLength = 0;
+    await for (List<int> chunk in fileContent) {
+      writtenLength += chunk.length;
+      yield writtenLength / onePercent;
     }
+    return;
   }
 
   @override
   KuebikoUpload upload(String filename, BookMeta meta, Stream<List<int>> fileContent, int fileLength) {
     int maxId = 0;
+    fileContent = fileContent.asBroadcastStream();
     Stream<double> progressStream = _getUploadProgressStream(filename, fileContent, fileLength);
 
     Future<LocalBook> book = storage.read(key: ebookMaxIdKey)
@@ -101,7 +100,33 @@ class LocalLibrary implements Library {
           ebookList[maxId.toString()] = filename;
           return storage.write(key: ebookListKey, value: jsonEncode(ebookList));
         })
-        .then((_) => LocalBook(filename, this, maxId));
+        .then((_) async {
+          LocalBook localBook = LocalBook(filename, this, maxId);
+          BookMeta bookMeta = await EbookService.parseEpubMeta(
+              filename,
+              File(await StorageService.service.generatePath(localBook)).openRead(),
+              fileLength
+          );
+
+          await storage.write(
+              key: localBook.metadataKey,
+              value: jsonEncode({
+                'name': bookMeta.name,
+                'author': bookMeta.author,
+                'description': '',
+                'series': null,
+                'number_of_volume': bookMeta.volNumber,
+                'publisher': null,
+                'language': bookMeta.language,
+                'genre': null,
+                'tag': null,
+                'age_rating': null,
+                "release_date": bookMeta.releaseDate,
+                "type": null
+              })
+          );
+          return localBook;
+        });
 
     return KuebikoUpload(progressStream, book);
   }
