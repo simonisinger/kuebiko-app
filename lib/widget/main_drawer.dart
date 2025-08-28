@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kuebiko_web_client/pages/library/libraries.dart';
 import '../generated/i18n/app_localizations.dart';
 import '../pages/client_selection.dart';
 import '../pages/library/overview.dart';
@@ -14,7 +15,7 @@ class MainDrawer extends StatelessWidget {
       leading: Icon(Icons.my_library_books),
       title: Text(localizations.libraries),
       onTap: () {
-        Navigator.of(context).pushNamedAndRemoveUntil('/libraries', (_) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil(LibrariesPage.route, (_) => false);
       },
     );
   }
@@ -30,7 +31,10 @@ class MainDrawer extends StatelessWidget {
             leading: Icon(Icons.home),
             title: Text(localizations.home),
             onTap: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(OverviewPage.route, (_) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  OverviewPage.route,
+                  (_) => false,
+              );
             },
           ),
           _generateLibrariesButton(localizations, context),
@@ -38,14 +42,20 @@ class MainDrawer extends StatelessWidget {
             leading: Icon(Icons.storage),
             title: Text(localizations.serverSelection),
             onTap: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(ClientSelectionPage.route, (_) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  ClientSelectionPage.route,
+                  (_) => false
+              );
             },
           ),
           ListTile(
             leading: Icon(Icons.settings),
             title: Text(localizations.settings),
             onTap: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(OverviewSettingsPage.route, (_) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  OverviewSettingsPage.route,
+                  (_) => false
+              );
             },
           )
         ],
