@@ -37,11 +37,13 @@ class LocalLibrary implements Library {
 
   @override
   Future<void> delete() async {
-    (await _ebooksList).forEach((_,filename) => File(path).deleteSync(recursive: true));
+    await Directory(path).delete(recursive: true);
+    await storage.delete(key: ebookListKey);
+    await storage.delete(key: ebookMaxIdKey);
   }
 
   @override
-  // TODO: implement id
+  // wont be implemented
   int get id => throw UnimplementedError();
 
   @override
