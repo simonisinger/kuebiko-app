@@ -19,26 +19,11 @@ class LibrariesPage extends StatefulWidget {
 
 class _LibrariesPageState extends State<LibrariesPage> {
 
-  late final List<Library> libraries;
-  bool initialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (ClientService.service.selectedClient != null) {
-      ClientService.service.selectedClient!.getLibraries().then((libs) {
-        setState(() {
-          libraries = libs;
-          initialized = true;
-        });
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      initialized ? _showLibraries() : _showLoading(),
+      _showLibraries(),
       floatingActionButton: const AddWidget(
         targetPath: LibraryAddPage.route,
       ),
@@ -60,7 +45,7 @@ class _LibrariesPageState extends State<LibrariesPage> {
               case ConnectionState.done:
                 if (snapshot.hasData) {
                   StorageService.service.writeLibrariesCache(snapshot.data!);
-                  if (libraries.isEmpty) {
+                  if (snapshot.hasData) {
                     widgets.add(
                         SizedBox(
                             width: double.infinity,
@@ -90,17 +75,4 @@ class _LibrariesPageState extends State<LibrariesPage> {
       ),
     );
   }
-
-  Widget _showLoading() => Scaffold(
-    body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircularProgressIndicator(),
-        Container(
-            margin: const EdgeInsets.only(top: 16),
-            child: Text(AppLocalizations.of(context)!.librariesLoading)
-        )
-      ],
-    ),
-  );
 }
