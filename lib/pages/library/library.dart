@@ -38,17 +38,16 @@ class _LibraryPageState extends State<LibraryPage> {
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                   ),
-                  itemBuilder: (BuildContext context, int index) =>
-                      Container(
-                        margin: EdgeInsets.all(4),
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              BookImage(book: snapshot.data[index])
-                            ],
-                          ),
-                        ),
+                  itemBuilder: (BuildContext context, int index) => Container(
+                    margin: EdgeInsets.all(4),
+                    child: GestureDetector(
+                      child: Column(
+                        children: [
+                          BookImage(book: snapshot.data[index])
+                        ],
                       ),
+                    ),
+                  ),
                 );
               }
           }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/services/storage/storage.dart';
+
+import '../../services/storage/storage.dart';
 import '../../generated/i18n/app_localizations.dart';
-import '../../pages/library/library.dart';
+import '../library/library.dart';
 import '../../services/client.dart';
 import '../../widget/add_button.dart';
 import '../../widget/base_scaffold.dart';
+import 'library_add.dart';
 
 class LibrariesPage extends StatefulWidget {
   const LibrariesPage({super.key});
@@ -38,7 +40,7 @@ class _LibrariesPageState extends State<LibrariesPage> {
     return BaseScaffold(
       initialized ? _showLibraries() : _showLoading(),
       floatingActionButton: const AddWidget(
-        targetPath: '/library/add',
+        targetPath: LibraryAddPage.route,
       ),
     );
   }
