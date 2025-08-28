@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import '../../../cache/storage.dart';
 import '../../../services/client.dart';
@@ -37,6 +38,10 @@ class LocalLibrary implements Library {
 
   @override
   Future<void> delete() async {
+    List<Book> bookList = await books(BookSorting.name, SortingDirection.asc);
+    for (Book book in bookList) {
+      await storage.delete(key: ProgressMixin.getLocalStorageKey(book));
+    }
     await Directory(path).delete(recursive: true);
     await storage.delete(key: ebookListKey);
     await storage.delete(key: ebookMaxIdKey);

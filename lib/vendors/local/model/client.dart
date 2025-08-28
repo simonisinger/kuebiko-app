@@ -20,7 +20,7 @@ class LocalClient implements Client {
 
   @override
   Future<void> createFolder(String path) {
-    // TODO: implement createFolder
+    // not needed
     throw UnimplementedError();
   }
 
@@ -120,7 +120,7 @@ class LocalClient implements Client {
 
   @override
   void renewMetadataAll() {
-    // no needs
+    // TODO: implement renewMetadataAll
   }
 
   @override
@@ -130,4 +130,13 @@ class LocalClient implements Client {
 
   @override
   Future<String> status() async => 'Running';
+
+  @override
+  Future<void> delete() async {
+    List<Library> libraries = await getLibraries();
+    for (Library library in libraries) {
+      await library.delete();
+    }
+    await storage.delete(key: librariesListKey);
+  }
 }
