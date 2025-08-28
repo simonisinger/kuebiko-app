@@ -11,9 +11,10 @@ class MainDrawer extends StatelessWidget {
 
   Widget _generateLibrariesButton(AppLocalizations localizations, BuildContext context) {
     return ClientService.service.selectedClient == null ? Container() : ListTile(
+      leading: Icon(Icons.my_library_books),
       title: Text(localizations.libraries),
       onTap: () {
-        Navigator.of(context).pushNamed('/libraries');
+        Navigator.of(context).pushNamedAndRemoveUntil('/libraries', (_) => false);
       },
     );
   }
@@ -26,22 +27,25 @@ class MainDrawer extends StatelessWidget {
       child: ListView(
         children: [
           ListTile(
+            leading: Icon(Icons.home),
             title: Text(localizations.home),
             onTap: () {
-              Navigator.of(context).pushNamed(OverviewPage.route);
+              Navigator.of(context).pushNamedAndRemoveUntil(OverviewPage.route, (_) => false);
             },
           ),
           _generateLibrariesButton(localizations, context),
           ListTile(
+            leading: Icon(Icons.storage),
             title: Text(localizations.serverSelection),
             onTap: () {
-              Navigator.of(context).pushNamed(ClientSelectionPage.route);
+              Navigator.of(context).pushNamedAndRemoveUntil(ClientSelectionPage.route, (_) => false);
             },
           ),
           ListTile(
+            leading: Icon(Icons.settings),
             title: Text(localizations.settings),
             onTap: () {
-              Navigator.of(context).pushNamed(OverviewSettingsPage.route);
+              Navigator.of(context).pushNamedAndRemoveUntil(OverviewSettingsPage.route, (_) => false);
             },
           )
         ],
