@@ -4,6 +4,9 @@ import 'dart:typed_data';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/cache/storage.dart';
+import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
+import 'package:kuebiko_web_client/services/storage/storage.dart';
+import 'package:kuebiko_web_client/vendors/local/model/library.dart';
 
 import '../../../services/client.dart';
 
@@ -38,8 +41,14 @@ class LocalBook implements Book {
   }
 
   @override
-  Future<void> delete() {
-    return File('${library.path}/$name').delete();
+  Future<void> delete() async {
+    LocalLibrary localLibrary = library as LocalLibrary;
+    Map<String, dynamic> dataRaw = jsonDecode((await storage.read(key: localLibrary.ebookListKey))!);
+    dataRaw.remove(id.toString());
+    await storage.write(key: localLibrary.ebookListKey, value: jsonEncode(dataRaw));
+    await File(await StorageService.service.generatePath(this)).delete();
+    await storage.delete(key: metadataKey);
+    await storage.delete(key: ProgressMixin.getLocalStorageKey(this));
   }
 
   @override
