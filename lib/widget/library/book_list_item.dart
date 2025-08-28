@@ -45,7 +45,7 @@ class BookListItem extends StatelessWidget {
             FutureBuilder(
                 future: metadataFuture,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data['number_of_volume'] != null) {
                     return Container(
                       padding: textPadding,
                       child: Text(

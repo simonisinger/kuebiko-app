@@ -45,21 +45,19 @@ class _LibrariesPageState extends State<LibrariesPage> {
               case ConnectionState.done:
                 if (snapshot.hasData) {
                   StorageService.service.writeLibrariesCache(snapshot.data!);
-                  if (snapshot.hasData) {
-                    widgets.add(
-                        SizedBox(
-                            width: double.infinity,
-                            child: Text(
-                              AppLocalizations.of(context)!.noLibraries,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            )
-                        )
-                    );
-                  }
+                  widgets.add(
+                      SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            AppLocalizations.of(context)!.noLibraries,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold
+                            ),
+                          )
+                      )
+                  );
                   return ListView(children: snapshot.data!.map((Library element) => OutlinedButton(
                       onPressed: () {
                         ClientService.service.selectedLibrary = element;
