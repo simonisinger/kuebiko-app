@@ -21,24 +21,6 @@ class LocalUser implements User {
   }
 
   @override
-  String getEmail() {
-    // no email needed
-    throw UnimplementedError();
-  }
-
-  @override
-  String getName() {
-    // no need
-    throw UnimplementedError();
-  }
-
-  @override
-  List<String> getRoles() {
-    // roles are obsolete for this
-    throw UnimplementedError();
-  }
-
-  @override
   // no need to implement
   int get id => throw UnimplementedError();
 
@@ -79,8 +61,43 @@ class LocalUser implements User {
   }
 
   @override
-  void update(String password) {
+  Future<void> update(String password) async {
     // also obsolete for local
     throw UnimplementedError();
+  }
+
+  @override
+  String get email => throw UnimplementedError();
+
+  @override
+  String get name => throw UnimplementedError();
+
+  @override
+  List<String> get roles => throw UnimplementedError();
+
+  @override
+  set email(String email) {
+    throw UnimplementedError();
+  }
+
+  @override
+  set name(String name) {
+    throw UnimplementedError();
+  }
+
+  @override
+  set roles(List<String> roles) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> adminUpdate() {
+    // TODO: implement adminUpdate
+    throw UnimplementedError();
+  }
+
+  @override
+  set newPassword(String newPassword) {
+    // TODO: implement newPassword
   }
 }

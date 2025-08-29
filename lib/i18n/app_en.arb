@@ -31,5 +31,13 @@
   "name": "Name",
   "createClient": "Create client",
   "deleteOnServer": "Delete on server",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "email": "Email",
+  "users": "Users",
+  "save": "Save",
+  "newPassword": "New password",
+  "newPasswordConfirmation": "Confirm new password",
+  "usernameEmpty": "Username cannot be empty",
+  "emailEmpty": "Email cannot be empty",
+  "emailInvalid": "Email is invalid"
 }

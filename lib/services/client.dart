@@ -11,6 +11,7 @@ import 'package:version/version.dart';
 enum ClientFeature {
   deleteOnServer,
   downloadEbooks,
+  userManagement,
   serverSettings,
   series,
   uploadEbooks,
@@ -44,7 +45,8 @@ class ClientService {
       ClientFeature.progressCache,
       ClientFeature.librariesCache,
       ClientFeature.ebooksCache,
-      ClientFeature.seriesCache
+      ClientFeature.seriesCache,
+      ClientFeature.userManagement
     },
     LocalClient: {
       ClientFeature.series,

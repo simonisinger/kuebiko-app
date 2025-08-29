@@ -110,4 +110,28 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cancel => 'Abbrechen';
+
+  @override
+  String get email => 'E-Mail';
+
+  @override
+  String get users => 'Benutzer';
+
+  @override
+  String get save => 'Speichern';
+
+  @override
+  String get newPassword => 'Neues Passwort';
+
+  @override
+  String get newPasswordConfirmation => 'Neues Passwort bestätigen';
+
+  @override
+  String get usernameEmpty => 'Benutzername darf nicht leer sein';
+
+  @override
+  String get emailEmpty => 'E-Mail darf nicht leer sein';
+
+  @override
+  String get emailInvalid => 'Die eingegebene E-Mail ist ungültig';
 }

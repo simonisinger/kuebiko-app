@@ -31,5 +31,13 @@
   "name": "Name",
   "createClient": "Client erstellen",
   "deleteOnServer": "Auf dem Server löschen",
-  "cancel": "Abbrechen"
+  "cancel": "Abbrechen",
+  "email": "E-Mail",
+  "users": "Benutzer",
+  "save": "Speichern",
+  "newPassword": "Neues Passwort",
+  "newPasswordConfirmation": "Neues Passwort bestätigen",
+  "usernameEmpty": "Benutzername darf nicht leer sein",
+  "emailEmpty": "E-Mail darf nicht leer sein",
+  "emailInvalid": "Die eingegebene E-Mail ist ungültig"
 }
