@@ -7,6 +7,7 @@ import '../../generated/i18n/app_localizations.dart';
 import '../../services/storage/storage.dart';
 import '../../widget/action_button.dart';
 import '../../widget/library/upload_book.dart';
+import 'library.dart';
 
 class UploadPage extends StatefulWidget {
   static const route = '/library/upload';
@@ -70,7 +71,7 @@ class _UploadPageState extends State<UploadPage> {
     return Scaffold(
         body: SafeArea(
             child: Column(
-              spacing: 16,
+              spacing: 12,
               children: [
                 uploadActive ? Container() : Container(
                   padding: EdgeInsets.symmetric(horizontal: padding),
@@ -86,8 +87,9 @@ class _UploadPageState extends State<UploadPage> {
                     onFinished: () async {
                       bool uploadStarted = await _uploadNextEbook(file);
                       if (!uploadStarted) {
-                        if (context.mounted) {
-                          Navigator.pop(context);
+                        if (this.context.mounted) {
+                          Navigator.of(this.context)
+                              .popUntil((route) => route.settings.name == LibraryPage.route);
                         }
                       }
                     },
@@ -125,6 +127,14 @@ class _UploadPageState extends State<UploadPage> {
                         }
                       },
                       buttonText: localizations.upload
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: padding),
+                  width: double.maxFinite,
+                  child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(localizations.cancel)
                   ),
                 )
               ],

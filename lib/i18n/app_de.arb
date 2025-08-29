@@ -30,5 +30,6 @@
   "localServer": "Lokal",
   "name": "Name",
   "createClient": "Client erstellen",
-  "deleteOnServer": "Auf dem Server löschen"
+  "deleteOnServer": "Auf dem Server löschen",
+  "cancel": "Abbrechen"
 }

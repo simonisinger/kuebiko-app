@@ -107,4 +107,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get deleteOnServer => 'Auf dem Server löschen';
+
+  @override
+  String get cancel => 'Abbrechen';
 }

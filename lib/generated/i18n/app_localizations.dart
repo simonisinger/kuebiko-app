@@ -289,6 +289,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete on server'**
   String get deleteOnServer;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
 }
 
 class _AppLocalizationsDelegate

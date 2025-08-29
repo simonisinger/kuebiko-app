@@ -30,5 +30,6 @@
   "localServer": "Local",
   "name": "Name",
   "createClient": "Create client",
-  "deleteOnServer": "Delete on server"
+  "deleteOnServer": "Delete on server",
+  "cancel": "Cancel"
 }

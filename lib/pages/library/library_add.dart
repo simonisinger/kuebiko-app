@@ -36,6 +36,11 @@ class LibraryAddPage extends StatelessWidget {
                 }
               },
               buttonText: AppLocalizations.of(context)!.createLibrary
+          ),
+          SizedBox(height: 12,),
+          OutlinedButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(localizations.cancel)
           )
         ],
       )
