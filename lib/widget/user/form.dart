@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/services/client.dart';
+
+import '../../pages/admin/user/list.dart';
+import '../../services/client.dart';
 
 import '../../widget/action_button.dart';
 import '../../../../generated/i18n/app_localizations.dart';
@@ -88,6 +90,7 @@ class _UserFormState extends State<UserForm> {
             ),
             widget.currentPasswordField ? TextFormField(
               controller: currentPasswordController,
+              obscureText: true,
               decoration: InputDecoration(
                   labelText: localizations.currentPassword,
                   hintText: localizations.currentPassword
@@ -95,6 +98,7 @@ class _UserFormState extends State<UserForm> {
             ) : Container(),
             TextFormField(
               controller: newPasswordController,
+              obscureText: true,
               decoration: InputDecoration(
                 labelText: localizations.newPassword,
                 hintText: localizations.newPassword
@@ -108,6 +112,7 @@ class _UserFormState extends State<UserForm> {
             ),
             TextFormField(
               controller: newPasswordConfirmationController,
+              obscureText: true,
               decoration: InputDecoration(
                 labelText: localizations.newPasswordConfirmation,
                 hintText: localizations.newPasswordConfirmation
@@ -155,6 +160,12 @@ class _UserFormState extends State<UserForm> {
                       } else {
                         await widget.user!.adminUpdate();
                       }
+                    }
+                    if (mounted) {
+                      Navigator.of(this.context).pushNamedAndRemoveUntil(
+                          AdminUserListPage.route,
+                          (route) => route.settings.name == AdminUserListPage.route
+                      );
                     }
                   }
                 },

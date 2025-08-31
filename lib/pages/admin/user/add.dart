@@ -9,6 +9,11 @@ class AdminUserAddPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScaffold(UserForm(user: null, actionButtonText: AppLocalizations.of(context)!.createAccount,));
+    return BaseScaffold(
+        UserForm(
+          user: null,
+          actionButtonText: AppLocalizations.of(context)!.createAccount,
+        )
+    );
   }
 }
