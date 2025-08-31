@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kuebiko_web_client/pages/admin/overview.dart';
 import 'package:kuebiko_web_client/pages/library/libraries.dart';
 import '../generated/i18n/app_localizations.dart';
 import '../pages/client_selection.dart';
@@ -28,7 +29,7 @@ class MainDrawer extends StatelessWidget {
       leading: Icon(Icons.my_library_books),
       title: Text(localizations.serverSettings),
       onTap: () {
-        Navigator.of(context).pushNamedAndRemoveUntil(LibrariesPage.route, (_) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil(AdminSettingsOverview.route, (_) => false);
       },
     );
   }
