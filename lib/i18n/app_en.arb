@@ -41,5 +41,9 @@
   "emailEmpty": "Email cannot be empty",
   "emailInvalid": "Email is invalid",
   "passwordNotEqual": "The passwords do not match",
-  "currentPassword": "Current password"
+  "currentPassword": "Current password",
+  "role": "Role",
+  "admin": "Admin",
+  "user": "User",
+  "serverSettings": "Server settings"
 }

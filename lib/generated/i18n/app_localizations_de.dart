@@ -141,4 +141,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get currentPassword => 'Aktuelles Passwort';
+
+  @override
+  String get role => 'Rolle';
+
+  @override
+  String get admin => 'Admin';
+
+  @override
+  String get user => 'Benutzer';
+
+  @override
+  String get serverSettings => 'Server Einstgellungen';
 }

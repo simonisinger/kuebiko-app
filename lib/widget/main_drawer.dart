@@ -11,9 +11,22 @@ class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
   Widget _generateLibrariesButton(AppLocalizations localizations, BuildContext context) {
-    return ClientService.service.selectedClient == null ? Container() : ListTile(
+    return ClientService.service.selectedClient == null
+        && ClientService.service.clientHasFeature(ClientFeature.libraries) ? Container() : ListTile(
       leading: Icon(Icons.my_library_books),
       title: Text(localizations.libraries),
+      onTap: () {
+        Navigator.of(context).pushNamedAndRemoveUntil(LibrariesPage.route, (_) => false);
+      },
+    );
+  }
+  
+  Future<Widget> _generateServerSettingsButton(AppLocalizations localizations, BuildContext context) async {
+    return ClientService.service.selectedClient == null
+        || !ClientService.service.clientHasFeature(ClientFeature.libraries)
+        || !(await ClientService.service.selectedClient!.currentUser()).roles.contains('Admin') ? Container() : ListTile(
+      leading: Icon(Icons.my_library_books),
+      title: Text(localizations.serverSettings),
       onTap: () {
         Navigator.of(context).pushNamedAndRemoveUntil(LibrariesPage.route, (_) => false);
       },
@@ -38,6 +51,16 @@ class MainDrawer extends StatelessWidget {
             },
           ),
           _generateLibrariesButton(localizations, context),
+          FutureBuilder(
+              future: _generateServerSettingsButton(localizations, context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                  return snapshot.data!;
+                } else {
+                  return Container();
+                }
+              }
+          ),
           ListTile(
             leading: Icon(Icons.storage),
             title: Text(localizations.serverSelection),

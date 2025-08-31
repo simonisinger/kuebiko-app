@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/widget/action_button.dart';
-import 'package:kuebiko_web_client/widget/base_scaffold.dart';
-import 'package:kuebiko_web_client/widget/user/form.dart';
+
+import '../../../widget/base_scaffold.dart';
+import '../../../widget/user/form.dart';
 
 class AdminUserEditPage extends StatefulWidget {
   static const String route = '/admin/user/edit';

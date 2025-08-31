@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/pages/admin/overview.dart';
+import 'package:kuebiko_web_client/pages/admin/user/edit.dart';
+import 'package:kuebiko_web_client/pages/admin/user/list.dart';
 
 import 'cache/storage.dart';
 import 'pages/404.dart';
@@ -89,6 +92,12 @@ class KuebikoApp extends StatelessWidget {
             targetPage = const LoginSelectorPage();
           case LocalLoginPage.route:
             targetPage = const LocalLoginPage();
+          case AdminUserEditPage.route:
+            targetPage = AdminUserEditPage(user: routeSettings.arguments as User);
+          case AdminUserListPage.route:
+            targetPage = AdminUserListPage();
+          case AdminSettingsOverview.route:
+            targetPage = AdminSettingsOverview();
           default:
             targetPage = const PageNotFoundPage();
         }

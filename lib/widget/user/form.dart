@@ -108,6 +108,14 @@ class _UserFormState extends State<UserForm> {
                 hintText: localizations.newPasswordConfirmation
               ),
             ),
+            DropdownMenu(
+              dropdownMenuEntries: [
+                DropdownMenuEntry(value: 'Admin', label: localizations.admin),
+              DropdownMenuEntry(value: 'User', label: localizations.user)
+              ],
+              hintText: localizations.role,
+              label: Text(localizations.role),
+            ),
             ActionButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {

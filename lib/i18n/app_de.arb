@@ -41,5 +41,9 @@
   "emailEmpty": "E-Mail darf nicht leer sein",
   "emailInvalid": "Die eingegebene E-Mail ist ungültig",
   "passwordNotEqual": "Die eingebenen Passwörter stimmen nicht überein",
-  "currentPassword": "Aktuelles Passwort"
+  "currentPassword": "Aktuelles Passwort",
+  "role": "Rolle",
+  "admin": "Admin",
+  "user": "Benutzer",
+  "serverSettings": "Server Einstgellungen"
 }

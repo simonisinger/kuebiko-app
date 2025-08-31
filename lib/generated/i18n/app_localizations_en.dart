@@ -140,4 +140,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currentPassword => 'Current password';
+
+  @override
+  String get role => 'Role';
+
+  @override
+  String get admin => 'Admin';
+
+  @override
+  String get user => 'User';
+
+  @override
+  String get serverSettings => 'Server settings';
 }
