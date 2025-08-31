@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/services/client.dart';
 
 import '../../widget/action_button.dart';
 import '../../../../generated/i18n/app_localizations.dart';
@@ -8,13 +9,11 @@ class UserForm extends StatefulWidget {
   final User? user;
   final String? actionButtonText;
   final bool currentPasswordField;
-  final Function() onActionButtonTap;
 
-  UserForm({
+  const UserForm({
     super.key,
     required this.user,
     this.actionButtonText,
-    required this.onActionButtonTap,
     this.currentPasswordField = false
   });
 
@@ -28,15 +27,21 @@ class _UserFormState extends State<UserForm> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController newPasswordConfirmationController = TextEditingController();
-  final TextEditingController oldPasswordController = TextEditingController();
+  final TextEditingController currentPasswordController = TextEditingController();
 
   final List<String> roles = [];
 
-  _UserFormState() {
+  @override
+  initState() {
+    super.initState();
     if (widget.user != null) {
       emailController.text = widget.user!.email;
       nameController.text = widget.user!.name;
       roles.addAll(widget.user!.roles);
+      emailController.addListener(() => widget.user!.email = emailController.text);
+      nameController.addListener(() => widget.user!.name = nameController.text);
+    } else {
+      roles.add('User');
     }
   }
 
@@ -82,7 +87,7 @@ class _UserFormState extends State<UserForm> {
               },
             ),
             widget.currentPasswordField ? TextFormField(
-              controller: newPasswordController,
+              controller: currentPasswordController,
               decoration: InputDecoration(
                   labelText: localizations.currentPassword,
                   hintText: localizations.currentPassword
@@ -108,25 +113,59 @@ class _UserFormState extends State<UserForm> {
                 hintText: localizations.newPasswordConfirmation
               ),
             ),
-            DropdownMenu(
-              dropdownMenuEntries: [
-                DropdownMenuEntry(value: 'Admin', label: localizations.admin),
-              DropdownMenuEntry(value: 'User', label: localizations.user)
-              ],
-              hintText: localizations.role,
-              label: Text(localizations.role),
+            SizedBox(
+              width: double.maxFinite,
+              child: DropdownButton(
+                items: [
+                  DropdownMenuItem(
+                      value: 'Admin',
+                      child: Text(localizations.admin),
+                  ),
+                  DropdownMenuItem(
+                      value: 'User',
+                      child: Text(localizations.user),
+                  )
+                ],
+                value: roles.contains('Admin') ? 'Admin' : 'User',
+                onChanged: (value) {
+                  setState(() {
+                    if (value != null) {
+                      roles.clear();
+                      roles.add(value);
+                    }
+                  });
+                },
+              ),
             ),
             ActionButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    widget.onActionButtonTap();
+                    if (widget.user == null) {
+                      ClientService.service.selectedClient!.createUser(
+                          emailController.text,
+                          nameController.text,
+                          newPasswordController.text,
+                          roles,
+                          '',
+                          ''
+                      );
+                    } else {
+                      if (widget.currentPasswordField) {
+                        await widget.user!.update(currentPasswordController.text);
+                      } else {
+                        await widget.user!.adminUpdate();
+                      }
+                    }
                   }
                 },
                 buttonText: widget.actionButtonText ?? localizations.save
             ),
-            OutlinedButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(localizations.cancel)
+            SizedBox(
+              width: double.maxFinite,
+              child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(localizations.cancel)
+              ),
             )
           ],
         ),

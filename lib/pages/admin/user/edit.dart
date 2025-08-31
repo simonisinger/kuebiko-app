@@ -19,9 +19,6 @@ class _AdminUserEditPageState extends State<AdminUserEditPage> {
     return BaseScaffold(
         UserForm(
             user: widget.user,
-            onActionButtonTap: () {
-              widget.user.adminUpdate();
-            },
         )
     );
   }
