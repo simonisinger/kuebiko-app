@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/pages/admin/user/add.dart';
 import 'package:kuebiko_web_client/pages/admin/user/edit.dart';
 import 'package:kuebiko_web_client/services/client.dart';
+import 'package:kuebiko_web_client/widget/add_button.dart';
 import 'package:kuebiko_web_client/widget/base_scaffold.dart';
 
 class AdminUserListPage extends StatefulWidget {
@@ -48,7 +50,8 @@ class _AdminUserListPageState extends State<AdminUserListPage> {
                 return CircularProgressIndicator();
               }
             }
-        )
+        ),
+      floatingActionButton: AddWidget(targetPath: AdminUserAddPage.route),
     );
   }
 }
