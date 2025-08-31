@@ -39,5 +39,7 @@
   "newPasswordConfirmation": "Neues Passwort bestätigen",
   "usernameEmpty": "Benutzername darf nicht leer sein",
   "emailEmpty": "E-Mail darf nicht leer sein",
-  "emailInvalid": "Die eingegebene E-Mail ist ungültig"
+  "emailInvalid": "Die eingegebene E-Mail ist ungültig",
+  "passwordNotEqual": "Die eingebenen Passwörter stimmen nicht überein",
+  "currentPassword": "Aktuelles Passwort"
 }

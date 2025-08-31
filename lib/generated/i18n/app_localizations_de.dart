@@ -134,4 +134,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get emailInvalid => 'Die eingegebene E-Mail ist ungültig';
+
+  @override
+  String get passwordNotEqual =>
+      'Die eingebenen Passwörter stimmen nicht überein';
+
+  @override
+  String get currentPassword => 'Aktuelles Passwort';
 }

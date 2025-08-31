@@ -343,6 +343,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Email is invalid'**
   String get emailInvalid;
+
+  /// No description provided for @passwordNotEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'The passwords do not match'**
+  String get passwordNotEqual;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get currentPassword;
 }
 
 class _AppLocalizationsDelegate

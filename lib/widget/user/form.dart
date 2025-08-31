@@ -4,22 +4,39 @@ import 'package:kuebiko_client/kuebiko_client.dart';
 import '../../widget/action_button.dart';
 import '../../../../generated/i18n/app_localizations.dart';
 
-class UserForm extends StatelessWidget {
+class UserForm extends StatefulWidget {
   final User? user;
   final String? actionButtonText;
+  final bool currentPasswordField;
   final Function() onActionButtonTap;
+
+  UserForm({
+    super.key,
+    required this.user,
+    this.actionButtonText,
+    required this.onActionButtonTap,
+    this.currentPasswordField = false
+  });
+
+  @override
+  State<UserForm> createState() => _UserFormState();
+}
+
+class _UserFormState extends State<UserForm> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController newPasswordConfirmationController = TextEditingController();
+  final TextEditingController oldPasswordController = TextEditingController();
+
   final List<String> roles = [];
 
-  UserForm({super.key, required this.user, this.actionButtonText, required this.onActionButtonTap}) {
-    if (user != null) {
-      emailController.text = user!.email;
-      nameController.text = user!.name;
-      roles.addAll(user!.roles);
+  _UserFormState() {
+    if (widget.user != null) {
+      emailController.text = widget.user!.email;
+      nameController.text = widget.user!.name;
+      roles.addAll(widget.user!.roles);
     }
   }
 
@@ -55,7 +72,7 @@ class UserForm extends StatelessWidget {
                 if (email == null || email.isEmpty) {
                   return localizations.emailEmpty;
                 }
-        
+
                 RegExp validator = RegExp(r'^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$');
                 if (validator.hasMatch(email)){
                   return null;
@@ -64,12 +81,25 @@ class UserForm extends StatelessWidget {
                 }
               },
             ),
+            widget.currentPasswordField ? TextFormField(
+              controller: newPasswordController,
+              decoration: InputDecoration(
+                  labelText: localizations.currentPassword,
+                  hintText: localizations.currentPassword
+              ),
+            ) : Container(),
             TextFormField(
               controller: newPasswordController,
               decoration: InputDecoration(
                 labelText: localizations.newPassword,
                 hintText: localizations.newPassword
               ),
+              validator: (_) {
+                if (newPasswordController.text != newPasswordConfirmationController.text) {
+                  return localizations.passwordNotEqual;
+                }
+                return null;
+              },
             ),
             TextFormField(
               controller: newPasswordConfirmationController,
@@ -81,10 +111,10 @@ class UserForm extends StatelessWidget {
             ActionButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    onActionButtonTap();
+                    widget.onActionButtonTap();
                   }
                 },
-                buttonText: actionButtonText ?? localizations.save
+                buttonText: widget.actionButtonText ?? localizations.save
             ),
             OutlinedButton(
                 onPressed: () => Navigator.pop(context),
