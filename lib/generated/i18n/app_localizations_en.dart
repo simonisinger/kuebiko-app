@@ -152,4 +152,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get serverSettings => 'Server settings';
+
+  @override
+  String get createAccount => 'Create account';
 }

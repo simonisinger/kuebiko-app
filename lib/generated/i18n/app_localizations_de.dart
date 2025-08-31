@@ -152,5 +152,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get user => 'Benutzer';
 
   @override
-  String get serverSettings => 'Server Einstgellungen';
+  String get serverSettings => 'Server Einstellungen';
+
+  @override
+  String get createAccount => 'Konto erstellen';
 }

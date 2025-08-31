@@ -45,5 +45,6 @@
   "role": "Rolle",
   "admin": "Admin",
   "user": "Benutzer",
-  "serverSettings": "Server Einstgellungen"
+  "serverSettings": "Server Einstellungen",
+  "createAccount": "Konto erstellen"
 }
