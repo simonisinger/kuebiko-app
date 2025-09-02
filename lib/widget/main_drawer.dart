@@ -21,6 +21,19 @@ class MainDrawer extends StatelessWidget {
       },
     );
   }
+
+  Widget _generateHomeButton(AppLocalizations localizations, BuildContext context) {
+    return ClientService.service.selectedClient == null ? Container() : ListTile(
+      leading: Icon(Icons.home),
+      title: Text(localizations.home),
+      onTap: () {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          OverviewPage.route,
+              (_) => false,
+        );
+      },
+    );
+  }
   
   Future<Widget> _generateServerSettingsButton(AppLocalizations localizations, BuildContext context) async {
     return ClientService.service.selectedClient == null
@@ -41,16 +54,7 @@ class MainDrawer extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: ListView(
         children: [
-          ListTile(
-            leading: Icon(Icons.home),
-            title: Text(localizations.home),
-            onTap: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  OverviewPage.route,
-                  (_) => false,
-              );
-            },
-          ),
+          _generateHomeButton(localizations, context),
           _generateLibrariesButton(localizations, context),
           FutureBuilder(
               future: _generateServerSettingsButton(localizations, context),
