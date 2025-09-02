@@ -13,7 +13,7 @@ class MainDrawer extends StatelessWidget {
 
   Widget _generateLibrariesButton(AppLocalizations localizations, BuildContext context) {
     return ClientService.service.selectedClient == null
-        && ClientService.service.clientHasFeature(ClientFeature.libraries) ? Container() : ListTile(
+        || !ClientService.service.clientHasFeature(ClientFeature.libraries) ? Container() : ListTile(
       leading: Icon(Icons.my_library_books),
       title: Text(localizations.libraries),
       onTap: () {
