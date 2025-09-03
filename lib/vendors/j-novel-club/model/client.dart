@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/vendors/j-novel-club/model/series.dart';
@@ -50,7 +52,18 @@ class JNovelClubClient implements Client {
   @override
   Future<List<Series>> getAllSeries() async {
     Response res = await _httpClient.get('$baseDomain/app/v2/series?format=json');
-    return res.data.map((data) => JNovelClubSeries(
+    Map<String, dynamic> data = res.data is Map ? res.data : jsonDecode(res.data);
+    return data['series'].map((seriesRaw) => JNovelClubSeries(
+      seriesRaw['id'],
+      seriesRaw['title'],
+      '',   // author
+      seriesRaw['description'],
+      0, // TODO numberOfVolumes refactor it that it will be retrieved dynamically
+      'J-Novel Club',
+      'en',
+      seriesRaw['tags'].join(','),
+      seriesRaw['ageRating'],
+      seriesRaw['type'],
 
     ));
   }

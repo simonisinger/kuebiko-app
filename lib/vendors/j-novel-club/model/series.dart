@@ -1,10 +1,31 @@
 import 'package:kuebiko_client/kuebiko_client.dart';
 
 class JNovelClubSeries implements Series {
-  final String _ageRating;
+  final String _id;
+  final String _name;
+  final String _author;
+  final String _description;
+  final int _numberOfVolumes;
+  final String _publisher;
+  final String _language;
+  final String _genre;
+  final int? _ageRating;
   final String _type;
+  final CacheController _cacheController;
 
-  JNovelClubSeries(this._ageRating, this._type);
+  JNovelClubSeries(
+      this._id,
+      this._name,
+      this._author,
+      this._description,
+      this._numberOfVolumes,
+      this._publisher,
+      this._language,
+      this._genre,
+      this._ageRating,
+      this._type,
+      this._cacheController,
+  );
 
   @override
   Future<List<Book>> books(BookSorting sorting, SortingDirection direction) {
@@ -13,66 +34,44 @@ class JNovelClubSeries implements Series {
   }
 
   @override
-  String getAgeRating() => _ageRating;
+  int? get ageRating => _ageRating;
 
   @override
-  String getAuthor() {
-    // TODO: implement getAuthor
-    throw UnimplementedError();
-  }
+  String get author => _author;
 
   @override
-  String getDescription() {
-    // TODO: implement getDescription
-    throw UnimplementedError();
-  }
+  String get description => _description;
 
   @override
-  String getGenre() {
-    // TODO: implement getGenre
-    throw UnimplementedError();
-  }
+  String get genre => _genre;
 
   @override
-  String getLanguage() {
-    // TODO: implement getLanguage
-    throw UnimplementedError();
-  }
+  String get language => _language;
 
   @override
-  String getName() {
-    // TODO: implement getName
-    throw UnimplementedError();
-  }
+  String get name => _name;
 
   @override
-  int getNumberOfVolumes() {
-    // TODO: implement getNumberOfVolumes
-    throw UnimplementedError();
-  }
+  int get numberOfVolumes => _numberOfVolumes;
 
   @override
-  String getPublisher() {
-    // TODO: implement getPublisher
-    throw UnimplementedError();
-  }
+  String get publisher => _publisher;
 
   @override
-  String getType() => _type.toLowerCase();
+  String get type => _type.toLowerCase();
 
   @override
-  // TODO: implement id
-  int get id => throw UnimplementedError();
+  String get id => _id;
 
   @override
   Series lockAgeRating() {
-    // TODO: implement lockAgeRating
+    // no support
     throw UnimplementedError();
   }
 
   @override
   Series lockAuthor() {
-    // TODO: implement lockAuthor
+    // no support
     throw UnimplementedError();
   }
 
@@ -114,60 +113,6 @@ class JNovelClubSeries implements Series {
 
   @override
   Series lockType() {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setAgeRating(String ageRating) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setAuthor(String author) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setDescription(String description) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setGenre(String genre) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setLanguage(String language) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setName(String name) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setNumberOfVolumes(int numberOfVolumes) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setPublisher(String publisher) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
-  Series setType(String type) {
     // no support
     throw UnimplementedError();
   }
@@ -227,7 +172,62 @@ class JNovelClubSeries implements Series {
   }
 
   @override
-  void update() {
+  Future<void> update() {
     // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set ageRating(int? ageRating) {
+    // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set author(String? author) {
+    // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set description(String description) {
+    // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set genre(String genre) {
+    // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set language(String language) {
+    // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set name(String name) {
+    // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set numberOfVolumes(int? numberOfVolumes) {
+    // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set publisher(String publisher) {
+    // no support
+    throw UnimplementedError();
+  }
+
+  @override
+  set type(String type) {
+    // no support
+    throw UnimplementedError();
   }
 }

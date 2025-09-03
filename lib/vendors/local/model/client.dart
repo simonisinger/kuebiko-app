@@ -41,7 +41,7 @@ class LocalClient implements Client {
   }
 
   @override
-  Future<Series> createSeries({required String name, required String author, required String description, required int numberOfVolumes, required String publisher, required String language, required String genre, required String ageRating, required String type, required List<String> locked}) {
+  Future<Series> createSeries({required String name, required String author, required String description, required int numberOfVolumes, required String publisher, required String language, required String genre, required int ageRating, required String type, required List<String> locked}) {
     // TODO: implement createSeries
     throw UnimplementedError();
   }
