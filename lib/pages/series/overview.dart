@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/pages/book/book_detail.dart';
 
 import '../../services/client.dart';
@@ -17,7 +16,7 @@ class SeriesOverviewPage extends StatelessWidget {
       FutureBuilder(
         future: ClientService.service
             .selectedLibrary!
-            .books(BookSorting.name, SortingDirection.asc),
+            .series(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
