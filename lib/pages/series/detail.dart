@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import '../../widget/library/book_list_item.dart';
+import '../../../widget/library/book_list_item.dart';
 
 class SeriesViewPage extends StatelessWidget {
+  static const String route = '/series/detail';
   final Series series;
   const SeriesViewPage({super.key, required this.series});
 

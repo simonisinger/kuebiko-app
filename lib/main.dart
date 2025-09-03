@@ -5,6 +5,8 @@ import 'package:kuebiko_web_client/pages/admin/overview.dart';
 import 'package:kuebiko_web_client/pages/admin/user/add.dart';
 import 'package:kuebiko_web_client/pages/admin/user/edit.dart';
 import 'package:kuebiko_web_client/pages/admin/user/list.dart';
+import 'package:kuebiko_web_client/pages/series/detail.dart';
+import 'package:kuebiko_web_client/pages/series/overview.dart';
 
 import 'cache/storage.dart';
 import 'pages/404.dart';
@@ -101,6 +103,11 @@ class KuebikoApp extends StatelessWidget {
             targetPage = const AdminSettingsOverview();
           case AdminUserAddPage.route:
             targetPage = const AdminUserAddPage();
+          case SeriesOverviewPage.route:
+            targetPage = const SeriesOverviewPage();
+          case SeriesViewPage.route:
+            Series series = routeSettings.arguments as Series;
+            targetPage = SeriesViewPage(series: series);
           default:
             targetPage = const PageNotFoundPage();
         }

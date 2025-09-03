@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/pages/book/book_detail.dart';
-import '../../pages/library/upload.dart';
+
 import '../../services/client.dart';
-import '../../widget/add_button.dart';
 import '../../widget/base_scaffold.dart';
 import '../../widget/book/book_image.dart';
 
-class LibraryPage extends StatefulWidget {
-  static const route = '/library';
-  const LibraryPage({super.key});
+class SeriesOverviewPage extends StatelessWidget {
+  static const route = '/series';
 
-  @override
-  State<LibraryPage> createState() => _LibraryPageState();
-}
-
-class _LibraryPageState extends State<LibraryPage> {
+  const SeriesOverviewPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +54,6 @@ class _LibraryPageState extends State<LibraryPage> {
           }
         },
       ),
-      floatingActionButton: ClientService.service.clientHasFeature(ClientFeature.uploadEbooks)
-        ? const AddWidget(targetPath: UploadPage.route)
-        : Container(),
     );
   }
 }
