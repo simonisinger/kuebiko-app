@@ -15,6 +15,8 @@ class JNovelClubHttpClient {
 
   static Future<JNovelClubHttpClient> login(String email, String password) async {
     JNovelClubHttpClient client = JNovelClubHttpClient();
+    await storage.write(key: client._emailKey, value: email);
+    await storage.write(key: client._passwordKey, value: password);
     await client._login(email, password);
 
     return client;
