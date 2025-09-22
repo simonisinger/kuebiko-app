@@ -2,10 +2,15 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/vendors/j-novel-club/model/series.dart';
+import '../http_client.dart';
+import 'cache_controller.dart';
+
+import 'series.dart';
+import 'user.dart';
 
 class JNovelClubClient implements Client {
-  final _httpClient = Dio();
+  final _httpClient = JNovelClubHttpClient();
+  final CacheController _seriesCache = JNovelClubCacheController();
   final String baseDomain = 'https://labs.j-novel.club';
 
   @override
@@ -21,20 +26,16 @@ class JNovelClubClient implements Client {
   }
 
   @override
-  Future<Series> createSeries({required String name, required String author, required String description, required int numberOfVolumes, required String publisher, required String language, required String genre, required String ageRating, required String type, required List<String> locked}) {
-    // no support
-    throw UnimplementedError();
-  }
-
-  @override
   Future<User> createUser(String email, String name, String password, List<String> role, String anilistName, String anilistToken) {
     // wont be implemented
     throw UnimplementedError();
   }
 
   @override
-  Future<User> currentUser() {
-    Dio();
+  Future<User> currentUser() async {
+    Response res = await _httpClient.get(Uri.parse('$baseDomain/app/v2/me?format=json'));
+    Map rawData = (res.data is Map ? res.data : jsonDecode(res.data));
+    return JNovelClubUser(rawData['id'], rawData['email'], rawData['username']);
   }
 
   @override
@@ -51,7 +52,7 @@ class JNovelClubClient implements Client {
 
   @override
   Future<List<Series>> getAllSeries() async {
-    Response res = await _httpClient.get('$baseDomain/app/v2/series?format=json');
+    Response res = await _httpClient.get(Uri.parse('$baseDomain/app/v2/series?format=json'));
     Map<String, dynamic> data = res.data is Map ? res.data : jsonDecode(res.data);
     return data['series'].map((seriesRaw) => JNovelClubSeries(
       seriesRaw['id'],
@@ -64,7 +65,7 @@ class JNovelClubClient implements Client {
       seriesRaw['tags'].join(','),
       seriesRaw['ageRating'],
       seriesRaw['type'],
-
+      _seriesCache
     ));
   }
 
@@ -87,10 +88,7 @@ class JNovelClubClient implements Client {
   }
 
   @override
-  bool getInitialized() {
-    // TODO: implement getInitialized
-    throw UnimplementedError();
-  }
+  bool getInitialized() => true;
 
   @override
   Future<List<Library>> getLibraries() {
@@ -121,8 +119,11 @@ class JNovelClubClient implements Client {
   }
 
   @override
-  Future<String> status() {
-    // TODO: implement status
+  Future<String> status() async => 'Running';
+
+  @override
+  Future<Series> createSeries({required String name, required String author, required String description, required int numberOfVolumes, required String publisher, required String language, required String genre, required int ageRating, required String type, required List<String> locked}) {
+    // no support
     throw UnimplementedError();
   }
 }

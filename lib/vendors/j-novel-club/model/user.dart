@@ -1,14 +1,20 @@
 import 'package:kuebiko_client/kuebiko_client.dart';
 
 class JNovelClubUser implements User {
-  @override
-  String email;
+  final String _id;
+  final String _email;
+  final String _nickname;
+
+  JNovelClubUser(this._id, this._email, this._nickname);
 
   @override
-  String name;
+  String get email => _email;
 
   @override
-  List<String> roles;
+  String get name => _nickname;
+
+  @override
+  List<String> roles = ['User'];
 
   @override
   Future<void> adminUpdate() {
@@ -58,5 +64,15 @@ class JNovelClubUser implements User {
   Future<void> update(String passwords) {
     // support later
     throw UnimplementedError();
+  }
+
+  @override
+  set email(String email) {
+    // wont be implemented
+  }
+
+  @override
+  set name(String name) {
+    // wont be implemented
   }
 }

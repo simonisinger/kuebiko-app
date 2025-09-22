@@ -1,0 +1,3 @@
+class MissingCredentialsException implements Exception {
+
+}

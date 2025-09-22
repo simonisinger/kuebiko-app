@@ -14,7 +14,7 @@ class SeriesViewPage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
-                child: Text(series.getName()),
+                child: Text(series.name),
               ),
               FutureBuilder(
                     future: series.books(BookSorting.name, SortingDirection.asc),
