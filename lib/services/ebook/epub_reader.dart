@@ -9,6 +9,7 @@ import '../../cache/storage.dart';
 import '../../enum/book_type.dart';
 import '../../enum/read_direction.dart';
 import '../../pages/reader/content/content_element.dart';
+import '../../pages/reader/content/horizontal_line.dart';
 import '../../pages/reader/content/image.dart';
 import '../../pages/reader/content/multi_part_paragraph.dart';
 import '../../pages/reader/content/part_paragraph.dart';
@@ -117,7 +118,8 @@ class EpubReader implements Reader {
               fontSize: 30
           );
           results[rawContentElement.chapter]![rawContentElement.fileName]!.add(SinglePartParagraph(rawContentElement.contentElement.text, style));
-          break;
+        case 'hr':
+          results[rawContentElement.chapter]![rawContentElement.fileName]!.add(HorizontalLine());
         case 'p':
           ContentElement contentElement;
           List<dom.Element> spanElements = rawContentElement.contentElement.querySelectorAll('span');
@@ -171,7 +173,6 @@ class EpubReader implements Reader {
           }
 
           results[rawContentElement.chapter]![rawContentElement.fileName]!.add(contentElement);
-          break;
         case 'img':
           epubx.EpubByteContentFileRef image = _book.Content!.Images![rawContentElement.contentElement.attributes['src']!.replaceAll('../', '')]!;
           bool fullSize = false;
@@ -180,7 +181,6 @@ class EpubReader implements Reader {
           }
 
           results[rawContentElement.chapter]![rawContentElement.fileName]!.add(ImageContent(image, fullSize));
-          break;
       }
     }
     // Thinking about refactor the result type and removing the filename because possible wrong order during rendering
@@ -294,7 +294,7 @@ class EpubReader implements Reader {
 
       dom.Document document = parse(utf8.decode(value.getContentFileEntry().content));
       _removeAElements(document);
-      List<dom.Element> localElements = document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,img,span');
+      List<dom.Element> localElements = document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,img,span,hr');
       String stylesheetName = '';
       if (document.querySelector('link[rel="stylesheet"]') != null) {
         stylesheetName = p.normalize(
