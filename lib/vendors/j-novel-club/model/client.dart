@@ -65,7 +65,8 @@ class JNovelClubClient implements Client {
       seriesRaw['tags'].join(','),
       seriesRaw['ageRating'],
       seriesRaw['type'],
-      _seriesCache
+      _seriesCache,
+      _httpClient
     ));
   }
 

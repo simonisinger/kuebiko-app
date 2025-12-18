@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/vendors/j-novel-club/http_client.dart';
+import 'package:kuebiko_web_client/vendors/j-novel-club/model/book.dart';
 
 class JNovelClubSeries implements Series {
   final String _id;
@@ -12,6 +17,7 @@ class JNovelClubSeries implements Series {
   final int? _ageRating;
   final String _type;
   final CacheController _cacheController;
+  final JNovelClubHttpClient _httpClient;
 
   JNovelClubSeries(
       this._id,
@@ -25,12 +31,21 @@ class JNovelClubSeries implements Series {
       this._ageRating,
       this._type,
       this._cacheController,
+      this._httpClient,
   );
 
   @override
-  Future<List<Book>> books(BookSorting sorting, SortingDirection direction) {
-    // TODO: implement books
-    throw UnimplementedError();
+  Future<List<Book>> books(BookSorting sorting, SortingDirection direction) async {
+    Response res = await _httpClient.get(
+        Uri.parse("https://labs.j-novel.club/app/v2/series/$_id/aggregate?format=json")
+    );
+    Map json = jsonDecode(res.data);
+    return json['volumes'].map((volumeRaw) => JNovelClubBook(
+        volumeRaw['volume']['id'],
+        volumeRaw['volume']['title'],
+        volumeRaw['volume']['cover']['coverUrl'],
+        _httpClient
+    )).toList();
   }
 
   @override
