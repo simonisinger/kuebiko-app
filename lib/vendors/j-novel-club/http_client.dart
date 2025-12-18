@@ -62,10 +62,12 @@ class JNovelClubHttpClient {
     }
   );
 
-  Future<Response> get(Uri path) async {
+  Future<Response> get(Uri path, {ResponseType responseType = ResponseType.plain}) async {
     Response response = await _client.getUri(
         path,
-        options: _options
+        options: _options.copyWith(
+          responseType: responseType
+        )
     );
     await _errorCheck(response);
 
