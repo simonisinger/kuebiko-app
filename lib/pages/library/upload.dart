@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/exceptions/io/ebook_read.dart';
 import '../../generated/i18n/app_localizations.dart';
 import '../../services/storage/storage.dart';
 import '../../widget/action_button.dart';
@@ -55,9 +56,16 @@ class _UploadPageState extends State<UploadPage> {
       file = keyList.first;
     }
 
-    KuebikoUpload upload = await StorageService
-        .service
-        .uploadEbook(file);
+    KuebikoUpload upload;
+    try {
+      upload = await StorageService
+          .service
+          .uploadEbook(file);
+    } on EbookReadException {
+      return false;
+    } catch (otherExeption) {
+      return false;
+    }
     StreamController controller = _fileStreamControllers[file]!;
     await controller.addStream(upload.stream);
     return true;

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
 import 'package:file_picker/file_picker.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/exceptions/io/ebook_read.dart';
 import 'package:kuebiko_web_client/vendors/local/model/book.dart';
 import 'package:kuebiko_web_client/vendors/local/model/client.dart';
 import '../../cache/storage.dart';
@@ -38,7 +39,10 @@ class StorageService {
   }
 
   Future<KuebikoUpload> uploadEbook(PlatformFile file) async {
-    BookMeta meta = await EbookService.parseEpubMeta(file.name, file.xFile.openRead(), file.size);
+    BookMeta? meta = await EbookService.parseEpubMeta(file.name, file.xFile.openRead(), file.size);
+    if (meta == null) {
+      throw EbookReadException();
+    }
     return ClientService.service.selectedLibrary!.upload(
         file.name,
         meta,

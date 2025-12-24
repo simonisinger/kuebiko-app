@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/exceptions/io/ebook_read.dart';
 import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
 import 'package:kuebiko_web_client/services/ebook/ebook.dart';
 import '../../../cache/storage.dart';
@@ -109,11 +110,15 @@ class LocalLibrary implements Library {
         })
         .then((_) async {
           LocalBook localBook = LocalBook(filename, this, maxId);
-          BookMeta bookMeta = await EbookService.parseEpubMeta(
+          BookMeta? bookMeta = await EbookService.parseEpubMeta(
               filename,
               File(await StorageService.service.generatePath(localBook)).openRead(),
               fileLength
           );
+
+          if (bookMeta == null) {
+            throw EbookReadException();
+          }
 
           await storage.write(
               key: localBook.metadataKey,

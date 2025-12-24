@@ -20,8 +20,14 @@ final class EbookService {
   static const readerCacheKey = 'pageConfigList';
   static const progressUnsynchedKey = 'progress.unsynched';
 
-  static Future<BookMeta> parseEpubMeta(String filename, Stream<List<int>> data, int length) async {
-    epubx.EpubBookRef ebook = await epubx.EpubReader.openBookStream(data,length);
+  static Future<BookMeta?> parseEpubMeta(String filename, Stream<List<int>> data, int length) async {
+    epubx.EpubBookRef ebook;
+    try {
+      ebook = await epubx.EpubReader.openBookStream(data,length);
+    } catch (e) {
+      return null;
+    }
+
 
     String baseFilename = p.basenameWithoutExtension(filename);
     RegExp regExp = RegExp(r'(?<name>.*)(Vol.|Volume|Bd.|Band)?( *)(?<volNumber>[0-9]+)(.*)$');

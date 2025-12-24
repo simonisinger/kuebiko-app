@@ -1,0 +1,3 @@
+class EbookReadException implements Exception {
+
+}
