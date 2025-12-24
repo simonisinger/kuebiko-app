@@ -128,7 +128,7 @@ class LocalLibrary implements Library {
                 'genre': null,
                 'tag': null,
                 'age_rating': null,
-                "release_date": bookMeta.releaseDate,
+                "release_date": bookMeta.releaseDate.toString(),
                 "type": null
               })
           );
