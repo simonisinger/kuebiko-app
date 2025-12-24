@@ -49,11 +49,11 @@ mixin ProgressMixin {
     } catch (e) {
       String unsynchedString = await storage.read(key: EbookService.progressUnsynchedKey) ?? '[]';
       List unsynched = jsonDecode(unsynchedString);
-      unsynched.add(getLocalStorageKey(book));
-      await storage.write(key: EbookService.progressUnsynchedKey, value: jsonEncode({
+      unsynched.add({
         'currentPage': position,
         'maxPage': positionOffset - 1
-      }));
+      });
+      await storage.write(key: EbookService.progressUnsynchedKey, value: jsonEncode(unsynched));
     }
   }
 
