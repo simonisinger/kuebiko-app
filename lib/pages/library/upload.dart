@@ -68,6 +68,7 @@ class _UploadPageState extends State<UploadPage> {
     }
     StreamController controller = _fileStreamControllers[file]!;
     await controller.addStream(upload.stream);
+    await controller.close();
     return true;
   }
 
@@ -95,7 +96,7 @@ class _UploadPageState extends State<UploadPage> {
                     onFinished: () async {
                       bool uploadStarted = await _uploadNextEbook(file);
                       if (!uploadStarted) {
-                        if (this.context.mounted) {
+                        if (mounted) {
                           Navigator.of(this.context)
                               .popUntil((route) => route.settings.name == LibraryPage.route);
                         }
