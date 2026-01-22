@@ -37,7 +37,10 @@ mixin ProgressMixin {
     }
 
     if (ClientService.service.clientHasFeature(ClientFeature.progressCache)) {
-      await storage.write(key: getLocalStorageKey(book), value: position.toString());
+      await storage.write(key: getLocalStorageKey(book), value: jsonEncode({
+        'currentPage': position,
+        'maxPage': positionOffset - 1
+      }));
     }
     try {
       await book.setProgress(
