@@ -122,7 +122,7 @@ class EpubReader implements Reader {
           results[rawContentElement.chapter]![rawContentElement.fileName]!.add(HorizontalLine());
         case 'p':
           ContentElement contentElement;
-          List<dom.Element> spanElements = rawContentElement.contentElement.querySelectorAll('span');
+          List<dom.Element> spanElements = rawContentElement.contentElement.querySelectorAll('span,em');
 
           if (spanElements.isNotEmpty) {
             List<PartParagraphElement> parts = [];
@@ -148,6 +148,9 @@ class EpubReader implements Reader {
                 // detect and override the default css rules
                 if (spanElement.attributes['style'] != null) {
                   List<CssProperty> localProperties = CssParser().parsePropertiesString(spanElement.attributes['style']!);
+                  if (spanElement.localName == 'em') {
+                    localProperties.add(CssProperty('font-weight', 'bold'));
+                  }
                   for (CssProperty property in localProperties) {
                     rules.removeWhere((CssProperty tmpProperty) => property.propertyName == tmpProperty.propertyName);
                     rules.add(property);
@@ -284,17 +287,21 @@ class EpubReader implements Reader {
 
     List<epubx.EpubChapterRef> chapters = await _book.getChapters();
     String chapter = chapters.first.Title!;
-    _book.Content!.Html!.forEach((key, value){
+
+    epubx.EpubChapterRef epubChapter;
+    for (epubx.EpubSpineItemRef spine in _book.Schema!.Package!.Spine!.Items!) {
+      String path = _book.Schema!.Package!.Manifest!.Items!.firstWhere((file) => file.Id == spine.IdRef).Href!;
       try {
-        epubx.EpubChapterRef epubChapter = chapters.firstWhere((element) => element.ContentFileName == key);
+        epubChapter = chapters.firstWhere((element) => element.ContentFileName == path);
         chapter = epubChapter.Title!;
       } catch(exception){
         // don`t do anything
       }
 
-      dom.Document document = parse(utf8.decode(value.getContentFileEntry().content));
+
+      dom.Document document = parse(utf8.decode(_book.Content!.Html![path]!.getContentFileEntry().content));
       _removeAElements(document);
-      List<dom.Element> localElements = document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,img,span,hr');
+      List<dom.Element> localElements = document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,img,span,hr,em,code');
       String stylesheetName = '';
       if (document.querySelector('link[rel="stylesheet"]') != null) {
         stylesheetName = p.normalize(
@@ -317,9 +324,9 @@ class EpubReader implements Reader {
         });
       }
       for (dom.Element element in localElements) {
-        elements[stylesheetName]!.add(EpubRawContentElement(cssFiles[stylesheetName] ?? CssParser(), element, chapter, key));
+        elements[stylesheetName]!.add(EpubRawContentElement(cssFiles[stylesheetName] ?? CssParser(), element, chapter, path));
       }
-    });
+    }
 
     return _EpubReaderTmpDataStorage(elements, documents);
   }
