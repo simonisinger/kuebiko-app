@@ -156,4 +156,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get createAccount => 'Konto erstellen';
+
+  @override
+  String get renderCacheCleared => 'Rendercache geleert';
 }

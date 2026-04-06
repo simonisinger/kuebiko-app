@@ -385,6 +385,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create account'**
   String get createAccount;
+
+  /// No description provided for @renderCacheCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Render cache cleared'**
+  String get renderCacheCleared;
 }
 
 class _AppLocalizationsDelegate

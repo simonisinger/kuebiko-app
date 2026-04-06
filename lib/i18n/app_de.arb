@@ -46,5 +46,6 @@
   "admin": "Admin",
   "user": "Benutzer",
   "serverSettings": "Server Einstellungen",
-  "createAccount": "Konto erstellen"
+  "createAccount": "Konto erstellen",
+  "renderCacheCleared": "Rendercache geleert"
 }

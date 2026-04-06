@@ -34,6 +34,11 @@ final class _ReaderSettingsPageState extends State<ReaderSettingsPage> {
             child: TextButton(
                 onPressed: () async {
                   await GetIt.instance.get<ReaderCacheService>().clear();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(localizations.renderCacheCleared))
+                    );
+                  }
                 },
                 child: Text(localizations.clearRenderCache)
             ),
