@@ -4,5 +4,5 @@ import 'content_element.dart';
 
 class HorizontalLine extends ContentElement {
   @override
-  Widget render() => Divider();
+  Widget render() => Container(padding: EdgeInsets.symmetric(horizontal: 10), child: Divider());
 }

@@ -209,6 +209,7 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
         pageConfig['fontFamily'] != settings.fontFamily
     ) {
       for (String chapter in _contentElements.keys) {
+        bool chapterChange = true;
         for (String filename in _contentElements[chapter]!.keys.toList()) {
           List<ContentElement> contentElements = _contentElements[chapter]![filename]!;
 
@@ -222,10 +223,11 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
             List<ContentElement> tmpPage = [];
             for (int i = 0; i < heights.length; i++) {
               tmpPageSize += heights[i];
-              if (tmpPageSize > maxHeight) {
+              if (tmpPageSize > maxHeight || chapterChange) {
                 pages.add(tmpPage);
                 tmpPageSize = heights[i];
                 tmpPage = [contentElements[i]];
+                chapterChange = false;
               } else {
                 tmpPage.add(contentElements[i]);
               }
