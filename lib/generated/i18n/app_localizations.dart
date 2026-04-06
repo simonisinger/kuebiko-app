@@ -391,6 +391,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Render cache cleared'**
   String get renderCacheCleared;
+
+  /// No description provided for @passwordEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot be empty'**
+  String get passwordEmpty;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @invalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid credentials'**
+  String get invalidCredentials;
 }
 
 class _AppLocalizationsDelegate

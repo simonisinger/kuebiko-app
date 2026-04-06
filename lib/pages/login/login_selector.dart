@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kuebiko_web_client/pages/login/j_novel_club.dart';
 import 'package:kuebiko_web_client/pages/login/local.dart';
 import '../../generated/i18n/app_localizations.dart';
 import '../../pages/login/login.dart';
@@ -22,7 +23,11 @@ class LoginSelectorPage extends StatelessWidget {
           ListTile(
             title: Text(localizations.localServer),
             onTap: () => Navigator.of(context).pushNamed(LocalLoginPage.route),
-          )
+          ),
+          ListTile(
+            title: Text('J-Novel Club'),
+            onTap: () => Navigator.of(context).pushNamed(JNovelClubLoginPage.route),
+          ),
         ],
       )
     );

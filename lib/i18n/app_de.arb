@@ -47,5 +47,8 @@
   "user": "Benutzer",
   "serverSettings": "Server Einstellungen",
   "createAccount": "Konto erstellen",
-  "renderCacheCleared": "Rendercache geleert"
+  "renderCacheCleared": "Rendercache geleert",
+  "passwordEmpty": "Das Passwort darf nicht leer sein",
+  "password": "Passwort",
+  "invalidCredentials": "Falsche Anmeldedaten"
 }

@@ -6,6 +6,7 @@ import 'package:kuebiko_web_client/pages/admin/overview.dart';
 import 'package:kuebiko_web_client/pages/admin/user/add.dart';
 import 'package:kuebiko_web_client/pages/admin/user/edit.dart';
 import 'package:kuebiko_web_client/pages/admin/user/list.dart';
+import 'package:kuebiko_web_client/pages/login/j_novel_club.dart';
 import 'package:kuebiko_web_client/pages/series/detail.dart';
 import 'package:kuebiko_web_client/pages/series/overview.dart';
 
@@ -76,6 +77,8 @@ class KuebikoApp extends StatelessWidget {
             targetPage = const ClientSelectionPage();
           case LoginPage.route:
             targetPage = LoginPage();
+          case JNovelClubLoginPage.route:
+            targetPage = JNovelClubLoginPage();
           case LibrariesPage.route:
             targetPage = const LibrariesPage();
           case OverviewPage.route:

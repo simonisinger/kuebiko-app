@@ -159,4 +159,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get renderCacheCleared => 'Rendercache geleert';
+
+  @override
+  String get passwordEmpty => 'Das Passwort darf nicht leer sein';
+
+  @override
+  String get password => 'Passwort';
+
+  @override
+  String get invalidCredentials => 'Falsche Anmeldedaten';
 }
