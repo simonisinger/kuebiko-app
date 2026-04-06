@@ -175,7 +175,7 @@ class EpubReader implements Reader {
             for (dom.Element stylingElement in stylingElements) {
               switch(stylingElement.localName) {
                 case 'code':
-                  rawContentElement.rules.add(CssProperty('font-family', 'Consolas'));
+                  rawContentElement.rules.add(CssProperty('font-family-force', 'Consolas'));
                   rawContentElement.rules.add(CssProperty('text-indent', '0'));
                 case 'b':
                   rawContentElement.rules.add(CssProperty('font-weight', 'bold'));
@@ -257,6 +257,7 @@ class EpubReader implements Reader {
     double? fontSizeFactor;
     FontWeight? fontWeight;
     FontStyle? fontStyle;
+    String? fontFamily;
     for (CssProperty property in properties) {
       switch (property.propertyName){
         case 'fontSize':
@@ -268,6 +269,8 @@ class EpubReader implements Reader {
           fontWeight = _handleFontWeight(property.propertyValue);
         case 'font-style':
           fontStyle = _handleFontStyle(property.propertyValue);
+        case 'font-family-force':
+          fontFamily = property.propertyValue.trim();
       }
     }
 
@@ -275,6 +278,7 @@ class EpubReader implements Reader {
         fontSize: fontSize,
         fontStyle: fontStyle,
         fontWeight: fontWeight,
+        fontFamily: fontFamily ?? settings.fontFamily
     );
   }
 
