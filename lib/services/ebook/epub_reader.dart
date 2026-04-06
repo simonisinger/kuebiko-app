@@ -186,7 +186,6 @@ class EpubReader implements Reader {
 
 
             for (String line in lines) {
-
               contentElement = SinglePartParagraph(
                   line.replaceAll(RegExp(r'<[^>]*>'), '').trim(),
                   convertCssPropertiesToTextStyle(rawContentElement.rules)
