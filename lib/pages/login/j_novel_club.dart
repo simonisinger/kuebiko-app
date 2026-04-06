@@ -23,6 +23,7 @@ class JNovelClubLoginPage extends StatelessWidget {
             children: [
               TextFormField(
                 autofillHints: [AutofillHints.email],
+                controller: _email,
                 decoration: InputDecoration(
                     hintText: localizations.email,
                     labelText: localizations.email
@@ -41,6 +42,7 @@ class JNovelClubLoginPage extends StatelessWidget {
                 },
               ),
               TextFormField(
+                controller: _password,
                 autofillHints: [AutofillHints.password],
                 decoration: InputDecoration(
                     hintText: localizations.password,
@@ -60,7 +62,7 @@ class JNovelClubLoginPage extends StatelessWidget {
                 child: TextButton(
                   onPressed: () async {
                     FormState formState = _formKey.currentState as FormState;
-                    if (formState.validate()) {
+                    if (!formState.validate()) {
                       return;
                     }
                     try {

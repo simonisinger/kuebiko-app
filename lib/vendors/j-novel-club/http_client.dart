@@ -37,7 +37,7 @@ class JNovelClubHttpClient {
           "slim": true
         })
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 201) {
       throw InvalidCredentialsException();
     }
 
