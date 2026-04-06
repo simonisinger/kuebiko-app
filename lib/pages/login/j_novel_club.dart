@@ -33,7 +33,7 @@ class JNovelClubLoginPage extends StatelessWidget {
                     return localizations.emailEmpty;
                   }
           
-                  if (RegExp(r"^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$").hasMatch(value)) {
+                  if (!RegExp(r"^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$").hasMatch(value)) {
                     return localizations.emailInvalid;
                   }
           
