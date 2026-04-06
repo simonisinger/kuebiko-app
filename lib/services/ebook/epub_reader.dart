@@ -169,13 +169,31 @@ class EpubReader implements Reader {
             }
             contentElement = MultiPartParagraphElement(parts);
           } else {
-            contentElement = SinglePartParagraph(
-                rawContentElement.contentElement.text,
-                convertCssPropertiesToTextStyle(rawContentElement.rules)
-            );
+            List<String> lines = rawContentElement.contentElement.innerHtml.split(RegExp(r"<br *\/?>"));
+            List<dom.Element> stylingElements = rawContentElement.contentElement.querySelectorAll('code,u,b');
+
+            for (dom.Element stylingElement in stylingElements) {
+              switch(stylingElement.localName) {
+                case 'code':
+                  rawContentElement.rules.add(CssProperty('font-family', 'Consolas'));
+                  rawContentElement.rules.add(CssProperty('text-indent', '0'));
+                case 'b':
+                  rawContentElement.rules.add(CssProperty('font-weight', 'bold'));
+                case 'u':
+                  rawContentElement.rules.add(CssProperty('text-decoration', 'underline'));
+              }
+            }
+
+
+            for (String line in lines) {
+              contentElement = SinglePartParagraph(
+                  line.trim(),
+                  convertCssPropertiesToTextStyle(rawContentElement.rules)
+              );
+              results[rawContentElement.chapter]![rawContentElement.fileName]!.add(contentElement);
+            }
           }
 
-          results[rawContentElement.chapter]![rawContentElement.fileName]!.add(contentElement);
         case 'img':
           epubx.EpubByteContentFileRef image = _book.Content!.Images![rawContentElement.contentElement.attributes['src']!.replaceAll('../', '')]!;
           bool fullSize = false;
@@ -191,55 +209,65 @@ class EpubReader implements Reader {
     return results;
   }
 
+  FontWeight? _handleFontWeight(String propertyValue) {
+    FontWeight? fontWeight;
+    switch (propertyValue.trim()) {
+      case '100':
+        fontWeight = FontWeight.w100;
+      case '200':
+        fontWeight = FontWeight.w200;
+      case '300':
+        fontWeight = FontWeight.w300;
+      case '400':
+        fontWeight = FontWeight.w400;
+      case '500':
+        fontWeight = FontWeight.w500;
+      case '600':
+        fontWeight = FontWeight.w600;
+      case '700':
+        fontWeight = FontWeight.w700;
+      case '800':
+        fontWeight = FontWeight.w800;
+      case '900':
+        fontWeight = FontWeight.w900;
+      case 'bold':
+        fontWeight = FontWeight.bold;
+      case 'normal':
+        fontWeight = FontWeight.normal;
+    }
+    return fontWeight;
+  }
+
+  FontStyle? _handleFontStyle(String propertyValue) {
+    FontStyle? fontStyle;
+    switch (propertyValue.trim()) {
+      case 'italic':
+        fontStyle = FontStyle.italic;
+        break;
+      case 'normal':
+        fontStyle = FontStyle.normal;
+        break;
+    }
+
+    return fontStyle;
+  }
+
   TextStyle convertCssPropertiesToTextStyle(List<CssProperty> properties) {
     double? fontSize;
     double? fontSizeFactor;
     FontWeight? fontWeight;
     FontStyle? fontStyle;
     for (CssProperty property in properties) {
-      if (property.propertyName == 'font-size') {
-        //fontSize = double.tryParse(property.propertyValue.replaceAll('px', ''));
-        fontSizeFactor = double.tryParse(property.propertyValue.replaceAll('em', ''));
-        // 14 is the default font size of flutter
-        fontSize = (fontSizeFactor ?? 1) * settings.fontSize;
-      }
-
-      if (property.propertyName == 'font-weight') {
-        switch (property.propertyValue.trim()) {
-          case '100':
-            fontWeight = FontWeight.w100;
-          case '200':
-            fontWeight = FontWeight.w200;
-          case '300':
-            fontWeight = FontWeight.w300;
-          case '400':
-            fontWeight = FontWeight.w400;
-          case '500':
-            fontWeight = FontWeight.w500;
-          case '600':
-            fontWeight = FontWeight.w600;
-          case '700':
-            fontWeight = FontWeight.w700;
-          case '800':
-            fontWeight = FontWeight.w800;
-          case '900':
-            fontWeight = FontWeight.w900;
-          case 'bold':
-            fontWeight = FontWeight.bold;
-          case 'normal':
-            fontWeight = FontWeight.normal;
-        }
-      }
-
-      if (property.propertyName == 'font-style') {
-        switch (property.propertyValue.trim()) {
-          case 'italic':
-            fontStyle = FontStyle.italic;
-            break;
-          case 'normal':
-            fontStyle = FontStyle.normal;
-            break;
-        }
+      switch (property.propertyName){
+        case 'fontSize':
+          //fontSize = double.tryParse(property.propertyValue.replaceAll('px', ''));
+          fontSizeFactor = double.tryParse(property.propertyValue.replaceAll('em', ''));
+          // 14 is the default font size of flutter
+          fontSize = (fontSizeFactor ?? 1) * settings.fontSize;
+        case 'font-weight':
+          fontWeight = _handleFontWeight(property.propertyValue);
+        case 'font-style':
+          fontStyle = _handleFontStyle(property.propertyValue);
       }
     }
 
@@ -256,7 +284,7 @@ class EpubReader implements Reader {
       try {
         CssProperty existingProperty = contentElement.rules.firstWhere((element) => element.propertyName == property.propertyName);
         contentElement.rules.remove(existingProperty);
-      } catch(exception){
+      } catch(exception) {
         // Do nothing
       }
       contentElement.rules.add(property);
@@ -301,7 +329,7 @@ class EpubReader implements Reader {
 
       dom.Document document = parse(utf8.decode(_book.Content!.Html![path]!.getContentFileEntry().content));
       _removeAElements(document);
-      List<dom.Element> localElements = document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,img,span,hr,em,code');
+      List<dom.Element> localElements = document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,img,span,hr,em');
       String stylesheetName = '';
       if (document.querySelector('link[rel="stylesheet"]') != null) {
         stylesheetName = p.normalize(
