@@ -31,6 +31,7 @@ dependencies:
   path_provider: ^2.1.5
   google_fonts: ^6.2.1
   dio: ^5.9.0
+  get_it: ^9.2.1
 
 
 dev_dependencies:

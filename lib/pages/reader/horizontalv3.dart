@@ -1,15 +1,14 @@
-import 'dart:convert';
-
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 
 import '../../cache/storage.dart';
 import '../../enum/book_type.dart';
 import '../../pages/reader/progress_mixin.dart';
-import '../../services/client.dart';
 import '../../services/ebook/ebook.dart';
 import '../../services/ebook/reader_interface.dart';
+import '../../services/reader/reader_cache.dart';
 import '../../services/storage/storage.dart';
 import '../../widget/cacheable_page_view.dart';
 import '../../widget/reader/overlay_bottom.dart';
@@ -196,13 +195,10 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
     double maxHeight = deviceHeight * 0.8;
     List<List<ContentElement>> pages = [];
 
-    String configKey = '${ClientService.service.getCurrentLocalName()}-${widget.book.id}-pageconfig';
+    ReaderCacheService readerCache = GetIt.instance.get<ReaderCacheService>();
 
-    String? pageConfigString = await storage.read(key: configKey);
-    Map<String, dynamic>? pageConfig;
-    if (pageConfigString != null) {
-      pageConfig = jsonDecode(pageConfigString);
-    }
+    Map<String, dynamic>? pageConfig = await readerCache.get(widget.book);
+
     if (
         pageConfig == null ||
         pageConfig['fontSize'] != settings.fontSize ||
@@ -235,20 +231,8 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
             if (tmpPage.isNotEmpty) {
               pages.add(List.unmodifiable(tmpPage));
             }
-            await storage.write(
-                key: configKey,
-                value: jsonEncode({
-                  'fontSize': settings.fontSize,
-                  'fontFamily': settings.fontFamily,
-                  'pageMapping': pages.map((element) => element.length).toList()
-                })
-            );
 
-            List pageConfigKeys = jsonDecode(await storage.read(key: EbookService.readerCacheKey) ?? '[]');
-            if (!pageConfigKeys.contains(configKey)) {
-              pageConfigKeys.add(configKey);
-              await storage.write(key: EbookService.readerCacheKey, value: jsonEncode(pageConfigKeys));
-            }
+            readerCache.write(widget.book, pages);
           } else {
             pages.add(List.unmodifiable(contentElements));
           }

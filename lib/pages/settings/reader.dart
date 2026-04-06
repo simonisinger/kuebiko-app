@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../cache/storage.dart';
 import '../../generated/i18n/app_localizations.dart';
+import '../../services/reader/reader_cache.dart';
 import '../../widget/base_scaffold.dart';
 
 final class ReaderSettingsPage extends StatefulWidget {
@@ -30,7 +32,9 @@ final class _ReaderSettingsPageState extends State<ReaderSettingsPage> {
           SizedBox(
             width: double.infinity,
             child: TextButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await GetIt.instance.get<ReaderCacheService>().clear();
+                },
                 child: Text(localizations.clearRenderCache)
             ),
           ),
@@ -85,18 +89,14 @@ final class _ReaderSettingsPageState extends State<ReaderSettingsPage> {
           ),
           TextField(
             onSubmitted: (String value) {
-              List<String> searchResults = [];
               if (value.length > 2) {
                 setState(() {
-                  searchResults = fonts
+                  fontSearchResults = fonts
                       .keys
                       .where((font) => font.contains(value))
                       .toList();
                 });
               }
-              setState(() {
-                fontSearchResults = searchResults;
-              });
             },
           ),
           ListView.builder(

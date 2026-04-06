@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
@@ -12,12 +11,11 @@ import '../../pages/reader/content/content_element.dart';
 import '../../pages/reader/content/image.dart';
 import '../../pages/reader/content/multi_part_paragraph.dart';
 import '../../pages/reader/content/single_part_paragraph.dart';
-import '../../cache/storage.dart';
 import '../ebook/epub_reader.dart';
 import '../ebook/reader_interface.dart';
 
 final class EbookService {
-  static const readerCacheKey = 'pageConfigList';
+
   static const progressUnsynchedKey = 'progress.unsynched';
 
   static Future<BookMeta?> parseEpubMeta(String filename, Stream<List<int>> data, int length) async {
@@ -105,13 +103,5 @@ final class EbookService {
     }
 
     return heights;
-  }
-
-  Future<void> clearRenderCache() async {
-    List renderCacheKeys = jsonDecode(await storage.read(key: readerCacheKey) ?? '[]');
-    for (String key in renderCacheKeys) {
-      await storage.delete(key: key);
-    }
-    await storage.write(key: readerCacheKey, value: '[]');
   }
 }

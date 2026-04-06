@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/pages/admin/overview.dart';
 import 'package:kuebiko_web_client/pages/admin/user/add.dart';
@@ -25,13 +26,19 @@ import 'pages/settings/reader.dart';
 import 'pages/setup/setup.dart';
 import 'generated/i18n/app_localizations.dart';
 import 'pages/login/login.dart';
+import 'services/reader/reader_cache.dart';
 import 'url_strategy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   await setupSettings();
+  initServices();
   runApp(const KuebikoApp());
+}
+
+void initServices() {
+  GetIt.instance.registerLazySingleton(() => ReaderCacheService());
 }
 
 class KuebikoApp extends StatelessWidget {
