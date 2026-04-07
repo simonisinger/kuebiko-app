@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:event/event.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/vendors/j-novel-club/http_client.dart';
+import 'package:kuebiko_web_client/vendors/j-novel-club/model/client.dart';
 import '../../cache/storage.dart';
 import '../../vendors/local/model/client.dart';
 import 'package:path_provider/path_provider.dart';
@@ -53,6 +55,12 @@ class ClientService {
       ClientFeature.uploadEbooks,
       ClientFeature.libraries,
       ClientFeature.progressCache,
+    },
+    JNovelClubClient: {
+      ClientFeature.series,
+      ClientFeature.progressCache,
+      ClientFeature.seriesCache,
+      ClientFeature.ebooksCache
     }
   };
 
@@ -107,6 +115,10 @@ class ClientService {
     return true;
   }
 
+  Future<bool> addJNovelClubClient() async {
+    return true;
+  }
+
   String _getClientKey(String localName) => 'clients.$localName'; 
 
   Future<bool> addClient(Client client, String localName) async {
@@ -138,6 +150,10 @@ class ClientService {
           'apiKey': config.apiKey,
           'deviceName': config.deviceName,
           'host': config.baseUrl.toString()
+        };
+      case JNovelClubClient jNovelClubClient:
+        data = {
+          'token': jNovelClubClient.token
         };
     }
     
@@ -183,6 +199,8 @@ class ClientService {
             );
           case 'LocalClient':
             configMap[localName] = LocalClient(localName);
+          case 'JNovelClubClient':
+            configMap[localName] = JNovelClubClient(JNovelClubHttpClient.fromToken(configRaw['token']));
         }
       } catch(exception){
         // do nothing

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
+import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/vendors/j-novel-club/http_client.dart';
+import 'package:kuebiko_web_client/vendors/j-novel-club/model/client.dart';
 
 import '../../widget/base_scaffold.dart';
 
@@ -11,6 +13,7 @@ class JNovelClubLoginPage extends StatelessWidget {
 
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  final TextEditingController _localName = TextEditingController();
   
   @override
   Widget build(BuildContext context) {
@@ -21,6 +24,13 @@ class JNovelClubLoginPage extends StatelessWidget {
         child: AutofillGroup(
           child: Column(
             children: [
+              TextFormField(
+                controller: _localName,
+                decoration: InputDecoration(
+                  hintText: localizations.name,
+                  labelText: localizations.name
+                ),
+              ),
               TextFormField(
                 autofillHints: [AutofillHints.email],
                 controller: _email,
@@ -66,7 +76,8 @@ class JNovelClubLoginPage extends StatelessWidget {
                       return;
                     }
                     try {
-                      await JNovelClubHttpClient.login(_email.text, _password.text);
+                      JNovelClubHttpClient httpClient = await JNovelClubHttpClient.login(_email.text, _password.text);
+                      await ClientService.service.addClient(JNovelClubClient(httpClient), _localName.text);
                     } catch(e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(

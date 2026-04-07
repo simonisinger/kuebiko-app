@@ -9,9 +9,12 @@ import 'series.dart';
 import 'user.dart';
 
 class JNovelClubClient implements Client {
-  final _httpClient = JNovelClubHttpClient();
+  final JNovelClubHttpClient _httpClient;
   final CacheController _seriesCache = JNovelClubCacheController();
   final String baseDomain = 'https://labs.j-novel.club';
+  String get token => _httpClient.token;
+
+  JNovelClubClient(this._httpClient);
 
   @override
   Future<void> createFolder(String path) {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+
 import '../../cache/storage.dart';
 import '../../services/client.dart';
 import 'exceptions/invalid_credentials.dart';
@@ -8,23 +9,22 @@ import 'exceptions/missing_credentials.dart';
 
 class JNovelClubHttpClient {
   final Dio _client = Dio();
-  late String _token;
-
+  late String token;
   String get _emailKey => "j-novel-club.${ClientService.service.getCurrentLocalName()}.username";
   String get _passwordKey => "j-novel-club.${ClientService.service.getCurrentLocalName()}.password";
 
   static Future<JNovelClubHttpClient> login(String email, String password) async {
     JNovelClubHttpClient client = JNovelClubHttpClient();
+    await client._login(email, password);
     await storage.write(key: client._emailKey, value: email);
     await storage.write(key: client._passwordKey, value: password);
-    await client._login(email, password);
 
     return client;
   }
 
   static JNovelClubHttpClient fromToken(String token) {
     JNovelClubHttpClient client = JNovelClubHttpClient();
-    client._token = token;
+    client.token = token;
     return client;
   }
 
@@ -41,7 +41,7 @@ class JNovelClubHttpClient {
       throw InvalidCredentialsException();
     }
 
-    _token = (response.data is Map ? response.data : jsonDecode(response.data))["id"];
+    token = (response.data is Map ? response.data : jsonDecode(response.data))["id"];
   }
 
   Future<void> _errorCheck(Response response) async {
@@ -58,7 +58,7 @@ class JNovelClubHttpClient {
 
   Options get _options => Options(
     headers: {
-      "labs_auth": _token
+      "labs_auth": token
     }
   );
 
