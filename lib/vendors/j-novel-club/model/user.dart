@@ -1,11 +1,13 @@
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/vendors/j-novel-club/http_client.dart';
 
 class JNovelClubUser implements User {
   final String _id;
   final String _email;
   final String _nickname;
+  final JNovelClubHttpClient _httpClient;
 
-  JNovelClubUser(this._id, this._email, this._nickname);
+  JNovelClubUser(this._id, this._email, this._nickname, this._httpClient);
 
   @override
   String get email => _email;
@@ -29,9 +31,8 @@ class JNovelClubUser implements User {
   }
 
   @override
-  Future<List<Book>> finishedBooks() {
-    // TODO: implement finishedBooks
-    throw UnimplementedError();
+  Future<List<Book>> finishedBooks() async {
+    return [];
   }
 
   @override
@@ -44,9 +45,8 @@ class JNovelClubUser implements User {
   }
 
   @override
-  Future<List<Book>> readingBooks() {
-    // TODO: implement readingBooks
-    throw UnimplementedError();
+  Future<List<Book>> readingBooks() async {
+    return [];
   }
 
   @override
@@ -55,9 +55,8 @@ class JNovelClubUser implements User {
   }
 
   @override
-  Future<List<Book>> unreadBooks() {
-    // TODO: implement unreadBooks
-    throw UnimplementedError();
+  Future<List<Book>> unreadBooks() async {
+    return [];
   }
 
   @override

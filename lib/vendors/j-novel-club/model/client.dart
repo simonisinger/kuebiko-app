@@ -13,6 +13,7 @@ class JNovelClubClient implements Client {
   final CacheController _seriesCache = JNovelClubCacheController();
   final String baseDomain = 'https://labs.j-novel.club';
   String get token => _httpClient.token;
+  JNovelClubUser? _user;
 
   JNovelClubClient(this._httpClient);
 
@@ -36,9 +37,12 @@ class JNovelClubClient implements Client {
 
   @override
   Future<User> currentUser() async {
-    Response res = await _httpClient.get(Uri.parse('$baseDomain/app/v2/me?format=json'));
-    Map rawData = (res.data is Map ? res.data : jsonDecode(res.data));
-    return JNovelClubUser(rawData['id'], rawData['email'], rawData['username']);
+    if (_user == null) {
+      Response res = await _httpClient.get(Uri.parse('$baseDomain/app/v2/me?format=json'));
+      Map rawData = (res.data is Map ? res.data : jsonDecode(res.data));
+      _user = JNovelClubUser(rawData['id'], rawData['email'], rawData['username'], _httpClient);
+    }
+    return _user!;
   }
 
   @override
