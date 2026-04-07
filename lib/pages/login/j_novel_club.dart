@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
-import 'package:kuebiko_web_client/services/client.dart';
 import 'package:kuebiko_web_client/vendors/j-novel-club/http_client.dart';
-import 'package:kuebiko_web_client/vendors/j-novel-club/model/client.dart';
 
 import '../../widget/base_scaffold.dart';
 
@@ -76,8 +74,7 @@ class JNovelClubLoginPage extends StatelessWidget {
                       return;
                     }
                     try {
-                      JNovelClubHttpClient httpClient = await JNovelClubHttpClient.login(_email.text, _password.text);
-                      await ClientService.service.addClient(JNovelClubClient(httpClient), _localName.text);
+                      await JNovelClubHttpClient.login(_email.text, _password.text, _localName.text);
                     } catch(e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(

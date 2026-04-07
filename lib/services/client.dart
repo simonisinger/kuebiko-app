@@ -200,7 +200,7 @@ class ClientService {
           case 'LocalClient':
             configMap[localName] = LocalClient(localName);
           case 'JNovelClubClient':
-            configMap[localName] = JNovelClubClient(JNovelClubHttpClient.fromToken(configRaw['token']));
+            configMap[localName] = JNovelClubClient(JNovelClubHttpClient.fromToken(configRaw['token'], localName));
         }
       } catch(exception){
         // do nothing

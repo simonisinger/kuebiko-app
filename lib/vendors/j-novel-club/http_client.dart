@@ -6,24 +6,30 @@ import '../../cache/storage.dart';
 import '../../services/client.dart';
 import 'exceptions/invalid_credentials.dart';
 import 'exceptions/missing_credentials.dart';
+import 'model/client.dart';
 
 class JNovelClubHttpClient {
   final Dio _client = Dio();
   late String token;
-  String get _emailKey => "j-novel-club.${ClientService.service.getCurrentLocalName()}.username";
-  String get _passwordKey => "j-novel-club.${ClientService.service.getCurrentLocalName()}.password";
+  late String _name;
+  String get _emailKey => "j-novel-club.$_name.username";
+  String get _passwordKey => "j-novel-club.$_name.password";
 
-  static Future<JNovelClubHttpClient> login(String email, String password) async {
-    JNovelClubHttpClient client = JNovelClubHttpClient();
-    await client._login(email, password);
-    await storage.write(key: client._emailKey, value: email);
-    await storage.write(key: client._passwordKey, value: password);
+  static Future<JNovelClubClient> login(String email, String password, String localName) async {
+    JNovelClubHttpClient httpClient = JNovelClubHttpClient();
+    await httpClient._login(email, password);
+    httpClient._name = localName;
+    JNovelClubClient client = JNovelClubClient(httpClient);
+    await ClientService.service.addClient(client, localName);
 
+    await storage.write(key: httpClient._emailKey, value: email);
+    await storage.write(key: httpClient._passwordKey, value: password);
     return client;
   }
 
-  static JNovelClubHttpClient fromToken(String token) {
+  static JNovelClubHttpClient fromToken(String token, String localName) {
     JNovelClubHttpClient client = JNovelClubHttpClient();
+    client._name = localName;
     client.token = token;
     return client;
   }
@@ -47,6 +53,7 @@ class JNovelClubHttpClient {
   Future<void> _errorCheck(Response response) async {
     switch (response.statusCode) {
       case 400:
+      case 401:
         String? email = await storage.read(key: _emailKey);
         String? password = await storage.read(key: _passwordKey);
         if (email == null || password == null) {
@@ -58,15 +65,20 @@ class JNovelClubHttpClient {
 
   Options get _options => Options(
     headers: {
-      "labs_auth": token
+      "Authorization": "Bearer $token"
     }
   );
 
-  Future<Response> get(Uri path, {ResponseType responseType = ResponseType.plain}) async {
+  bool _validateStatus(int? status) {
+    return (status ?? 500) < 500;
+  }
+
+  Future<Response> get(Uri path, {ResponseType responseType = ResponseType.json}) async {
     Response response = await _client.getUri(
         path,
         options: _options.copyWith(
-          responseType: responseType
+          responseType: responseType,
+          validateStatus: _validateStatus
         )
     );
     await _errorCheck(response);
