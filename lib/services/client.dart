@@ -3,12 +3,14 @@ import 'dart:io';
 
 import 'package:event/event.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/vendors/j-novel-club/http_client.dart';
-import 'package:kuebiko_web_client/vendors/j-novel-club/model/client.dart';
-import '../../cache/storage.dart';
-import '../../vendors/local/model/client.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:version/version.dart';
+
+import '../../vendors/j-novel-club/http_client.dart';
+import '../../vendors/j-novel-club/model/client.dart';
+import '../../vendors/tiger-translations/model/client.dart';
+import '../../cache/storage.dart';
+import '../../vendors/local/model/client.dart';
 
 enum ClientFeature {
   deleteOnServer,
@@ -61,6 +63,11 @@ class ClientService {
       ClientFeature.progressCache,
       ClientFeature.seriesCache,
       ClientFeature.ebooksCache
+    },
+    TigerTranslationsClient: {
+      ClientFeature.series,
+      ClientFeature.progressCache,
+      ClientFeature.seriesCache
     }
   };
 
@@ -117,6 +124,10 @@ class ClientService {
 
   Future<bool> addJNovelClubClient() async {
     return true;
+  }
+
+  Future<bool> addTigerTranslationsClient(String localName) async {
+    return await addClient(TigerTranslationsClient(), localName);
   }
 
   String _getClientKey(String localName) => 'clients.$localName'; 
@@ -201,6 +212,8 @@ class ClientService {
             configMap[localName] = LocalClient(localName);
           case 'JNovelClubClient':
             configMap[localName] = JNovelClubClient(JNovelClubHttpClient.fromToken(configRaw['token'], localName));
+          case 'TigerTranslationsClient':
+            configMap[localName] = TigerTranslationsClient();
         }
       } catch(exception){
         // do nothing

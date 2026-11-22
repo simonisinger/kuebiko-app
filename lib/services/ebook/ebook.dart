@@ -61,7 +61,7 @@ final class EbookService {
       switch (element) {
         case ImageContent imageContent:
           image.Image imageObject = image.decodeImage(
-              Uint8List.fromList(await imageContent.image.readContent())
+              Uint8List.fromList(await imageContent.content)
           )!;
           double height = imageObject.height.toDouble();
           if (imageObject.width > maxWidth) {

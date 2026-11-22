@@ -1,15 +1,16 @@
 import 'dart:typed_data';
 
-import 'package:epubx_kuebiko/epubx_kuebiko.dart' show EpubByteContentFileRef;
 import 'package:flutter/material.dart';
 
 import 'content_element.dart';
 
 class ImageContent extends ContentElement {
-  final EpubByteContentFileRef image;
+  final Future<List<int>> Function() _loader;
   final bool fullSize;
+  // the image is needed for the height calculation and the rendering, so it is only loaded once
+  late final Future<List<int>> content = _loader();
 
-  ImageContent(this.image, this.fullSize);
+  ImageContent(this._loader, this.fullSize);
 
   @override
   Widget render() {
@@ -19,7 +20,7 @@ class ImageContent extends ContentElement {
             ? EdgeInsets.zero
             : const EdgeInsets.symmetric(vertical: 10),
         child: FutureBuilder(
-            future: image.readContent(),
+            future: content,
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:

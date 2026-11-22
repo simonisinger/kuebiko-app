@@ -7,6 +7,7 @@ import 'package:kuebiko_web_client/pages/admin/user/add.dart';
 import 'package:kuebiko_web_client/pages/admin/user/edit.dart';
 import 'package:kuebiko_web_client/pages/admin/user/list.dart';
 import 'package:kuebiko_web_client/pages/login/j_novel_club.dart';
+import 'package:kuebiko_web_client/pages/login/tiger_translations.dart';
 import 'package:kuebiko_web_client/pages/series/detail.dart';
 import 'package:kuebiko_web_client/pages/series/overview.dart';
 
@@ -79,6 +80,8 @@ class KuebikoApp extends StatelessWidget {
             targetPage = LoginPage();
           case JNovelClubLoginPage.route:
             targetPage = JNovelClubLoginPage();
+          case TigerTranslationsLoginPage.route:
+            targetPage = TigerTranslationsLoginPage();
           case LibrariesPage.route:
             targetPage = const LibrariesPage();
           case OverviewPage.route:
@@ -121,7 +124,7 @@ class KuebikoApp extends StatelessWidget {
           default:
             targetPage = const PageNotFoundPage();
         }
-        return MaterialPageRoute(builder: (context) => targetPage);
+        return MaterialPageRoute(settings: routeSettings, builder: (context) => targetPage);
       },
       title: 'Kuebiko App',
       theme: ThemeData(

@@ -3,7 +3,7 @@ description: The Kuebiko App und Web Client
 
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.2
 
 environment:
   sdk: "^3.8.0"
@@ -27,7 +27,7 @@ dependencies:
   flutter_localizations:
       sdk: flutter
   intl: any
-  file_picker: ^10.1.2
+  file_picker: ^11.0.2
   path_provider: ^2.1.5
   google_fonts: ^6.2.1
   dio: ^5.9.0

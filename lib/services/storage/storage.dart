@@ -14,6 +14,8 @@ import '../../services/ebook/ebook.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../ebook/epub_reader.dart';
+import '../ebook/html_reader.dart';
+import '../ebook/reader_interface.dart';
 
 class StorageService {
   static final StorageService service = StorageService();
@@ -25,7 +27,8 @@ class StorageService {
   Future<String> generatePath(Book book) async {
     Directory baseDirectory = await getApplicationDocumentsDirectory();
     String localName = ClientService.service.getCurrentLocalName()!;
-    return '${baseDirectory.path}/$localName-${book.id}.epub';
+    String extension = book is HtmlBook ? 'html' : 'epub';
+    return '${baseDirectory.path}/$localName-${book.id}.$extension';
   }
 
   Future<bool> ebookIsDownloaded(Book book) async {
@@ -140,7 +143,7 @@ class StorageService {
 
   Future<Uint8List> getCover(Book book) async {
     Uint8List? localBookCover;
-    if (await ebookIsDownloaded(book)) {
+    if (book is! HtmlBook && await ebookIsDownloaded(book)) {
       localBookCover = await (await _getRawEpubObject(book)).readCoverRaw();
     }
 
@@ -160,7 +163,10 @@ class StorageService {
     );
   }
 
-  Future<EpubReader> getEbookReader(Book book) async {
+  Future<Reader> getEbookReader(Book book) async {
+    if (book is HtmlBook) {
+      return HtmlReader(await File(await generatePath(book)).readAsString());
+    }
     return EpubReader.fromEpubBookRef(await _getRawEpubObject(book));
   }
 }

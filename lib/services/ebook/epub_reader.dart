@@ -201,7 +201,7 @@ class EpubReader implements Reader {
             fullSize = true;
           }
 
-          results[rawContentElement.chapter]![rawContentElement.fileName]!.add(ImageContent(image, fullSize));
+          results[rawContentElement.chapter]![rawContentElement.fileName]!.add(ImageContent(image.readContent, fullSize));
       }
     }
     // Thinking about refactor the result type and removing the filename because possible wrong order during rendering

@@ -24,7 +24,7 @@ class _UploadPageState extends State<UploadPage> {
   bool uploadActive = false;
 
   void _pickFiles() async {
-    List<PlatformFile>? pickedFiles = (await FilePicker.platform.pickFiles(
+    List<PlatformFile>? pickedFiles = (await FilePicker.pickFiles(
       type: FileType.custom,
       allowMultiple: true,
       allowedExtensions: ['epub'],
