@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/exceptions/io/ebook_read.dart';
 import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
-import 'package:kuebiko_web_client/services/ebook/ebook.dart';
+import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
 import '../../../cache/storage.dart';
 import '../../../services/client.dart';
 import '../../../services/storage/storage.dart';
@@ -76,70 +77,79 @@ class LocalLibrary implements Library {
   Future<Map<String, dynamic>> get _ebooksList async => jsonDecode(await storage.read(key: ebookListKey) ?? '{}');
 
 
-  Stream<double> _getUploadProgressStream(String filename, Stream<List<int>> fileContent, int fileLength) async* {
-    int maxId = int.parse(await storage.read(key: ebookMaxIdKey) ?? '0');
-    String path = await StorageService.service.generatePath(LocalBook(filename, this, maxId+1));
-    File file = File(path);
+  Future<LocalBook> _storeEbook(
+      String filename,
+      BookMeta meta,
+      Stream<List<int>> fileContent,
+      int fileLength,
+      StreamController<double> progress
+  ) async {
+    File? file;
+    try {
+      int id = int.parse(await storage.read(key: ebookMaxIdKey) ?? '0') + 1;
+      LocalBook localBook = LocalBook(filename, this, id);
+      file = File(await StorageService.service.generatePath(localBook));
 
-    file.openWrite().addStream(fileContent);
+      // write the file completely before registering it anywhere
+      IOSink sink = file.openWrite();
+      int writtenLength = 0;
+      try {
+        await for (List<int> chunk in fileContent) {
+          sink.add(chunk);
+          writtenLength += chunk.length;
+          progress.add(writtenLength / fileLength * 100);
+        }
+        await sink.flush();
+      } finally {
+        await sink.close();
+      }
 
-    double onePercent = fileLength / 100;
-    int writtenLength = 0;
-    await for (List<int> chunk in fileContent) {
-      writtenLength += chunk.length;
-      yield writtenLength / onePercent;
+      // only verify the written file is a readable epub, the meta was already
+      // parsed from the source file by the caller
+      try {
+        await epubx.EpubReader.openBookStream(file.openRead(), await file.length());
+      } catch (e) {
+        throw EbookReadException();
+      }
+
+      await storage.write(key: ebookMaxIdKey, value: id.toString());
+      Map<String, dynamic> ebookList = await _ebooksList;
+      ebookList[id.toString()] = filename;
+      await storage.write(key: ebookListKey, value: jsonEncode(ebookList));
+
+      await storage.write(
+          key: localBook.metadataKey,
+          value: jsonEncode({
+            'name': meta.name,
+            'author': meta.author,
+            'description': '',
+            'series': null,
+            'number_of_volume': meta.volNumber,
+            'publisher': null,
+            'language': meta.language,
+            'genre': null,
+            'tag': null,
+            'age_rating': null,
+            "release_date": meta.releaseDate.toString(),
+            "type": null
+          })
+      );
+      return localBook;
+    } catch (e, stackTrace) {
+      if (file != null && await file.exists()) {
+        await file.delete();
+      }
+      progress.addError(e, stackTrace);
+      rethrow;
+    } finally {
+      progress.close();
     }
-    return;
   }
 
   @override
   KuebikoUpload upload(String filename, BookMeta meta, Stream<List<int>> fileContent, int fileLength) {
-    int maxId = 0;
-    fileContent = fileContent.asBroadcastStream();
-    Stream<double> progressStream = _getUploadProgressStream(filename, fileContent, fileLength);
-
-    Future<LocalBook> book = storage.read(key: ebookMaxIdKey)
-        .then((String? ebookMaxId) {
-          maxId = int.parse(ebookMaxId ?? '0');
-          return storage.write(key: ebookMaxIdKey, value: (++maxId).toString());
-        })
-        .then((_)  => _ebooksList)
-        .then((Map<String, dynamic> ebookList) {
-          ebookList[maxId.toString()] = filename;
-          return storage.write(key: ebookListKey, value: jsonEncode(ebookList));
-        })
-        .then((_) async {
-          LocalBook localBook = LocalBook(filename, this, maxId);
-          BookMeta? bookMeta = await EbookService.parseEpubMeta(
-              filename,
-              File(await StorageService.service.generatePath(localBook)).openRead(),
-              fileLength
-          );
-
-          if (bookMeta == null) {
-            throw EbookReadException();
-          }
-
-          await storage.write(
-              key: localBook.metadataKey,
-              value: jsonEncode({
-                'name': bookMeta.name,
-                'author': bookMeta.author,
-                'description': '',
-                'series': null,
-                'number_of_volume': bookMeta.volNumber,
-                'publisher': null,
-                'language': bookMeta.language,
-                'genre': null,
-                'tag': null,
-                'age_rating': null,
-                "release_date": bookMeta.releaseDate.toString(),
-                "type": null
-              })
-          );
-          return localBook;
-        });
-
-    return KuebikoUpload(progressStream, book);
+    StreamController<double> progress = StreamController<double>();
+    Future<LocalBook> book = _storeEbook(filename, meta, fileContent, fileLength, progress);
+    return KuebikoUpload(progress.stream, book);
   }
 }
