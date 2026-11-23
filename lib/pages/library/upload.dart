@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/event/book.dart';
 import 'package:kuebiko_web_client/exceptions/io/ebook_read.dart';
 import '../../generated/i18n/app_localizations.dart';
 import '../../services/storage/storage.dart';
@@ -24,17 +25,15 @@ class _UploadPageState extends State<UploadPage> {
   bool uploadActive = false;
 
   void _pickFiles() async {
-    List<PlatformFile>? pickedFiles = (await FilePicker.pickFiles(
+    List<PlatformFile> pickedFiles = await FilePicker.pickFiles(
       type: FileType.custom,
-      allowMultiple: true,
       allowedExtensions: ['epub'],
-      withReadStream: true
-    ))?.files;
+    );
 
     if (!mounted) return;
 
     setState(() {
-      if (pickedFiles != null) {
+      if (pickedFiles.isNotEmpty) {
         _fileStreamControllers.addEntries(pickedFiles.map((file) => MapEntry(file, StreamController())));
         _fileStreams.addEntries(pickedFiles.map((file) => MapEntry(file, _fileStreamControllers[file]!.stream.asBroadcastStream())));
       }
@@ -67,8 +66,15 @@ class _UploadPageState extends State<UploadPage> {
       return false;
     }
     StreamController controller = _fileStreamControllers[file]!;
-    await controller.addStream(upload.stream);
-    await controller.close();
+    try {
+      await controller.addStream(upload.stream, cancelOnError: true);
+      await upload.book;
+      ebookAddedEvent.broadcast();
+    } catch (_) {
+      return false;
+    } finally {
+      await controller.close();
+    }
     return true;
   }
 

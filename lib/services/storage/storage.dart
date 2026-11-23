@@ -42,15 +42,19 @@ class StorageService {
   }
 
   Future<KuebikoUpload> uploadEbook(PlatformFile file) async {
-    BookMeta? meta = await EbookService.parseEpubMeta(file.name, file.xFile.openRead(), file.size);
+    int? size = await file.length();
+    if (size == null) {
+      throw EbookReadException();
+    }
+    BookMeta? meta = await EbookService.parseEpubMeta(file.name, file.readAsByteStream(), size);
     if (meta == null) {
       throw EbookReadException();
     }
     return ClientService.service.selectedLibrary!.upload(
         file.name,
         meta,
-        file.xFile.openRead(),
-        file.size
+        file.readAsByteStream(),
+        size
     );
   }
 
