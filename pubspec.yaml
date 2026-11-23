@@ -27,7 +27,7 @@ dependencies:
   flutter_localizations:
       sdk: flutter
   intl: any
-  file_picker: ^11.0.2
+  file_picker: ^13.4.1
   path_provider: ^2.1.5
   google_fonts: ^6.2.1
   dio: ^5.9.0
