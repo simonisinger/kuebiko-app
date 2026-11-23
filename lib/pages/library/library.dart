@@ -1,6 +1,8 @@
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/pages/book/book_detail.dart';
+import '../../event/book.dart';
 import '../../pages/library/upload.dart';
 import '../../services/client.dart';
 import '../../widget/add_button.dart';
@@ -16,6 +18,19 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
+  late final List<Book> _books;
+
+  @override
+  void initState() {
+    ebookAddedEvent.subscribe(_updateState);
+    super.initState();
+  }
+
+  void _updateState(Value<Book> bookValue) {
+    setState(() {
+      _books.add(bookValue.value);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,28 +49,8 @@ class _LibraryPageState extends State<LibraryPage> {
               if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               } else {
-                return GridView.builder(
-                  itemCount: snapshot.data.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                  ),
-                  itemBuilder: (BuildContext context, int index) => Container(
-                    margin: EdgeInsets.all(4),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushNamed(
-                            BookDetailPage.route,
-                            arguments: snapshot.data[index]
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          BookImage(book: snapshot.data[index])
-                        ],
-                      ),
-                    ),
-                  ),
-                );
+                _books = snapshot.data;
+                return _grid();
               }
           }
         },
@@ -64,5 +59,36 @@ class _LibraryPageState extends State<LibraryPage> {
         ? const AddWidget(targetPath: UploadPage.route)
         : Container(),
     );
+  }
+
+  Widget _grid() {
+    return GridView.builder(
+      itemCount: _books.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+      ),
+      itemBuilder: (BuildContext context, int index) => Container(
+        margin: EdgeInsets.all(4),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(
+                BookDetailPage.route,
+                arguments: _books[index]
+            );
+          },
+          child: Column(
+            children: [
+              BookImage(book: _books[index])
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    ebookAddedEvent.unsubscribe(_updateState);
+    super.dispose();
   }
 }

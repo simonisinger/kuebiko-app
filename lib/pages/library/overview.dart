@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
-import 'package:kuebiko_web_client/event/book.dart';
+
 import '../../generated/i18n/app_localizations.dart';
 import '../../services/client.dart';
 import '../../widget/base_scaffold.dart';
-
 import '../../widget/library/books_list_horizontal.dart';
 
 class OverviewPage extends StatefulWidget {
@@ -16,16 +15,6 @@ class OverviewPage extends StatefulWidget {
 }
 
 class _OverviewPageState extends State<OverviewPage> {
-  @override
-  void initState() {
-    ebookAddedEvent.subscribe(_updateState);
-    super.initState();
-  }
-
-  void _updateState(_) {
-    setState(() {});
-  }
-
   Widget _rebuildFutureBuilder(BuildContext context, AsyncSnapshot<List<Book>> snapshot) {
     switch (snapshot.connectionState) {
       case ConnectionState.none:
