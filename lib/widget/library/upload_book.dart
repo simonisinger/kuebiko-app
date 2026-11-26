@@ -28,11 +28,13 @@ class _UploadBookState extends State<UploadBook> {
 
   @override
   void initState() {
-    widget.progressStream.listen((data) {
-      if (data >= 1.0 && widget.onFinished != null) {
-        widget.onFinished!();
-      }
-    });
+    // the upload is finished once the progress stream is closed,
+    // the book is persisted at that point
+    widget.progressStream.listen(
+      (_) {},
+      onError: (_) {},
+      onDone: () => widget.onFinished?.call(),
+    );
     super.initState();
   }
 
@@ -43,7 +45,9 @@ class _UploadBookState extends State<UploadBook> {
       stream: widget.progressStream,
       initialData: 0.0,
       builder: (context, snapshot) {
+        // progress is reported in percent (0-100)
         final progress = snapshot.data ?? 0.0;
+        final fraction = (progress / 100).clamp(0.0, 1.0);
         return SizedBox(
           width: widget.width,
           height: widget.height,
@@ -61,7 +65,7 @@ class _UploadBookState extends State<UploadBook> {
                 ),
 
                 FractionallySizedBox(
-                  widthFactor: progress,
+                  widthFactor: fraction,
                   child: Container(
                     height: widget.height,
                     decoration: BoxDecoration(
@@ -101,7 +105,7 @@ class _UploadBookState extends State<UploadBook> {
                         ),
 
                         ClipRect(
-                          clipper: _ProgressClipper(progress),
+                          clipper: _ProgressClipper(fraction),
                           child: Align(
                             alignment: Alignment.center,
                             child: Text(

@@ -34,6 +34,15 @@ class ReaderCacheService {
     await storage.write(key: readerCacheKey, value: '[]');
   }
 
+  Future<void> remove(Book book) async {
+    String configKey = _generateCacheConfigKey(book);
+    await storage.delete(key: configKey);
+    List pageConfigKeys = jsonDecode(await storage.read(key: readerCacheKey) ?? '[]');
+    if (pageConfigKeys.remove(configKey)) {
+      await storage.write(key: readerCacheKey, value: jsonEncode(pageConfigKeys));
+    }
+  }
+
   String _generateCacheConfigKey(Book book) => '${ClientService.service.getCurrentLocalName()}-${book.id}-pageconfig';
 
   Future<bool> has(Book book) async {

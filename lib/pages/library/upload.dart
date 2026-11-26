@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:event/event.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
@@ -68,8 +69,8 @@ class _UploadPageState extends State<UploadPage> {
     StreamController controller = _fileStreamControllers[file]!;
     try {
       await controller.addStream(upload.stream, cancelOnError: true);
-      await upload.book;
-      ebookAddedEvent.broadcast();
+      Book book = await upload.book;
+      ebookAddedEvent.broadcast(Value(book));
     } catch (_) {
       return false;
     } finally {

@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:kuebiko_web_client/exceptions/io/ebook_read.dart';
-import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
 import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
 import '../../../cache/storage.dart';
 import '../../../services/client.dart';
@@ -42,9 +41,13 @@ class LocalLibrary implements Library {
   Future<void> delete() async {
     List<Book> bookList = await books(BookSorting.name, SortingDirection.asc);
     for (Book book in bookList) {
-      await storage.delete(key: ProgressMixin.getLocalStorageKey(book));
+      // removes the ebook file, metadata, progress and reader cache
+      await book.delete();
     }
-    await Directory(path).delete(recursive: true);
+    Directory directory = Directory(path);
+    if (await directory.exists()) {
+      await directory.delete(recursive: true);
+    }
     await storage.delete(key: ebookListKey);
     await storage.delete(key: ebookMaxIdKey);
   }

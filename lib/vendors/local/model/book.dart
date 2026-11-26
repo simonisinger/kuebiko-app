@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:get_it/get_it.dart';
 import 'package:kuebiko_client/kuebiko_client.dart';
+import 'package:kuebiko_web_client/services/reader/reader_cache.dart';
 import 'package:kuebiko_web_client/cache/storage.dart';
 import 'package:kuebiko_web_client/pages/reader/progress_mixin.dart';
 import 'package:kuebiko_web_client/services/storage/storage.dart';
@@ -43,12 +45,20 @@ class LocalBook implements Book {
   @override
   Future<void> delete() async {
     LocalLibrary localLibrary = library as LocalLibrary;
-    Map<String, dynamic> dataRaw = jsonDecode((await storage.read(key: localLibrary.ebookListKey))!);
-    dataRaw.remove(id.toString());
-    await storage.write(key: localLibrary.ebookListKey, value: jsonEncode(dataRaw));
-    await File(await StorageService.service.generatePath(this)).delete();
+    // clean up all stored data first, so a missing file can't leave orphaned entries behind
     await storage.delete(key: metadataKey);
     await storage.delete(key: ProgressMixin.getLocalStorageKey(this));
+    await GetIt.instance.get<ReaderCacheService>().remove(this);
+
+    Map<String, dynamic> dataRaw = jsonDecode(await storage.read(key: localLibrary.ebookListKey) ?? '{}');
+    if (dataRaw.remove(id.toString()) != null) {
+      await storage.write(key: localLibrary.ebookListKey, value: jsonEncode(dataRaw));
+    }
+
+    File file = File(await StorageService.service.generatePath(this));
+    if (await file.exists()) {
+      await file.delete();
+    }
   }
 
   @override

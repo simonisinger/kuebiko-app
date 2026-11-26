@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/generated/i18n/app_localizations.dart';
+import '../../../generated/i18n/app_localizations.dart';
 import '../../../widget/base_scaffold.dart';
 import '../../../widget/user/form.dart';
 

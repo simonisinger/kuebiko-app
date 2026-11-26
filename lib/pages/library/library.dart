@@ -18,17 +18,25 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  late final List<Book> _books;
+  late List<Book> _books;
+  late Future<List<Book>> _booksFuture;
 
   @override
   void initState() {
+    _booksFuture = _loadBooks();
     ebookAddedEvent.subscribe(_updateState);
     super.initState();
   }
 
-  void _updateState(Value<Book> bookValue) {
+  Future<List<Book>> _loadBooks() => ClientService.service
+      .selectedLibrary!
+      .books(BookSorting.name, SortingDirection.asc);
+
+  void _updateState(Value<Book>? _) {
+    if (!mounted) return;
     setState(() {
-      _books.add(bookValue.value);
+      // reload so the new book is included and correctly sorted
+      _booksFuture = _loadBooks();
     });
   }
 
@@ -36,10 +44,8 @@ class _LibraryPageState extends State<LibraryPage> {
   Widget build(BuildContext context) {
     return BaseScaffold(
       FutureBuilder(
-        future: ClientService.service
-            .selectedLibrary!
-            .books(BookSorting.name, SortingDirection.asc),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        future: _booksFuture,
+        builder: (BuildContext context, AsyncSnapshot<List<Book>> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
@@ -49,7 +55,7 @@ class _LibraryPageState extends State<LibraryPage> {
               if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               } else {
-                _books = snapshot.data;
+                _books = snapshot.data!;
                 return _grid();
               }
           }

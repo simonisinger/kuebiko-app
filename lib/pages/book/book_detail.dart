@@ -10,6 +10,7 @@ import '../../widget/base_scaffold.dart';
 import '../../services/storage/storage.dart';
 import '../../widget/action_button.dart';
 import '../../widget/book/download_button.dart';
+import '../../vendors/local/model/book.dart';
 
 class BookDetailPage extends StatefulWidget {
   static const route = '/book/detail';
@@ -131,6 +132,13 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           ),
                           _ebookDownloaded ? IconButton(
                               onPressed: () async {
+                                if (widget.book is LocalBook) {
+                                  // local ebooks only exist on the device, so deleting the file
+                                  // means deleting the whole ebook including its stored data
+                                  await widget.book.delete();
+                                  if (context.mounted) Navigator.pop(context);
+                                  return;
+                                }
                                 await StorageService.service.deleteEbook(widget.book);
                                 setState(() {
                                   _ebookDownloaded = false;
