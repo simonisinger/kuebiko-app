@@ -9,6 +9,8 @@ class ImageContent extends ContentElement {
   final bool fullSize;
   // the image is needed for the height calculation and the rendering, so it is only loaded once
   late final Future<List<int>> content = _loader();
+  // set by the page layout so the rendered image matches the measured height
+  double? maxHeight;
 
   ImageContent(this._loader, this.fullSize);
 
@@ -32,7 +34,14 @@ class ImageContent extends ContentElement {
                   if (snapshot.hasError) {
                     return Text(snapshot.error.toString());
                   }
-                  return Image.memory(Uint8List.fromList(snapshot.data!));
+                  Widget image = Image.memory(Uint8List.fromList(snapshot.data!));
+                  if (maxHeight != null) {
+                    image = ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: maxHeight!),
+                      child: image,
+                    );
+                  }
+                  return image;
               }
             }
         )

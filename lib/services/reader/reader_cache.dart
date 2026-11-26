@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' show Size;
 
 import 'package:kuebiko_client/kuebiko_client.dart';
 
@@ -7,15 +8,20 @@ import '../client.dart';
 
 class ReaderCacheService {
   static const readerCacheKey = 'pageConfigList';
+  // bump whenever the pagination logic changes so old page mappings get recalculated
+  static const layoutVersion = 2;
 
 
-  Future<void> write(Book book, List pages) async {
+  Future<void> write(Book book, List pages, Size size) async {
     String configKey = _generateCacheConfigKey(book);
     await storage.write(
         key: configKey,
         value: jsonEncode({
           'fontSize': settings.fontSize,
           'fontFamily': settings.fontFamily,
+          'layoutVersion': layoutVersion,
+          'width': size.width,
+          'height': size.height,
           'pageMapping': pages.map((element) => element.length).toList()
         })
     );

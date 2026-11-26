@@ -1,13 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:epubx_kuebiko/epubx_kuebiko.dart' as epubx;
-import 'package:flutter/material.dart' show BoxConstraints, TextDirection, TextSpan, TextStyle;
+import 'package:flutter/material.dart' show BoxConstraints, InlineSpan, TextDirection, TextScaler, TextSpan, TextStyle;
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:image/image.dart' as image;
 import 'package:kuebiko_client/kuebiko_client.dart';
 import 'package:path/path.dart' as p;
 
 import '../../pages/reader/content/content_element.dart';
+import '../../pages/reader/content/horizontal_line.dart';
 import '../../pages/reader/content/image.dart';
 import '../../pages/reader/content/multi_part_paragraph.dart';
 import '../../pages/reader/content/single_part_paragraph.dart';
@@ -48,57 +49,82 @@ final class EbookService {
     );
   }
 
-  static Future<List<double>> generateHeight(List<ContentElement> elements, double maxWidth, double maxHeight) async {
+  /// Horizontal padding (left + right) applied to text elements during rendering.
+  static const double textHorizontalPadding = 20;
+
+  /// Vertical padding (top + bottom) applied to text elements during rendering.
+  static const double textVerticalPadding = 10;
+
+  /// Vertical padding (top + bottom) applied to non full-size images during rendering.
+  static const double imageVerticalPadding = 20;
+
+  /// Measures the rendered height of every element.
+  ///
+  /// The returned list always has the same length as [elements].
+  /// [baseStyle] and [textScaler] must match what the `Text` widgets use while
+  /// rendering (DefaultTextStyle and MediaQuery text scaler), otherwise the
+  /// measured heights differ from the real ones.
+  static Future<List<double>> generateHeight(
+      List<ContentElement> elements,
+      double maxWidth,
+      double maxHeight, {
+        TextStyle? baseStyle,
+        TextScaler textScaler = TextScaler.noScaling,
+        double dividerHeight = 16,
+      }) async {
     List<double> heights = [];
     BoxConstraints constraints = BoxConstraints(
-      maxWidth: maxWidth, // maxwidth calculated
+      maxWidth: maxWidth - textHorizontalPadding,
       minHeight: 0.0,
       minWidth: 0.0,
     );
 
+    double measureText(InlineSpan span) {
+      RenderParagraph renderParagraph = RenderParagraph(
+        span,
+        textDirection: TextDirection.ltr,
+        textScaler: textScaler,
+      );
+      renderParagraph.layout(constraints);
+      return renderParagraph.size.height + textVerticalPadding;
+    }
+
+    TextStyle resolve(TextStyle style) => baseStyle?.merge(style) ?? style;
+
     for (ContentElement element in elements) {
-      RenderParagraph renderParagraph;
       switch (element) {
         case ImageContent imageContent:
           image.Image imageObject = image.decodeImage(
               Uint8List.fromList(await imageContent.content)
           )!;
+          double padding = imageContent.fullSize ? 0 : imageVerticalPadding;
+          double maxImageHeight = maxHeight - padding;
           double height = imageObject.height.toDouble();
           if (imageObject.width > maxWidth) {
             double multiplication = imageObject.height / imageObject.width;
             height = maxWidth * multiplication;
           }
-          if (maxHeight < height) {
-            height = maxHeight;
+          if (maxImageHeight < height) {
+            height = maxImageHeight;
           }
-          heights.add(height);
+          imageContent.maxHeight = maxImageHeight;
+          heights.add(height + padding);
         case SinglePartParagraph singlePartParagraph:
-          renderParagraph = RenderParagraph(
-            TextSpan(
-                text: singlePartParagraph.text,
-                style: singlePartParagraph.style
-            ),
-            textDirection: TextDirection.ltr,
-          );
-
-          renderParagraph.layout(constraints);
-          heights.add(renderParagraph.size.height + 10);
+          heights.add(measureText(TextSpan(
+              text: singlePartParagraph.text,
+              style: resolve(singlePartParagraph.style)
+          )));
         case MultiPartParagraphElement multiPartParagraphElement:
-          renderParagraph = RenderParagraph(
-            TextSpan(
-                text: '',
-                style: const TextStyle(),
-                children: multiPartParagraphElement.textElements.map(
-                        (e) => TextSpan(
-                        text: e.text,
-                        style: e.style
-                    )
-                ).toList()
-            ),
-            textDirection: TextDirection.ltr,
-          );
-          renderParagraph.layout(constraints);
-          heights.add(renderParagraph.size.height + 10);
+          heights.add(measureText(TextSpan(
+              style: baseStyle,
+              children: multiPartParagraphElement.textElements.map(
+                      (e) => TextSpan(text: e.text, style: e.style)
+              ).toList()
+          )));
+        case HorizontalLine _:
+          heights.add(dividerHeight);
+        default:
+          heights.add(0);
       }
     }
 

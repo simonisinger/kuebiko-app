@@ -11,24 +11,16 @@ class MultiPartParagraphElement extends ContentElement {
 
   @override
   Widget render() {
-    List<PartParagraphElement> newElements = [];
-    // splitting text elements in single words to improve text wrapping
-    for (PartParagraphElement textElement in textElements) {
-      List<String> words = textElement.text.split(' ');
-      for (int i  = 0; i < words.length; i++) {
-        String word = words[i];
-        if (i != words.length - 1) {
-          word += " ";
-        }
-        newElements.add(PartParagraphElement(textElement.style, word));
-      }
-    }
+    // rendered as a single rich text so it wraps exactly like the height measurement
     return Padding(
+        key: key,
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        child: Wrap(
-          key: key,
-          crossAxisAlignment: WrapCrossAlignment.end,
-          children: newElements.map((e) => e.render()).toList(),
+        child: Text.rich(
+          TextSpan(
+            children: textElements
+                .map((e) => TextSpan(text: e.text, style: e.style))
+                .toList(),
+          ),
         )
     );
   }

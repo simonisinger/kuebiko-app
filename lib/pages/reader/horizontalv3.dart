@@ -15,6 +15,7 @@ import '../../widget/reader/overlay_bottom.dart';
 import '../../widget/reader/overlay_top.dart';
 import '../../enum/read_direction.dart';
 import 'content/content_element.dart';
+import 'content/image.dart';
 
 enum _ChangePageDirection {
   up,
@@ -189,11 +190,24 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
         .of(context)
         .size;
     double deviceHeight = size.height;
+    // must match the style the Text widgets inherit while rendering
+    // (the Scaffold's Material provides textTheme.bodyMedium as DefaultTextStyle)
+    TextStyle baseStyle = Theme.of(context).textTheme.bodyMedium ?? const TextStyle();
+    TextScaler textScaler = MediaQuery.textScalerOf(context);
+    double dividerHeight = Theme.of(context).dividerTheme.space ?? 16;
     reader = await StorageService.service.getEbookReader(widget.book);
     _contentElements = await reader.convertToObjects();
 
     double maxHeight = deviceHeight * 0.8;
     List<List<ContentElement>> pages = [];
+
+    for (Map<String, List<ContentElement>> files in _contentElements.values) {
+      for (List<ContentElement> elements in files.values) {
+        for (ImageContent imageContent in elements.whereType<ImageContent>()) {
+          imageContent.maxHeight = maxHeight - (imageContent.fullSize ? 0 : EbookService.imageVerticalPadding);
+        }
+      }
+    }
 
     ReaderCacheService readerCache = GetIt.instance.get<ReaderCacheService>();
 
@@ -202,7 +216,10 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
     if (
         pageConfig == null ||
         pageConfig['fontSize'] != settings.fontSize ||
-        pageConfig['fontFamily'] != settings.fontFamily
+        pageConfig['fontFamily'] != settings.fontFamily ||
+        pageConfig['layoutVersion'] != ReaderCacheService.layoutVersion ||
+        pageConfig['width'] != size.width ||
+        pageConfig['height'] != size.height
     ) {
       for (String chapter in _contentElements.keys) {
         bool chapterChange = true;
@@ -213,14 +230,20 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
             List<double> heights = await EbookService.generateHeight(
                 contentElements,
                 size.width,
-                maxHeight
+                maxHeight,
+                baseStyle: baseStyle,
+                textScaler: textScaler,
+                dividerHeight: dividerHeight
             );
             double tmpPageSize = 0;
             List<ContentElement> tmpPage = [];
             for (int i = 0; i < heights.length; i++) {
               tmpPageSize += heights[i];
               if (tmpPageSize > maxHeight || chapterChange) {
-                pages.add(tmpPage);
+                // never emit empty pages (e.g. at the start of a chapter)
+                if (tmpPage.isNotEmpty) {
+                  pages.add(List.unmodifiable(tmpPage));
+                }
                 tmpPageSize = heights[i];
                 tmpPage = [contentElements[i]];
                 chapterChange = false;
@@ -231,13 +254,12 @@ class _HorizontalV3ReaderPageState extends State<HorizontalV3ReaderPage> with Pr
             if (tmpPage.isNotEmpty) {
               pages.add(List.unmodifiable(tmpPage));
             }
-
-            readerCache.write(widget.book, pages);
-          } else {
+          } else if (contentElements.isNotEmpty) {
             pages.add(List.unmodifiable(contentElements));
           }
         }
       }
+      await readerCache.write(widget.book, pages, size);
     } else {
       List<ContentElement> contentElementsList = [];
       for (String chapter in _contentElements.keys) {
