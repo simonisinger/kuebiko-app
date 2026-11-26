@@ -50,5 +50,6 @@
   "renderCacheCleared": "Render cache cleared",
   "passwordEmpty": "Password cannot be empty",
   "password": "Password",
-  "invalidCredentials": "Invalid credentials"
+  "invalidCredentials": "Invalid credentials",
+  "series": "Series"
 }

@@ -168,4 +168,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get invalidCredentials => 'Falsche Anmeldedaten';
+
+  @override
+  String get series => 'Serien';
 }

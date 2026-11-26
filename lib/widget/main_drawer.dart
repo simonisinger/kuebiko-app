@@ -46,6 +46,17 @@ class MainDrawer extends StatelessWidget {
       },
     );
   }
+
+  Widget _generateSeriesButton(AppLocalizations localizations, BuildContext context) {
+    return ClientService.service.selectedClient == null
+        || !ClientService.service.clientHasFeature(ClientFeature.series) ? Container() : ListTile(
+      leading: Icon(Icons.auto_stories),
+      title: Text(localizations.series),
+      onTap: () {
+        Navigator.of(context).pushNamedAndRemoveUntil(AdminSettingsOverview.route, (_) => false);
+      },
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -56,6 +67,7 @@ class MainDrawer extends StatelessWidget {
         children: [
           _generateHomeButton(localizations, context),
           _generateLibrariesButton(localizations, context),
+          _generateSeriesButton(localizations, context),
           FutureBuilder(
               future: _generateServerSettingsButton(localizations, context),
               builder: (context, snapshot) {
