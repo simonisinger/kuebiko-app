@@ -19,6 +19,7 @@ import '../../services/css/rule.dart';
 import '../../services/css_parser.dart';
 import '../../services/ebook/models/epub_raw_content_element.dart';
 import '../../services/ebook/reader_interface.dart';
+import 'code_font.dart';
 import 'package:path/path.dart' as p;
 
 class EpubReader implements Reader {
@@ -175,7 +176,7 @@ class EpubReader implements Reader {
             for (dom.Element stylingElement in stylingElements) {
               switch(stylingElement.localName) {
                 case 'code':
-                  rawContentElement.rules.add(CssProperty('font-family-force', 'Consolas'));
+                  rawContentElement.rules.add(CssProperty('font-family-force', codeFontFamily));
                   rawContentElement.rules.add(CssProperty('text-indent', '0'));
                 case 'b':
                   rawContentElement.rules.add(CssProperty('font-weight', 'bold'));
@@ -278,7 +279,8 @@ class EpubReader implements Reader {
         fontSize: fontSize,
         fontStyle: fontStyle,
         fontWeight: fontWeight,
-        fontFamily: fontFamily ?? settings.fontFamily
+        fontFamily: fontFamily ?? settings.fontFamily,
+        fontFamilyFallback: fontFamily == codeFontFamily ? codeFontFamilyFallback : null
     );
   }
 
