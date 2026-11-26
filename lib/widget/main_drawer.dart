@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kuebiko_web_client/pages/admin/overview.dart';
 import 'package:kuebiko_web_client/pages/library/libraries.dart';
+import 'package:kuebiko_web_client/pages/series/overview.dart';
 import '../generated/i18n/app_localizations.dart';
 import '../pages/client_selection.dart';
 import '../pages/library/overview.dart';
@@ -53,7 +54,7 @@ class MainDrawer extends StatelessWidget {
       leading: Icon(Icons.auto_stories),
       title: Text(localizations.series),
       onTap: () {
-        Navigator.of(context).pushNamedAndRemoveUntil(AdminSettingsOverview.route, (_) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil(SeriesOverviewPage.route, (_) => false);
       },
     );
   }

@@ -1,56 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:kuebiko_web_client/pages/book/book_detail.dart';
+import 'package:kuebiko_client/kuebiko_client.dart';
 
 import '../../services/client.dart';
 import '../../widget/base_scaffold.dart';
-import '../../widget/book/book_image.dart';
+import 'detail.dart';
 
 class SeriesOverviewPage extends StatelessWidget {
   static const route = '/series';
 
   const SeriesOverviewPage({super.key});
 
+  Future<List<Series>> _loadSeries() {
+    ClientService service = ClientService.service;
+    // clients without library support (e.g. tiger translations) provide series directly
+    Library? library = service.selectedLibrary;
+    if (library != null && service.clientHasFeature(ClientFeature.libraries)) {
+      return library.series();
+    }
+    return service.selectedClient!.getAllSeries();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      FutureBuilder(
-        future: ClientService.service
-            .selectedLibrary!
-            .series(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return CircularProgressIndicator(color: Theme.of(context).shadowColor,);
-            case ConnectionState.done:
-              if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              } else {
-                return GridView.builder(
-                  itemCount: snapshot.data.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                  ),
-                  itemBuilder: (BuildContext context, int index) => Container(
-                    margin: EdgeInsets.all(4),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushNamed(
-                            BookDetailPage.route,
-                            arguments: snapshot.data[index]
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          BookImage(book: snapshot.data[index])
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
+      FutureBuilder<List<Series>>(
+        future: _loadSeries(),
+        builder: (BuildContext context, AsyncSnapshot<List<Series>> snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Center(child: CircularProgressIndicator(color: Theme.of(context).shadowColor));
           }
+          if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          List<Series> series = snapshot.data!;
+          return ListView.builder(
+            itemCount: series.length,
+            itemBuilder: (BuildContext context, int index) => ListTile(
+              title: Text(series[index].name),
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  SeriesViewPage.route,
+                  arguments: series[index]
+                );
+              },
+            ),
+          );
         },
       ),
     );
